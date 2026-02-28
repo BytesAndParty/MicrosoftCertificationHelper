@@ -1,23 +1,25 @@
 # Microsoft Certification Helper (AI-900)
 
-Browser-basierte Lern-App für die Microsoft AI-900 Zertifizierung. Läuft komplett clientseitig — kein Backend, keine Accounts.
+Browser-based study app for the Microsoft AI-900 certification. Runs fully client-side with no backend and no user accounts.
 
 ## Features
 
-- **Quiz-Modus** — Fragen mit dynamisch generierten Antwortoptionen und Sofort-Feedback
-- **Prüfungsmodus** — 10 Fragen, 20-Minuten-Timer, Ergebnisauswertung pro Thema
-- **Karteikarten** — Spaced Repetition mit drei Bewertungsstufen (Nochmal / Gut / Sicher)
-- **Fehlerjournal** — Falsch beantwortete Fragen priorisiert wiederholen
-- **Glossar** — Durchsuchbare AI-900-Kernbegriffe
-- **Dashboard** — Fortschritt, Trefferquote, Bestscores, fällige Karten
-- **Persistenz** — IndexedDB mit localStorage-Fallback
+- **Quiz mode** - Question practice with dynamically generated answer options and instant feedback
+- **Exam mode** - 10 questions, 20-minute timer, and topic-level result breakdown
+- **Flashcards** - Spaced repetition with three rating levels (Again / Good / Easy)
+- **Error journal** - Prioritized review of incorrectly answered questions
+- **Glossary** - Searchable AI-900 core terms
+- **Dashboard** - Progress, accuracy, best exam score, and due cards
+- **Persistence** - IndexedDB with localStorage fallback
+- **Theme toggle** - Persistent light and dark mode
+- **Language toggle** - English/German switch for UI labels and flashcards
 
 ## Tech Stack
 
-| Layer | Technologie |
-|-------|-------------|
+| Layer | Technology |
+|-------|------------|
 | Framework | Astro 5 |
-| Sprache | JavaScript (ES6+) |
+| Language | JavaScript (ES6+) |
 | Package Manager | Bun |
 | Styling | Custom CSS (Space Grotesk + IBM Plex Mono) |
 | Storage | IndexedDB + localStorage |
@@ -29,32 +31,32 @@ bun install
 bun run dev
 ```
 
-App läuft auf `http://localhost:4321`.
+App runs on `http://localhost:4321`.
 
 ## Content
 
-| Inhalt | Anzahl |
-|--------|--------|
-| Quiz-Fragen | 78 |
-| Karteikarten | 34 |
-| Glossar-Begriffe | 40 |
-| Themen | 8 (AI Workloads, ML, Computer Vision, NLP, Generative AI, Knowledge Mining, Responsible AI, Document AI) |
+| Content | Count |
+|---------|-------|
+| Quiz Questions | 78 |
+| Flashcards | 34 |
+| Glossary Terms | 40 |
+| Topics | 8 (AI Workloads, ML, Computer Vision, NLP, Generative AI, Knowledge Mining, Responsible AI, Document AI) |
 
-## Projektstruktur
+## Project Structure
 
 ```
 src/
-├── data/content.js     # Fragen, Karteikarten, Glossar, Roadmap-Themen
-├── layouts/Layout.astro # HTML-Grundgerüst
-├── pages/index.astro    # Hauptseite mit allen Sektionen
-├── scripts/app.js       # Gesamte App-Logik (Quiz, Exam, Flashcards, Persistenz)
-└── styles/app.css       # Styling und Responsive Design
+├── data/content.js       # Questions, flashcards, glossary, and roadmap topics
+├── layouts/Layout.astro  # Base HTML shell
+├── pages/index.astro     # Main page with all study modules
+├── scripts/app.js        # Application logic (quiz, exam, flashcards, persistence)
+└── styles/app.css        # Styling and responsive layout
 ```
 
 ## Scripts
 
-| Command | Beschreibung |
+| Command | Description |
 |---------|-------------|
-| `bun run dev` | Dev-Server starten |
-| `bun run build` | Production-Build nach `./dist/` |
-| `bun run preview` | Build lokal testen |
+| `bun run dev` | Start local dev server |
+| `bun run build` | Production build to `./dist/` |
+| `bun run preview` | Preview production build locally |
