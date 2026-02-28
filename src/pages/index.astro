@@ -1,0 +1,143 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { roadmapThemes } from '../data/content';
+import '../styles/app.css';
+---
+
+<Layout title="AI-900 Study Companion">
+	<main class="page">
+		<header class="hero reveal">
+			<p class="eyebrow">AI-900 Prep Workspace</p>
+			<h1>Microsoft Certification Helper</h1>
+			<p class="hero-copy">
+				Quiz, Exam-Mode, Karteikarten, Fehlerjournal und Glossar mit lokalem Fortschritt in der
+				Browser-DB.
+			</p>
+			<div class="hero-actions">
+				<p class="hint">Big-Picture-Plan: <code>ROADMAP.md</code></p>
+				<button id="reset-progress" type="button" class="secondary">Fortschritt zurucksetzen</button>
+			</div>
+		</header>
+
+		<section class="card reveal">
+			<div class="section-head">
+				<h2>Roadmap</h2>
+				<p id="roadmap-summary" class="meta">0 / 0 To-dos erledigt</p>
+			</div>
+			<div class="roadmap-grid">
+				{
+					roadmapThemes.map((theme) => (
+						<article class="theme-card">
+							<h3>{theme.title}</h3>
+							<p>{theme.goal}</p>
+							<ul>
+								{theme.todos.map((todo, todoIndex) => (
+									<li>
+										<label>
+											<input type="checkbox" data-roadmap-key={`${theme.id}:${todoIndex}`} />
+											<span>{todo}</span>
+										</label>
+									</li>
+								))}
+							</ul>
+						</article>
+					))
+				}
+			</div>
+		</section>
+
+		<section class="metrics reveal">
+			<article class="metric"><p>Roadmap</p><strong id="metric-roadmap">0%</strong></article>
+			<article class="metric"><p>Quiz Accuracy</p><strong id="metric-accuracy">0%</strong></article>
+			<article class="metric"><p>Best Exam</p><strong id="metric-exam">0%</strong></article>
+			<article class="metric"><p>Due Cards</p><strong id="metric-due">0</strong></article>
+			<article class="metric"><p>Fehlerjournal</p><strong id="metric-journal">0</strong></article>
+		</section>
+
+		<section class="workspace card reveal">
+			<div class="tabs" role="tablist" aria-label="Lernmodi">
+				<button type="button" class="tab is-active" data-tab="quiz" aria-selected="true">Quiz</button>
+				<button type="button" class="tab" data-tab="exam" aria-selected="false">Exam</button>
+				<button type="button" class="tab" data-tab="flashcards" aria-selected="false">
+					Karteikarten
+				</button>
+				<button type="button" class="tab" data-tab="journal" aria-selected="false">Fehlerjournal</button>
+				<button type="button" class="tab" data-tab="glossary" aria-selected="false">Glossar</button>
+			</div>
+
+			<div class="panels">
+				<section class="panel" data-panel="quiz">
+					<div class="panel-head">
+						<h3>Quiz mit Sofort-Feedback</h3>
+						<p id="quiz-progress" class="meta"></p>
+					</div>
+					<p id="quiz-topic" class="chip"></p>
+					<h4 id="quiz-question"></h4>
+					<div id="quiz-options" class="option-list"></div>
+					<p id="quiz-feedback" class="feedback" aria-live="polite"></p>
+					<button id="quiz-next" type="button" class="primary">Nachste Frage</button>
+				</section>
+
+				<section class="panel" data-panel="exam" hidden>
+					<div class="panel-head">
+						<h3>Prufungsmodus</h3>
+						<p class="meta">10 Fragen, 20 Minuten, Mixed Fragetypen und detaillierter Review.</p>
+					</div>
+					<div class="exam-top">
+						<button id="exam-start" type="button" class="primary">Prufung starten</button>
+						<p id="exam-timer" class="timer">20:00</p>
+					</div>
+					<div id="exam-stage" hidden>
+						<p id="exam-progress" class="meta"></p>
+						<h4 id="exam-question"></h4>
+						<div id="exam-options" class="option-list"></div>
+						<button id="exam-next" type="button" class="primary" disabled>Nachste Frage</button>
+					</div>
+					<div id="exam-result" class="exam-result" aria-live="polite"></div>
+					<div id="exam-review" class="exam-review"></div>
+				</section>
+
+				<section class="panel" data-panel="flashcards" hidden>
+					<div class="panel-head">
+						<h3>Spaced Repetition</h3>
+						<p class="meta">Bewerte jede Karte: Nochmal, Gut, Sicher.</p>
+					</div>
+					<div id="flashcard-box" class="flashcard">
+						<p id="flashcard-topic" class="chip"></p>
+						<h4 id="flashcard-front"></h4>
+						<p id="flashcard-back" hidden></p>
+					</div>
+					<div class="flash-actions">
+						<button id="flashcard-show" type="button" class="secondary">Antwort zeigen</button>
+						<div id="flashcard-grade-actions" class="grade-actions" hidden>
+							<button id="flashcard-again" type="button" class="danger">Nochmal</button>
+							<button id="flashcard-good" type="button" class="primary">Gut</button>
+							<button id="flashcard-easy" type="button" class="secondary">Sicher</button>
+						</div>
+					</div>
+					<p id="flashcard-meta" class="meta"></p>
+				</section>
+
+				<section class="panel" data-panel="journal" hidden>
+					<div class="panel-head">
+						<h3>Fehlerjournal</h3>
+						<p class="meta">Priorisierte Liste deiner falschen Fragen.</p>
+					</div>
+					<div id="journal-list" class="journal-list"></div>
+				</section>
+
+				<section class="panel" data-panel="glossary" hidden>
+					<div class="panel-head">
+						<h3>Glossar</h3>
+						<p class="meta">Schneller Zugriff auf zentrale AI-900 Begriffe.</p>
+					</div>
+					<label class="search-label" for="glossary-search">Suche</label>
+					<input id="glossary-search" type="search" placeholder="Begriff oder Stichwort..." />
+					<div id="glossary-list" class="glossary-list"></div>
+				</section>
+			</div>
+		</section>
+	</main>
+
+	<script type="module" src="../scripts/app.js"></script>
+</Layout>
