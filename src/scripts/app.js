@@ -48,6 +48,9 @@ const ui = {
 	flashEasy: byId('flashcard-easy'),
 	flashMeta: byId('flashcard-meta'),
 	journalList: byId('journal-list'),
+	quizHint: byId('quiz-hint'),
+	quizSkip: byId('quiz-skip'),
+	quizHintText: byId('quiz-hint-text'),
 	glossarySearch: byId('glossary-search'),
 	glossaryList: byId('glossary-list'),
 	resetProgress: byId('reset-progress')
@@ -344,6 +347,10 @@ function showQuizQuestion(forcedQuestionId = null) {
 	ui.quizProgress.textContent = `Beantwortet: ${state.quiz.answered} | Richtig: ${state.quiz.correct}${poolHint}`;
 	ui.quizFeedback.textContent = '';
 	ui.quizFeedback.className = 'feedback';
+	ui.quizHintText.textContent = '';
+	ui.quizHintText.hidden = true;
+	ui.quizHint.hidden = false;
+	ui.quizSkip.hidden = false;
 	ui.quizOptions.innerHTML = '';
 	ui.quizNext.disabled = true;
 
@@ -384,6 +391,8 @@ function submitQuizAnswer(selectedIndex) {
 		if (!isCorrect && index === selectedIndex) button.classList.add('is-wrong');
 	});
 
+	ui.quizHint.hidden = true;
+	ui.quizSkip.hidden = true;
 	ui.quizFeedback.classList.add(isCorrect ? 'is-correct' : 'is-wrong');
 	ui.quizFeedback.textContent = `${isCorrect ? 'Richtig.' : 'Nicht korrekt.'} ${activeQuestion.explanation}`;
 	ui.quizNext.disabled = false;
@@ -762,6 +771,14 @@ function bindEvents() {
 	});
 
 	ui.quizNext.onclick = () => showQuizQuestion();
+	ui.quizHint.onclick = () => {
+		if (!activeQuestion) return;
+		const hintText = activeQuestion.hint || activeQuestion.explanation;
+		ui.quizHintText.textContent = hintText;
+		ui.quizHintText.hidden = false;
+		ui.quizHint.hidden = true;
+	};
+	ui.quizSkip.onclick = () => showQuizQuestion();
 	ui.examStart.onclick = () => startExam();
 	ui.examNext.onclick = () => nextExamQuestion();
 	ui.flashShow.onclick = () => {
@@ -772,7 +789,7 @@ function bindEvents() {
 	ui.flashGood.onclick = () => rateCard('good');
 	ui.flashEasy.onclick = () => rateCard('easy');
 	ui.glossarySearch.oninput = (event) => renderGlossary(event.target.value);
-	ui.resetProgress.onclick = () => void resetAll();
+	if (ui.resetProgress) ui.resetProgress.onclick = () => void resetAll();
 }
 
 async function init() {

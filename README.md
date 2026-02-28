@@ -35,9 +35,9 @@ App läuft auf `http://localhost:4321`.
 
 | Inhalt | Anzahl |
 |--------|--------|
-| Quiz-Fragen | 65 |
-| Karteikarten | 27 |
-| Glossar-Begriffe | 30 |
+| Quiz-Fragen | 78 |
+| Karteikarten | 34 |
+| Glossar-Begriffe | 40 |
 | Themen | 8 (AI Workloads, ML, Computer Vision, NLP, Generative AI, Knowledge Mining, Responsible AI, Document AI) |
 
 ## Projektstruktur

@@ -15,7 +15,6 @@ import '../styles/app.css';
 			</p>
 			<div class="hero-actions">
 				<p class="hint">Big-Picture-Plan: <code>ROADMAP.md</code></p>
-				<button id="reset-progress" type="button" class="secondary">Fortschritt zurucksetzen</button>
 			</div>
 		</header>
 
@@ -74,6 +73,11 @@ import '../styles/app.css';
 					<p id="quiz-topic" class="chip"></p>
 					<h4 id="quiz-question"></h4>
 					<div id="quiz-options" class="option-list"></div>
+					<div class="quiz-actions">
+						<button id="quiz-hint" type="button" class="secondary">Hinweis anzeigen</button>
+						<button id="quiz-skip" type="button" class="secondary">Uberspringen</button>
+					</div>
+					<p id="quiz-hint-text" class="hint-box" hidden></p>
 					<p id="quiz-feedback" class="feedback" aria-live="polite"></p>
 					<button id="quiz-next" type="button" class="primary">Nachste Frage</button>
 				</section>
@@ -136,6 +140,10 @@ import '../styles/app.css';
 					<div id="glossary-list" class="glossary-list"></div>
 				</section>
 			</div>
+		</section>
+
+		<section class="reset-section reveal">
+			<button id="reset-progress" type="button" class="danger">Fortschritt zurucksetzen</button>
 		</section>
 	</main>
 
