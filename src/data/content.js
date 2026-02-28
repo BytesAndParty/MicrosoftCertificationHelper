@@ -56,6 +56,7 @@ export const quizQuestions = [
 		id: 'q1',
 		topic: 'AI Workloads',
 		prompt: 'Welche Aussage beschreibt KI-Workloads am besten?',
+		hint: 'Uberlege, was alles zusammenspielen muss, damit KI ein konkretes Problem losen kann.',
 		options: [
 			'Jeder KI-Use-Case nutzt dasselbe Modell und denselben Datenfluss.',
 			'Ein KI-Workload kombiniert Daten, Modell und Inferenz fur ein konkretes Ziel.',
@@ -69,6 +70,7 @@ export const quizQuestions = [
 		id: 'q2',
 		topic: 'AI Workloads',
 		prompt: 'Du willst Nachtlogs gesammelt auswerten. Welches Inferenzmuster passt am besten?',
+		hint: 'Denk daran, welches Muster gut zu grossen Datenmengen passt, die nicht in Echtzeit verarbeitet werden mussen.',
 		options: ['Batch Inference', 'Online Inference', 'Streaming Translation', 'Prompt Engineering'],
 		answerIndex: 0,
 		explanation: 'Batch Inference passt fur periodische Verarbeitung grosser Datenmengen.'
@@ -77,6 +79,7 @@ export const quizQuestions = [
 		id: 'q3',
 		topic: 'AI Workloads',
 		prompt: 'Ein Produktivmodell soll stabil bleiben. Welche Praxis hilft direkt?',
+		hint: 'Was passiert, wenn sich die Daten im Laufe der Zeit verandern und niemand hinschaut?',
 		options: [
 			'Modell ohne Monitoring deployen',
 			'Nur mit Trainingsmetriken arbeiten',
@@ -90,6 +93,7 @@ export const quizQuestions = [
 		id: 'q4',
 		topic: 'Machine Learning',
 		prompt: 'Du willst Hauspreise vorhersagen. Welche Aufgabe passt?',
+		hint: 'Preise sind keine Kategorien, sondern fortlaufende Zahlen. Welche ML-Aufgabe arbeitet mit Zahlenwerten?',
 		options: ['Klassifikation', 'Regression', 'Clustering', 'Anomalieerkennung'],
 		answerIndex: 1,
 		explanation: 'Preise sind kontinuierliche Zahlenwerte, also Regression.'
@@ -98,6 +102,7 @@ export const quizQuestions = [
 		id: 'q5',
 		topic: 'Machine Learning',
 		prompt: 'Was ist ein typisches Zeichen fur Overfitting?',
+		hint: 'Achte auf den Unterschied zwischen Trainings- und Testperformance.',
 		options: [
 			'Training und Test sind beide schlecht',
 			'Training ist sehr gut, Test deutlich schlechter',
@@ -111,6 +116,7 @@ export const quizQuestions = [
 		id: 'q6',
 		topic: 'Machine Learning',
 		prompt: 'Kundensegmente ohne Labels finden ist ...',
+		hint: 'Wenn keine vordefinierten Kategorien (Labels) vorhanden sind, welche Art von Lernen kommt dann zum Einsatz?',
 		options: ['Supervised Learning', 'Unsupervised Learning', 'Reinforcement Learning', 'Transfer Learning'],
 		answerIndex: 1,
 		explanation: 'Clustering ohne Zielvariable ist ein unsupervised Verfahren.'
@@ -119,6 +125,7 @@ export const quizQuestions = [
 		id: 'q7',
 		topic: 'Computer Vision',
 		prompt: 'Bilder in "Hund", "Katze", "Vogel" einteilen ist ...',
+		hint: 'Es geht darum, einem ganzen Bild genau eine Kategorie zuzuweisen.',
 		options: ['Bildklassifikation', 'Objekterkennung', 'Face Verification', 'OCR'],
 		answerIndex: 0,
 		explanation: 'Bildklassifikation weist dem Bild eine Klasse zu.'
@@ -127,6 +134,7 @@ export const quizQuestions = [
 		id: 'q8',
 		topic: 'Computer Vision',
 		prompt: 'Welches Szenario passt zu OCR?',
+		hint: 'OCR steht fur Optical Character Recognition. Wo muss geschriebener Text aus einem visuellen Medium gelesen werden?',
 		options: [
 			'Stimmung in Kundenfeedback erkennen',
 			'Text auf gescannten Formularen auslesen',
@@ -140,6 +148,7 @@ export const quizQuestions = [
 		id: 'q9',
 		topic: 'Computer Vision',
 		prompt: 'Objekterkennung liefert typischerweise ...',
+		hint: 'Objekterkennung findet nicht nur was im Bild ist, sondern auch wo es sich befindet.',
 		options: [
 			'eine einzelne Klassenwahrscheinlichkeit fur das ganze Bild',
 			'Bounding Boxes und Klassen fur erkannte Objekte',
@@ -153,6 +162,7 @@ export const quizQuestions = [
 		id: 'q10',
 		topic: 'NLP',
 		prompt: 'Ein Dienst soll automatisch die Sprache in Texten erkennen.',
+		hint: 'Welche NLP-Funktion bestimmt, ob ein Text z.B. auf Deutsch, Englisch oder Franzosisch geschrieben ist?',
 		options: ['Language Detection', 'Sentiment Analysis', 'OCR', 'Topic Modeling'],
 		answerIndex: 0,
 		explanation: 'Language Detection bestimmt die Sprache direkt.'
@@ -161,6 +171,7 @@ export const quizQuestions = [
 		id: 'q11',
 		topic: 'NLP',
 		prompt: 'Welche Funktion erkennt positive, negative oder neutrale Aussagen?',
+		hint: 'Es geht um die Stimmung oder Meinung in einem Text. Welche Analyse bewertet genau das?',
 		options: ['Sentiment Analysis', 'Entity Linking', 'Part-of-Speech Tagging', 'OCR'],
 		answerIndex: 0,
 		explanation: 'Sentiment Analysis bewertet die Stimmung in Text.'
@@ -169,6 +180,7 @@ export const quizQuestions = [
 		id: 'q12',
 		topic: 'NLP',
 		prompt: 'Named Entity Recognition dient primar dazu ...',
+		hint: 'Der Name sagt es schon: Es geht um das Erkennen von benannten Dingen in Texten.',
 		options: [
 			'Bilder in Kategorien einzuteilen',
 			'Entitaten wie Personen, Orte und Organisationen zu extrahieren',
@@ -182,6 +194,7 @@ export const quizQuestions = [
 		id: 'q13',
 		topic: 'Generative AI',
 		prompt: 'Welcher Azure-Dienst ist fur promptbasierte Textgenerierung gedacht?',
+		hint: 'Welcher Azure-Dienst stellt die bekannten GPT-Modelle bereit?',
 		options: ['Azure OpenAI Service', 'Azure AI Search', 'Azure AI Vision', 'Azure DNS'],
 		answerIndex: 0,
 		explanation: 'Azure OpenAI Service stellt Modelle fur generative Prompts bereit.'
@@ -190,6 +203,7 @@ export const quizQuestions = [
 		id: 'q14',
 		topic: 'Generative AI',
 		prompt: 'Was ist ein typisches Ziel von Prompt Engineering?',
+		hint: 'Beim Prompt Engineering geht es darum, wie man dem Modell seine Aufgabe am besten erklart.',
 		options: [
 			'GPU-Temperatur optimieren',
 			'Modellausgaben durch klare Anweisungen und Kontext verbessern',
@@ -203,6 +217,7 @@ export const quizQuestions = [
 		id: 'q15',
 		topic: 'Generative AI',
 		prompt: 'Welcher Ansatz reduziert Halluzinationen in Antworten auf Unternehmensdaten?',
+		hint: 'Welches Verfahren gibt dem Modell zuerst relevante Dokumente als Kontext mit?',
 		options: ['RAG mit relevanten Quellen', 'Nur Temperatur erhohen', 'Context Window reduzieren', 'Nur Few-shot vermeiden'],
 		answerIndex: 0,
 		explanation: 'RAG liefert dem Modell passende, aktuelle Quellen als Kontext.'
@@ -211,6 +226,7 @@ export const quizQuestions = [
 		id: 'q16',
 		topic: 'Knowledge Mining',
 		prompt: 'Viele Dokumente indizieren und semantisch suchen passt zu ...',
+		hint: 'Welcher Azure-Dienst ist speziell fur das Durchsuchen grosser Dokumentensammlungen gemacht?',
 		options: ['Azure AI Search', 'Azure AI Face', 'Azure Batch', 'Azure Monitor'],
 		answerIndex: 0,
 		explanation: 'Azure AI Search ist fur Indexierung und Suche ausgelegt.'
@@ -219,6 +235,7 @@ export const quizQuestions = [
 		id: 'q17',
 		topic: 'Knowledge Mining',
 		prompt: 'Was ist ein zentraler Schritt im Knowledge-Mining-Workflow?',
+		hint: 'Rohe Dokumente mussen erst aufbereitet werden, bevor man darin suchen kann.',
 		options: [
 			'Dokumente ignorieren',
 			'Inhalte anreichern und indexieren',
@@ -232,6 +249,7 @@ export const quizQuestions = [
 		id: 'q18',
 		topic: 'Knowledge Mining',
 		prompt: 'Semantische Suche unterscheidet sich von einfacher Keyword-Suche vor allem durch ...',
+		hint: 'Denk an den Unterschied zwischen exaktem Wortabgleich und dem Verstehen der Bedeutung.',
 		options: [
 			'nur schnellere Antwortzeit',
 			'Verstandnis von Bedeutung und Kontext',
@@ -245,6 +263,7 @@ export const quizQuestions = [
 		id: 'q19',
 		topic: 'Responsible AI',
 		prompt: 'Ein Modell benachteiligt eine Gruppe systematisch. Welches Prinzip ist betroffen?',
+		hint: 'Welches Prinzip stellt sicher, dass niemand ungerecht behandelt wird?',
 		options: ['Fairness', 'Transparenz', 'Inklusivitat', 'Verantwortlichkeit'],
 		answerIndex: 0,
 		explanation: 'Ungleichbehandlung zwischen Gruppen ist ein Fairness-Problem.'
@@ -253,6 +272,7 @@ export const quizQuestions = [
 		id: 'q20',
 		topic: 'Responsible AI',
 		prompt: 'Welche Massnahme erhoht Transparenz in KI-Systemen?',
+		hint: 'Transparenz bedeutet Nachvollziehbarkeit. Was hilft, Entscheidungen verstandlich zu machen?',
 		options: [
 			'Entscheidungen ohne Begrundung liefern',
 			'Modellinputs und Entscheidungslogik dokumentieren',
@@ -266,6 +286,7 @@ export const quizQuestions = [
 		id: 'q21',
 		topic: 'Responsible AI',
 		prompt: 'Welches Prinzip fordert robuste, sichere Modellnutzung?',
+		hint: 'Welches Responsible-AI-Prinzip kummert sich um Stabilitat und Schutz vor Fehlern?',
 		options: ['Inklusivitat', 'Zuverlassigkeit und Sicherheit', 'Fairness', 'Datendichte'],
 		answerIndex: 1,
 		explanation: 'Zuverlassigkeit und Sicherheit sind Kernprinzipien verantwortungsvoller KI.'
@@ -274,6 +295,7 @@ export const quizQuestions = [
 		id: 'q22',
 		topic: 'Document AI',
 		prompt: 'Rechnungsdaten wie Betrag und Datum extrahieren passt zu ...',
+		hint: 'Welcher Azure-Dienst ist darauf spezialisiert, strukturierte Felder aus Dokumenten herauszulesen?',
 		options: [
 			'Azure AI Document Intelligence',
 			'Azure AI Translator',
@@ -287,6 +309,7 @@ export const quizQuestions = [
 		id: 'q23',
 		topic: 'Document AI',
 		prompt: 'Wann nutzt man ein benutzerdefiniertes Extraktionsmodell?',
+		hint: 'Wann reichen die mitgelieferten Standardmodelle nicht aus?',
 		options: [
 			'Wenn Standardmodelle die Dokumentstruktur nicht gut abdecken',
 			'Wenn keine Daten vorhanden sind',
@@ -300,6 +323,7 @@ export const quizQuestions = [
 		id: 'q24',
 		topic: 'Document AI',
 		prompt: 'Welches Ergebnis ist bei Document Intelligence typisch?',
+		hint: 'Was bekommt man zuruck, wenn ein Dokument analysiert wird? Denk an mehr als nur Text.',
 		options: [
 			'Nur ein PNG als Ausgabe',
 			'Strukturierte Felder inklusive Konfidenzwerten',
@@ -314,6 +338,7 @@ export const quizQuestions = [
 		type: 'true-false',
 		topic: 'Responsible AI',
 		prompt: 'Aussage: Fairness in KI bedeutet, dass alle Nutzergruppen gleich behandelt werden sollen.',
+		hint: 'Uberlege, ob Fairness bedeutet, Unterschiede zwischen Gruppen auszugleichen oder sie zu ignorieren.',
 		correctAnswer: 'Wahr',
 		explanation: 'Fairness zielt auf gerechte Behandlung und vermeidet systematische Benachteiligung.'
 	},
@@ -322,6 +347,7 @@ export const quizQuestions = [
 		type: 'true-false',
 		topic: 'Generative AI',
 		prompt: 'Aussage: Prompt Engineering ist nur fur Bildmodelle relevant.',
+		hint: 'Denk daran, welche Arten von Modellen alle mit Prompts arbeiten (Text, Code, Bilder...).',
 		correctAnswer: 'Falsch',
 		explanation: 'Prompt Engineering ist besonders auch fur Text- und Code-Modelle zentral.'
 	},
@@ -330,6 +356,7 @@ export const quizQuestions = [
 		type: 'true-false',
 		topic: 'Machine Learning',
 		prompt: 'Aussage: Ein Modell kann auf Trainingsdaten sehr gut sein und trotzdem auf neuen Daten schwach performen.',
+		hint: 'Dieses Phanomen hat einen bekannten Namen in Machine Learning. Denk an die Balance zwischen Lernen und Generalisieren.',
 		correctAnswer: 'Wahr',
 		explanation: 'Das ist ein typisches Verhalten bei Overfitting.'
 	},
@@ -338,6 +365,7 @@ export const quizQuestions = [
 		type: 'true-false',
 		topic: 'Knowledge Mining',
 		prompt: 'Aussage: Semantische Suche berucksichtigt Bedeutung und Kontext statt nur exakte Keywords.',
+		hint: 'Was macht semantische Suche anders als eine einfache Volltextsuche?',
 		correctAnswer: 'Wahr',
 		explanation: 'Genau das unterscheidet semantische Suche von reiner Keyword-Suche.'
 	},
@@ -346,6 +374,7 @@ export const quizQuestions = [
 		id: 'q29',
 		topic: 'AI Workloads',
 		prompt: 'Welcher Azure-Dienst bundelt viele KI-Funktionen wie Vision, Speech und Language unter einem Dach?',
+		hint: 'Frueher hiess dieser Sammeldienst "Cognitive Services". Wie heisst er heute?',
 		options: ['Azure AI Services', 'Azure DevOps', 'Azure Monitor', 'Azure Logic Apps'],
 		answerIndex: 0,
 		explanation: 'Azure AI Services (fruher Cognitive Services) bietet eine zentrale API fur mehrere KI-Fahigkeiten.'
@@ -354,6 +383,7 @@ export const quizQuestions = [
 		id: 'q30',
 		topic: 'AI Workloads',
 		prompt: 'Was beschreibt den Prozess, ein trainiertes Modell fur Endnutzer verfugbar zu machen?',
+		hint: 'Wie nennt man den Schritt, bei dem ein Modell als Endpunkt oder Service bereitgestellt wird?',
 		options: ['Deployment', 'Feature Engineering', 'Data Wrangling', 'Hyperparameter Tuning'],
 		answerIndex: 0,
 		explanation: 'Deployment ist das Bereitstellen eines Modells als Endpunkt oder Service.'
@@ -363,6 +393,7 @@ export const quizQuestions = [
 		type: 'true-false',
 		topic: 'AI Workloads',
 		prompt: 'Aussage: Azure AI Services konnen uber REST-APIs und SDKs angesprochen werden.',
+		hint: 'Uberlege, wie Cloud-Dienste normalerweise von Entwicklern angesprochen werden.',
 		correctAnswer: 'Wahr',
 		explanation: 'Alle Azure AI Services bieten REST-Endpunkte und Client-SDKs in mehreren Sprachen.'
 	},
@@ -371,6 +402,7 @@ export const quizQuestions = [
 		id: 'q32',
 		topic: 'Machine Learning',
 		prompt: 'Welche Azure-Komponente bietet eine Drag-and-Drop-Oberflache zum Erstellen von ML-Pipelines?',
+		hint: 'Es gibt ein visuelles Werkzeug in Azure ML, das keinen Code erfordert.',
 		options: ['Azure Machine Learning Designer', 'Azure Data Factory', 'Azure Stream Analytics', 'Azure Synapse'],
 		answerIndex: 0,
 		explanation: 'Der Designer ermoglicht visuelles Erstellen von ML-Workflows ohne Code.'
@@ -379,6 +411,7 @@ export const quizQuestions = [
 		id: 'q33',
 		topic: 'Machine Learning',
 		prompt: 'Was ist der Hauptvorteil von Automated ML (AutoML)?',
+		hint: 'Was wird bei AutoML automatisiert, das man sonst muhsam von Hand machen musste?',
 		options: [
 			'Es testet automatisch verschiedene Algorithmen und Hyperparameter',
 			'Es ersetzt die Datensammlung komplett',
@@ -392,6 +425,7 @@ export const quizQuestions = [
 		id: 'q34',
 		topic: 'Machine Learning',
 		prompt: 'Welche Metrik misst, wie oft ein Klassifikationsmodell richtig liegt?',
+		hint: 'Welche einfache Metrik gibt den prozentualen Anteil korrekter Vorhersagen an?',
 		options: ['Accuracy', 'Latency', 'Throughput', 'Overfitting-Rate'],
 		answerIndex: 0,
 		explanation: 'Accuracy ist der Anteil korrekter Vorhersagen an der Gesamtzahl.'
@@ -400,6 +434,7 @@ export const quizQuestions = [
 		id: 'q35',
 		topic: 'Machine Learning',
 		prompt: 'Was beschreibt Feature Engineering?',
+		hint: 'Es geht um die Vorbereitung der Eingabedaten, bevor ein Modell daraus lernt.',
 		options: [
 			'Das Auswahlen und Transformieren von Eingabevariablen fur ein Modell',
 			'Das Deployen eines Modells in die Cloud',
@@ -413,6 +448,7 @@ export const quizQuestions = [
 		id: 'q36',
 		topic: 'Machine Learning',
 		prompt: 'Welches Verfahren lernt durch Belohnungen und Bestrafungen?',
+		hint: 'Denk an einen Agenten, der durch Versuch und Irrtum lernt, ahnlich wie ein Spieler in einem Spiel.',
 		options: ['Reinforcement Learning', 'Supervised Learning', 'Unsupervised Learning', 'Transfer Learning'],
 		answerIndex: 0,
 		explanation: 'Reinforcement Learning optimiert Aktionen basierend auf Reward-Signalen.'
@@ -422,6 +458,7 @@ export const quizQuestions = [
 		type: 'true-false',
 		topic: 'Machine Learning',
 		prompt: 'Aussage: Bei Supervised Learning braucht man gelabelte Trainingsdaten.',
+		hint: 'Was bedeutet "supervised" (beaufsichtigt)? Wer oder was gibt die Anleitung beim Lernen?',
 		correctAnswer: 'Wahr',
 		explanation: 'Supervised Learning nutzt Eingabe-Ausgabe-Paare (Labels) zum Lernen.'
 	},
@@ -429,6 +466,7 @@ export const quizQuestions = [
 		id: 'q38',
 		topic: 'Machine Learning',
 		prompt: 'Du willst E-Mails als Spam oder Nicht-Spam einstufen. Welche Aufgabe ist das?',
+		hint: 'Wie viele mogliche Kategorien gibt es hier? Und was heisst es, wenn es genau zwei sind?',
 		options: ['Binare Klassifikation', 'Regression', 'Clustering', 'Anomalieerkennung'],
 		answerIndex: 0,
 		explanation: 'Zwei Klassen (Spam/Nicht-Spam) sind eine binare Klassifikationsaufgabe.'
@@ -438,6 +476,7 @@ export const quizQuestions = [
 		id: 'q39',
 		topic: 'Computer Vision',
 		prompt: 'Welcher Azure-Dienst bietet vorgefertigte Modelle fur Bildanalyse, Gesichtserkennung und OCR?',
+		hint: 'Welcher Azure-Dienst hat "Vision" im Namen und deckt alles rund um Bildverarbeitung ab?',
 		options: ['Azure AI Vision', 'Azure AI Translator', 'Azure AI Speech', 'Azure Cosmos DB'],
 		answerIndex: 0,
 		explanation: 'Azure AI Vision (fruher Computer Vision) bietet APIs fur diverse Bildanalysen.'
@@ -446,6 +485,7 @@ export const quizQuestions = [
 		id: 'q40',
 		topic: 'Computer Vision',
 		prompt: 'Welche Aufgabe ordnet jedem Pixel eines Bildes eine Klasse zu?',
+		hint: 'Es geht nicht um das ganze Bild, sondern um die Zuordnung auf Pixel-Ebene.',
 		options: ['Semantische Segmentierung', 'Bildklassifikation', 'OCR', 'Face Detection'],
 		answerIndex: 0,
 		explanation: 'Semantische Segmentierung klassifiziert jeden Pixel statt nur das Gesamtbild.'
@@ -454,6 +494,7 @@ export const quizQuestions = [
 		id: 'q41',
 		topic: 'Computer Vision',
 		prompt: 'Azure AI Face kann verwendet werden fur ...',
+		hint: 'Der Name "Face" verrat schon viel. Was kann man mit Gesichtern in Bildern alles machen?',
 		options: [
 			'Gesichtserkennung und Verifizierung',
 			'Spracherkennung in Audiodaten',
@@ -468,6 +509,7 @@ export const quizQuestions = [
 		type: 'true-false',
 		topic: 'Computer Vision',
 		prompt: 'Aussage: Azure AI Vision kann automatisch Bildunterschriften (Captions) generieren.',
+		hint: 'Uberlege, ob moderne Bildanalyse-Dienste Bilder auch beschreiben konnen, nicht nur klassifizieren.',
 		correctAnswer: 'Wahr',
 		explanation: 'Die Image Captioning Funktion erstellt automatische Beschreibungen von Bildinhalten.'
 	},
@@ -476,6 +518,7 @@ export const quizQuestions = [
 		id: 'q43',
 		topic: 'NLP',
 		prompt: 'Welcher Azure-Dienst ubersetzt Text automatisch zwischen Sprachen?',
+		hint: 'Der Name dieses Dienstes beschreibt genau seine Funktion: Ubersetzung.',
 		options: ['Azure AI Translator', 'Azure AI Vision', 'Azure AI Search', 'Azure Monitor'],
 		answerIndex: 0,
 		explanation: 'Azure AI Translator bietet neuronale maschinelle Ubersetzung.'
@@ -484,6 +527,7 @@ export const quizQuestions = [
 		id: 'q44',
 		topic: 'NLP',
 		prompt: 'Key Phrase Extraction dient dazu ...',
+		hint: 'Der Name verrat es: Es werden Schlusselbegriffe (Key Phrases) aus etwas herausgezogen.',
 		options: [
 			'die wichtigsten Begriffe aus einem Text herauszuziehen',
 			'Bilder zu klassifizieren',
@@ -497,6 +541,7 @@ export const quizQuestions = [
 		id: 'q45',
 		topic: 'NLP',
 		prompt: 'Welcher Dienst wandelt gesprochene Sprache in Text um?',
+		hint: 'Audio rein, Text raus. Welcher Azure-Dienst macht genau das?',
 		options: ['Azure AI Speech (Speech-to-Text)', 'Azure AI Vision', 'Azure AI Search', 'Azure AI Face'],
 		answerIndex: 0,
 		explanation: 'Speech-to-Text transkribiert Audio in geschriebenen Text.'
@@ -505,6 +550,7 @@ export const quizQuestions = [
 		id: 'q46',
 		topic: 'NLP',
 		prompt: 'Welcher Dienst wandelt Text in gesprochene Sprache um?',
+		hint: 'Diesmal andersherum: Text rein, Sprache raus. Welcher Dienst synthetisiert Sprache?',
 		options: ['Azure AI Speech (Text-to-Speech)', 'Azure AI Translator', 'Azure AI Vision', 'Azure AI Search'],
 		answerIndex: 0,
 		explanation: 'Text-to-Speech synthetisiert naturlich klingende Sprache aus Text.'
@@ -514,6 +560,7 @@ export const quizQuestions = [
 		type: 'true-false',
 		topic: 'NLP',
 		prompt: 'Aussage: Azure AI Language kann Frage-Antwort-Paare aus Dokumenten erstellen (Question Answering).',
+		hint: 'Kann ein Sprachdienst Wissen aus Dokumenten so aufbereiten, dass Fragen darauf beantwortet werden?',
 		correctAnswer: 'Wahr',
 		explanation: 'Custom Question Answering ermoglicht es, Wissensdatenbanken aus Dokumenten zu erstellen.'
 	},
@@ -521,6 +568,7 @@ export const quizQuestions = [
 		id: 'q48',
 		topic: 'NLP',
 		prompt: 'Ein Chatbot soll haufige Kundenanfragen automatisiert beantworten. Welche Azure-Kombination passt?',
+		hint: 'Ein Chatbot braucht zwei Dinge: eine Wissensquelle fur Antworten und einen Kanal fur die Kommunikation.',
 		options: [
 			'Azure AI Language (Question Answering) + Azure Bot Service',
 			'Azure AI Vision + Azure Batch',
@@ -535,6 +583,7 @@ export const quizQuestions = [
 		id: 'q49',
 		topic: 'Generative AI',
 		prompt: 'Welches Modell in Azure OpenAI kann Bilder generieren?',
+		hint: 'Welches bekannte Modell von OpenAI erstellt Bilder aus Textbeschreibungen?',
 		options: ['DALL-E', 'Whisper', 'GPT-4', 'Ada'],
 		answerIndex: 0,
 		explanation: 'DALL-E generiert Bilder basierend auf Textbeschreibungen.'
@@ -543,6 +592,7 @@ export const quizQuestions = [
 		id: 'q50',
 		topic: 'Generative AI',
 		prompt: 'Was versteht man unter dem "Temperature"-Parameter bei GPT-Modellen?',
+		hint: 'Temperature beeinflusst, wie vorhersehbar oder uberraschend die Antworten ausfallen.',
 		options: [
 			'Er steuert die Kreativitat bzw. Zufalligkeit der Ausgaben',
 			'Er bestimmt die GPU-Temperatur',
@@ -556,6 +606,7 @@ export const quizQuestions = [
 		id: 'q51',
 		topic: 'Generative AI',
 		prompt: 'Was ist das "Context Window" eines LLM?',
+		hint: 'Jedes Modell hat eine Obergrenze fur die Menge an Text, die es auf einmal sehen kann.',
 		options: [
 			'Die maximale Menge an Text (Tokens), die das Modell gleichzeitig verarbeiten kann',
 			'Das Fenster in der Azure-UI',
@@ -569,6 +620,7 @@ export const quizQuestions = [
 		id: 'q52',
 		topic: 'Generative AI',
 		prompt: 'Was ist ein "System Message" bei Azure OpenAI?',
+		hint: 'Die System Message wird vor der eigentlichen Nutzerfrage gesetzt. Was konnte sie dem Modell mitgeben?',
 		options: [
 			'Eine Anweisung, die das Verhalten und die Rolle des Modells festlegt',
 			'Eine Fehlermeldung vom Server',
@@ -583,6 +635,7 @@ export const quizQuestions = [
 		type: 'true-false',
 		topic: 'Generative AI',
 		prompt: 'Aussage: Azure OpenAI Service bietet dieselben Modelle wie OpenAI, aber mit Azure-Sicherheitsfeatures.',
+		hint: 'Uberlege, warum Microsoft die gleichen Modelle nochmals in Azure anbietet. Welchen Mehrwert bringt das?',
 		correctAnswer: 'Wahr',
 		explanation: 'Azure OpenAI kombiniert OpenAI-Modelle mit Azure-Netzwerksicherheit, RBAC und Compliance.'
 	},
@@ -590,6 +643,7 @@ export const quizQuestions = [
 		id: 'q54',
 		topic: 'Generative AI',
 		prompt: 'Was bedeutet "Grounding" im Kontext generativer KI?',
+		hint: 'Grounding bedeutet woertlich "Verankerung". Worin werden die Antworten verankert?',
 		options: [
 			'Antworten auf faktische, verifizierbare Informationen stutzen',
 			'Das Modell physisch erden',
@@ -603,6 +657,7 @@ export const quizQuestions = [
 		id: 'q55',
 		topic: 'Generative AI',
 		prompt: 'Microsoft Copilot basiert primaer auf ...',
+		hint: 'Copilot ist ein KI-Assistent in Microsoft-Produkten. Welche Technologie steckt dahinter?',
 		options: [
 			'Grossen Sprachmodellen (LLMs) mit Zugriff auf Nutzerdaten und Kontext',
 			'Regelbasierten If-Then-Entscheidungen',
@@ -617,6 +672,7 @@ export const quizQuestions = [
 		id: 'q56',
 		topic: 'Knowledge Mining',
 		prompt: 'Welche Rolle spielen "Skillsets" in Azure AI Search?',
+		hint: 'Skillsets fugen wahrend eines bestimmten Schritts KI-Fahigkeiten hinzu. Welcher Schritt ist das?',
 		options: [
 			'Sie reichern Dokumente wahrend der Indexierung mit KI-Fahigkeiten an',
 			'Sie definieren Benutzerberechtigungen',
@@ -630,6 +686,7 @@ export const quizQuestions = [
 		id: 'q57',
 		topic: 'Knowledge Mining',
 		prompt: 'Was ist ein "Knowledge Store" in Azure AI Search?',
+		hint: 'Wohin gehen die angereicherten Daten, wenn man sie nicht nur fur die Suche, sondern auch fur andere Zwecke braucht?',
 		options: [
 			'Ein sekundarer Speicher fur angereicherte Inhalte zur Weiterverarbeitung',
 			'Ein Git-Repository fur Code',
@@ -644,6 +701,7 @@ export const quizQuestions = [
 		type: 'true-false',
 		topic: 'Knowledge Mining',
 		prompt: 'Aussage: Azure AI Search kann Daten aus Blob Storage, SQL und Cosmos DB indexieren.',
+		hint: 'Uberlege, ob Azure AI Search nur eine einzige Datenquelle unterstutzt oder flexibler ist.',
 		correctAnswer: 'Wahr',
 		explanation: 'Azure AI Search unterstutzt mehrere Datenquellen uber integrierte Indexer.'
 	},
@@ -652,6 +710,7 @@ export const quizQuestions = [
 		id: 'q59',
 		topic: 'Responsible AI',
 		prompt: 'Welches Responsible-AI-Prinzip fordert, dass KI-Systeme fur moglichst viele Menschen nutzbar sind?',
+		hint: 'Welches Prinzip stellt sicher, dass niemand von der Nutzung ausgeschlossen wird?',
 		options: ['Inklusivitat', 'Fairness', 'Transparenz', 'Datenschutz'],
 		answerIndex: 0,
 		explanation: 'Inklusivitat stellt sicher, dass KI-Losungen niemanden ausschliessen.'
@@ -660,6 +719,7 @@ export const quizQuestions = [
 		id: 'q60',
 		topic: 'Responsible AI',
 		prompt: 'Welches Prinzip fordert, dass Menschen KI-Entscheidungen uberprufen und korrigieren konnen?',
+		hint: 'Wer tragt am Ende die Verantwortung fur KI-Entscheidungen? Es sind nicht die Maschinen.',
 		options: [
 			'Verantwortlichkeit (Accountability)',
 			'Datenschutz',
@@ -673,6 +733,7 @@ export const quizQuestions = [
 		id: 'q61',
 		topic: 'Responsible AI',
 		prompt: 'Azure AI Content Safety dient primaer dazu ...',
+		hint: 'Der Name "Content Safety" deutet auf den Schutz vor bestimmten Arten von Inhalten hin.',
 		options: [
 			'schadliche oder unangemessene Inhalte in Text und Bildern zu erkennen',
 			'GPU-Leistung zu optimieren',
@@ -687,6 +748,7 @@ export const quizQuestions = [
 		type: 'true-false',
 		topic: 'Responsible AI',
 		prompt: 'Aussage: Microsofts Responsible AI Prinzipien umfassen Fairness, Zuverlassigkeit, Datenschutz, Inklusivitat, Transparenz und Verantwortlichkeit.',
+		hint: 'Zahle die genannten Prinzipien durch. Sind das tatsachlich die sechs offiziellen Microsoft-Prinzipien?',
 		correctAnswer: 'Wahr',
 		explanation: 'Das sind die sechs zentralen Responsible AI Prinzipien von Microsoft.'
 	},
@@ -695,6 +757,7 @@ export const quizQuestions = [
 		id: 'q63',
 		topic: 'Document AI',
 		prompt: 'Welches vorgefertigte Modell in Document Intelligence ist speziell fur Rechnungen optimiert?',
+		hint: 'Fur gaengige Dokumenttypen gibt es fertige Modelle. Welches Modell ist nach dem Dokumenttyp "Rechnung" benannt?',
 		options: ['Prebuilt Invoice Model', 'Prebuilt Receipt Model', 'Custom Neural Model', 'Layout Model'],
 		answerIndex: 0,
 		explanation: 'Das Invoice Model extrahiert typische Rechnungsfelder wie Betrag, Datum, Lieferant.'
@@ -703,6 +766,7 @@ export const quizQuestions = [
 		id: 'q64',
 		topic: 'Document AI',
 		prompt: 'Was liefert das Layout-Modell von Document Intelligence?',
+		hint: 'Das Layout-Modell analysiert die visuelle Struktur. Was gehoert alles zur Struktur eines Dokuments?',
 		options: [
 			'Textzeilen, Tabellen, Auswahlmarkierungen und Dokumentstruktur',
 			'Nur den reinen Text ohne Positionsdaten',
@@ -717,8 +781,178 @@ export const quizQuestions = [
 		type: 'true-false',
 		topic: 'Document AI',
 		prompt: 'Aussage: Document Intelligence kann sowohl vorgefertigte als auch benutzerdefinierte Modelle nutzen.',
+		hint: 'Uberlege, ob der Dienst nur Standarddokumente verarbeiten kann oder auch an eigene Formate angepasst werden kann.',
 		correctAnswer: 'Wahr',
 		explanation: 'Es gibt Prebuilt Models fur gaengige Dokumente und Custom Models fur spezifische Layouts.'
+	},
+	// --- Deep Learning & Transformer ---
+	{
+		id: 'q66',
+		topic: 'Machine Learning',
+		prompt: 'Was unterscheidet Deep Learning von klassischem Machine Learning?',
+		hint: 'Denk an die Anzahl der Schichten in neuronalen Netzen und was das fur die Merkmalsextraktion bedeutet.',
+		options: [
+			'Deep Learning nutzt neuronale Netze mit vielen Schichten zur automatischen Merkmalsextraktion',
+			'Deep Learning braucht weniger Daten als klassisches ML',
+			'Deep Learning funktioniert nur mit Text',
+			'Deep Learning ersetzt Feature Engineering durch manuelle Regeln'
+		],
+		answerIndex: 0,
+		explanation: 'Tiefe neuronale Netze lernen hierarchische Features automatisch aus grossen Datenmengen.'
+	},
+	{
+		id: 'q67',
+		topic: 'Machine Learning',
+		prompt: 'Was ist die Transformer-Architektur?',
+		hint: 'Transformer haben einen besonderen Mechanismus, der es ihnen erlaubt, auf alle Teile der Eingabe gleichzeitig zu achten.',
+		options: [
+			'Ein neuronales Netzwerk das Selbst-Aufmerksamkeit (Self-Attention) nutzt, um Kontextbeziehungen zu lernen',
+			'Ein Hardware-Bauteil in GPUs',
+			'Ein Datenbank-Index-Typ',
+			'Ein Azure-Netzwerkprotokoll'
+		],
+		answerIndex: 0,
+		explanation: 'Transformer sind die Basis moderner LLMs und nutzen Attention-Mechanismen statt sequentieller Verarbeitung.'
+	},
+	{
+		id: 'q68',
+		type: 'true-false',
+		topic: 'Machine Learning',
+		prompt: 'Aussage: GPT und BERT basieren beide auf der Transformer-Architektur.',
+		hint: 'Beide Modelle nutzen Attention-Mechanismen, aber auf unterschiedliche Weise. Haben sie eine gemeinsame Basis?',
+		correctAnswer: 'Wahr',
+		explanation: 'Beide Modellfamilien nutzen Transformer, aber GPT ist generativ (Decoder) und BERT ist bidirektional (Encoder).'
+	},
+	{
+		id: 'q69',
+		topic: 'Machine Learning',
+		prompt: 'Was sind "Features" und "Labels" in einem ML-Dataset?',
+		hint: 'Denk an eine Tabelle: Welche Spalten beschreiben die Datenpunkte, und welche Spalte soll vorhergesagt werden?',
+		options: [
+			'Features sind Eingabevariablen, Labels sind die zu vorhersagenden Zielwerte',
+			'Features sind Ausgaben, Labels sind Eingaben',
+			'Beides sind Hyperparameter',
+			'Features sind nur numerisch, Labels nur Text'
+		],
+		answerIndex: 0,
+		explanation: 'Features (X) beschreiben die Datenpunkte, Labels (Y) sind die gewunschten Vorhersageziele.'
+	},
+	{
+		id: 'q70',
+		topic: 'Machine Learning',
+		prompt: 'Warum teilt man Daten in Training- und Validierungs-Sets?',
+		hint: 'Woher weisst du, ob ein Modell wirklich gelernt hat oder nur auswendig kann? Du brauchst ungesehene Daten.',
+		options: [
+			'Um die Modellleistung auf ungesehenen Daten zu prufen und Overfitting zu erkennen',
+			'Weil Azure nur zwei Dateien akzeptiert',
+			'Um Speicherplatz zu sparen',
+			'Weil Trainingsdaten nie validiert werden mussen'
+		],
+		answerIndex: 0,
+		explanation: 'Validierungsdaten simulieren neue, ungesehene Daten und zeigen, ob das Modell generalisiert.'
+	},
+	{
+		id: 'q71',
+		topic: 'Machine Learning',
+		prompt: 'Welche Azure-Ressource stellt Rechenleistung fur ML-Training bereit?',
+		hint: 'ML-Training braucht Rechenpower. Welche Azure-ML-Ressource liefert genau das?',
+		options: [
+			'Azure Machine Learning Compute (Compute Instances und Clusters)',
+			'Azure DNS',
+			'Azure CDN',
+			'Azure Key Vault'
+		],
+		answerIndex: 0,
+		explanation: 'Compute Instances sind fur Entwicklung, Compute Clusters fur skalierbares Training.'
+	},
+	// --- Azure AI Foundry (NEU im Exam) ---
+	{
+		id: 'q72',
+		topic: 'Generative AI',
+		prompt: 'Was ist Azure AI Foundry?',
+		hint: 'Frueher hiess es Azure AI Studio. Was kann man dort alles mit KI-Anwendungen machen?',
+		options: [
+			'Eine einheitliche Plattform zum Erstellen, Testen und Bereitstellen von KI-Anwendungen',
+			'Ein Hardware-Hersteller',
+			'Ein reiner Speicherdienst',
+			'Ein Netzwerk-Monitoring-Tool'
+		],
+		answerIndex: 0,
+		explanation: 'Azure AI Foundry (fruher Azure AI Studio) ist die zentrale Entwicklungsplattform fur KI auf Azure.'
+	},
+	{
+		id: 'q73',
+		topic: 'Generative AI',
+		prompt: 'Was bietet der Azure AI Foundry Model Catalog?',
+		hint: 'Ein Katalog ist eine Sammlung. Was findet man in einem Katalog fur KI-Modelle?',
+		options: [
+			'Eine Sammlung vorgefertigter KI-Modelle verschiedener Anbieter zum Testen und Bereitstellen',
+			'Nur Microsoft-eigene Modelle',
+			'Nur Bildgeneratoren',
+			'Hardware-Spezifikationen'
+		],
+		answerIndex: 0,
+		explanation: 'Der Model Catalog enthalt Modelle von Microsoft, OpenAI, Meta, Hugging Face und weiteren.'
+	},
+	{
+		id: 'q74',
+		type: 'true-false',
+		topic: 'Generative AI',
+		prompt: 'Aussage: Azure AI Foundry ermoglicht es, verschiedene LLMs aus dem Model Catalog zu vergleichen und zu testen.',
+		hint: 'Wenn es einen Katalog mit vielen Modellen gibt, ware es sinnvoll, diese auch vergleichen zu konnen, oder?',
+		correctAnswer: 'Wahr',
+		explanation: 'Der Model Catalog bietet Benchmarks und Playground-Tests fur verschiedene Modelle.'
+	},
+	{
+		id: 'q75',
+		topic: 'Generative AI',
+		prompt: 'Welche Responsible-AI-Massnahme ist spezifisch fur generative KI besonders wichtig?',
+		hint: 'Generative Modelle konnen problematische Inhalte erzeugen. Wie kann man das verhindern?',
+		options: [
+			'Content-Filterung um schadliche Eingaben und Ausgaben zu blockieren',
+			'Nur Open-Source-Modelle verwenden',
+			'Alle Prompts offentlich machen',
+			'Temperature immer auf Maximum setzen'
+		],
+		answerIndex: 0,
+		explanation: 'Content-Filter in Azure OpenAI prufen Prompts und Antworten auf schadliche Inhalte.'
+	},
+	{
+		id: 'q76',
+		topic: 'NLP',
+		prompt: 'Was versteht man unter Language Modeling?',
+		hint: 'Denk an die Autovervollstandigung auf deinem Handy. Das Modell sagt voraus, was als Nachstes kommt.',
+		options: [
+			'Das Vorhersagen des nachsten Worts oder Tokens basierend auf Kontext',
+			'Das Ubersetzen von Programmiersprachen',
+			'Das Erstellen von Sprachkursen',
+			'Das Komprimieren von Textdateien'
+		],
+		answerIndex: 0,
+		explanation: 'Language Models lernen statistische Muster in Sprache und konnen Text generieren oder vervollstandigen.'
+	},
+	{
+		id: 'q77',
+		topic: 'Machine Learning',
+		prompt: 'Wo kann man in Azure ML trainierte Modelle als Endpunkt bereitstellen?',
+		hint: 'Azure ML bietet verwaltete Endpunkte fur die Bereitstellung. Wie heissen diese?',
+		options: [
+			'Azure Machine Learning Managed Endpoints',
+			'Azure DNS Zones',
+			'Azure Active Directory',
+			'Azure Key Vault'
+		],
+		answerIndex: 0,
+		explanation: 'Managed Endpoints ermoglichen Echtzeit- und Batch-Inferenz fur bereitgestellte Modelle.'
+	},
+	{
+		id: 'q78',
+		type: 'true-false',
+		topic: 'Machine Learning',
+		prompt: 'Aussage: Convolutional Neural Networks (CNNs) werden haufig fur Bilderkennungsaufgaben eingesetzt.',
+		hint: 'CNNs haben eine spezielle Architektur. Fur welche Art von Daten sind sie besonders gut geeignet?',
+		correctAnswer: 'Wahr',
+		explanation: 'CNNs sind speziell fur die Verarbeitung rasterformiger Daten wie Bilder optimiert.'
 	}
 ];
 
@@ -884,6 +1118,48 @@ export const flashcards = [
 		topic: 'GenAI',
 		front: 'Was ist Microsoft Copilot?',
 		back: 'KI-Assistent basierend auf LLMs, eingebettet in Microsoft-Produkte (Office, Windows, etc.).'
+	},
+	{
+		id: 'f28',
+		topic: 'Machine Learning',
+		front: 'Deep Learning vs. klassisches ML',
+		back: 'Deep Learning nutzt tiefe neuronale Netze und lernt Features automatisch. Klassisches ML braucht manuelle Feature-Auswahl.'
+	},
+	{
+		id: 'f29',
+		topic: 'Machine Learning',
+		front: 'Was ist die Transformer-Architektur?',
+		back: 'Neuronales Netz mit Self-Attention. Basis von GPT, BERT und modernen LLMs.'
+	},
+	{
+		id: 'f30',
+		topic: 'Machine Learning',
+		front: 'Features vs. Labels',
+		back: 'Features = Eingabevariablen (X). Labels = Zielwerte die vorhergesagt werden sollen (Y).'
+	},
+	{
+		id: 'f31',
+		topic: 'Machine Learning',
+		front: 'Training vs. Validation Dataset',
+		back: 'Training: Modell lernt Muster. Validation: Pruft Generalisierung auf ungesehenen Daten.'
+	},
+	{
+		id: 'f32',
+		topic: 'GenAI',
+		front: 'Was ist Azure AI Foundry?',
+		back: 'Zentrale Plattform zum Erstellen, Testen und Bereitstellen von KI-Apps (fruher Azure AI Studio).'
+	},
+	{
+		id: 'f33',
+		topic: 'GenAI',
+		front: 'Azure AI Foundry Model Catalog',
+		back: 'Sammlung von Modellen verschiedener Anbieter (Microsoft, OpenAI, Meta, etc.) zum Vergleichen und Deployen.'
+	},
+	{
+		id: 'f34',
+		topic: 'NLP',
+		front: 'Was ist Language Modeling?',
+		back: 'Vorhersage des nachsten Worts/Tokens basierend auf Kontext. Grundlage von GPT und ahnlichen Modellen.'
 	}
 ];
 
@@ -1003,5 +1279,41 @@ export const glossaryTerms = [
 	{
 		term: 'Knowledge Store',
 		definition: 'Sekundarer Speicher fur angereicherte Inhalte aus Azure AI Search.'
+	},
+	{
+		term: 'Deep Learning',
+		definition: 'ML-Teilgebiet mit tiefen neuronalen Netzen, die Features automatisch aus Daten lernen.'
+	},
+	{
+		term: 'Transformer',
+		definition: 'Neuronale Netzarchitektur mit Self-Attention. Basis von GPT, BERT und modernen LLMs.'
+	},
+	{
+		term: 'Azure AI Foundry',
+		definition: 'Zentrale Azure-Plattform zum Entwickeln, Testen und Bereitstellen von KI-Anwendungen (fruher AI Studio).'
+	},
+	{
+		term: 'Model Catalog',
+		definition: 'Sammlung vorgefertigter Modelle in Azure AI Foundry von verschiedenen Anbietern.'
+	},
+	{
+		term: 'CNN',
+		definition: 'Convolutional Neural Network, spezialisiert auf Bilderkennung und visuelle Datenverarbeitung.'
+	},
+	{
+		term: 'Label',
+		definition: 'Zielwert in einem ML-Dataset, den das Modell vorhersagen soll.'
+	},
+	{
+		term: 'Feature',
+		definition: 'Eingabevariable in einem ML-Dataset, die das Modell zur Vorhersage nutzt.'
+	},
+	{
+		term: 'Validation Dataset',
+		definition: 'Datensatz zum Prufen der Modellleistung auf ungesehenen Daten (Generalisierung).'
+	},
+	{
+		term: 'Language Modeling',
+		definition: 'Vorhersage des nachsten Tokens basierend auf Kontext. Grundprinzip generativer Sprachmodelle.'
 	}
 ];
