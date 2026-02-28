@@ -1,46 +1,60 @@
-# Astro Starter Kit: Basics
+# Microsoft Certification Helper (AI-900)
+
+Browser-basierte Lern-App für die Microsoft AI-900 Zertifizierung. Läuft komplett clientseitig — kein Backend, keine Accounts.
+
+## Features
+
+- **Quiz-Modus** — Fragen mit dynamisch generierten Antwortoptionen und Sofort-Feedback
+- **Prüfungsmodus** — 10 Fragen, 20-Minuten-Timer, Ergebnisauswertung pro Thema
+- **Karteikarten** — Spaced Repetition mit drei Bewertungsstufen (Nochmal / Gut / Sicher)
+- **Fehlerjournal** — Falsch beantwortete Fragen priorisiert wiederholen
+- **Glossar** — Durchsuchbare AI-900-Kernbegriffe
+- **Dashboard** — Fortschritt, Trefferquote, Bestscores, fällige Karten
+- **Persistenz** — IndexedDB mit localStorage-Fallback
+
+## Tech Stack
+
+| Layer | Technologie |
+|-------|-------------|
+| Framework | Astro 5 |
+| Sprache | JavaScript (ES6+) |
+| Package Manager | Bun |
+| Styling | Custom CSS (Space Grotesk + IBM Plex Mono) |
+| Storage | IndexedDB + localStorage |
+
+## Quickstart
 
 ```sh
-bun create astro@latest -- --template basics
+bun install
+bun run dev
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+App läuft auf `http://localhost:4321`.
 
-## 🚀 Project Structure
+## Content
 
-Inside of your Astro project, you'll see the following folders and files:
+| Inhalt | Anzahl |
+|--------|--------|
+| Quiz-Fragen | 65 |
+| Karteikarten | 27 |
+| Glossar-Begriffe | 30 |
+| Themen | 8 (AI Workloads, ML, Computer Vision, NLP, Generative AI, Knowledge Mining, Responsible AI, Document AI) |
 
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
+## Projektstruktur
+
+```
+src/
+├── data/content.js     # Fragen, Karteikarten, Glossar, Roadmap-Themen
+├── layouts/Layout.astro # HTML-Grundgerüst
+├── pages/index.astro    # Hauptseite mit allen Sektionen
+├── scripts/app.js       # Gesamte App-Logik (Quiz, Exam, Flashcards, Persistenz)
+└── styles/app.css       # Styling und Responsive Design
 ```
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+## Scripts
 
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `bun install`             | Installs dependencies                            |
-| `bun dev`             | Starts local dev server at `localhost:4321`      |
-| `bun build`           | Build your production site to `./dist/`          |
-| `bun preview`         | Preview your build locally, before deploying     |
-| `bun astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `bun astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+| Command | Beschreibung |
+|---------|-------------|
+| `bun run dev` | Dev-Server starten |
+| `bun run build` | Production-Build nach `./dist/` |
+| `bun run preview` | Build lokal testen |
