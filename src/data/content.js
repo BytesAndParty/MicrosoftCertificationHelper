@@ -1,53 +1,53 @@
 export const roadmapThemes = [
 	{
 		id: 'scope',
-		title: '1. Scope und Lernstrategie',
-		goal: 'AI-900-Ziele priorisieren und Lernzeit strukturieren.',
+		title: '1. Scope and learning strategy',
+		goal: 'Prioritize AI-900 goals and structure study time.',
 		todos: [
-			'Skill-Outline in Themencluster aufteilen',
-			'Wochenziele mit Zeitbudget festlegen',
-			'Messbare Lernziele definieren'
+			'Map the skill outline into topic clusters',
+			'Define weekly goals with clear time budgets',
+			'Set measurable learning targets'
 		]
 	},
 	{
 		id: 'foundation',
-		title: '2. Produktbasis mit Bun + Astro',
-		goal: 'Technische Basis stabil und schnell aufsetzen.',
+		title: '2. Product foundation with Bun + Astro',
+		goal: 'Build a stable and fast technical foundation.',
 		todos: [
-			'Responsives Layout fur Desktop und Mobile',
-			'Build- und Dev-Workflow validieren',
-			'Module fur Quiz, Exam und Karten verbinden'
+			'Create a responsive layout for desktop and mobile',
+			'Validate build and development workflows',
+			'Connect quiz, exam, and flashcard modules'
 		]
 	},
 	{
 		id: 'content',
-		title: '3. Content-Modell',
-		goal: 'Fragen, Glossar und Karten einheitlich strukturieren.',
-		todos: ['Fragenmodell standardisieren', 'Glossar pflegen', 'Karten pro Topic ausbauen']
+		title: '3. Content model',
+		goal: 'Standardize questions, glossary terms, and flashcards.',
+		todos: ['Standardize the question model', 'Maintain glossary quality', 'Expand flashcards per topic']
 	},
 	{
 		id: 'core',
-		title: '4. Kern-Lernfunktionen',
-		goal: 'Quiz + Feedback + Fehlerjournal als Tagesroutine nutzen.',
-		todos: ['Quiz mit Erklarungen', 'Fehlerjournal fuhren', 'Dashboard-Werte beobachten']
+		title: '4. Core study features',
+		goal: 'Use quiz, feedback, and an error journal as a daily routine.',
+		todos: ['Practice with explanation-driven quizzes', 'Track misses in the error journal', 'Monitor dashboard metrics']
 	},
 	{
 		id: 'exam',
-		title: '5. Prufungsmodus',
-		goal: 'Prufungssituation simulieren und Schwachstellen erkennen.',
-		todos: ['Exam mit Timer laufen lassen', 'Themenauswertung lesen', 'Bestwert verbessern']
+		title: '5. Exam mode',
+		goal: 'Simulate exam conditions and identify weak areas.',
+		todos: ['Run timed exam sessions', 'Review topic-level performance', 'Improve your best score']
 	},
 	{
 		id: 'spaced',
 		title: '6. Spaced Repetition',
-		goal: 'Wissen langfristig halten.',
-		todos: ['Fallige Karten durcharbeiten', 'Ratings konsequent nutzen', 'Due-Queue leeren']
+		goal: 'Retain knowledge long term.',
+		todos: ['Work through all due cards', 'Use ratings consistently', 'Keep the due queue clear']
 	},
 	{
 		id: 'quality',
 		title: '7. Iteration',
-		goal: 'Lernsystem wochentlich verbessern.',
-		todos: ['Retrospektive pro Woche', 'Fragenpool erweitern', 'v0.2 planen']
+		goal: 'Improve the learning system weekly.',
+		todos: ['Run a weekly retrospective', 'Expand the question pool', 'Plan v0.2']
 	}
 ];
 
@@ -960,206 +960,274 @@ export const flashcards = [
 	{
 		id: 'f1',
 		topic: 'ML',
-		front: 'Regression vs. Klassifikation',
-		back: 'Regression: Zahlenwerte. Klassifikation: Klassen.'
+		front: 'Regression vs. classification',
+		back: 'Regression predicts numeric values. Classification predicts categories.',
+		frontDe: 'Regression vs. Klassifikation',
+		backDe: 'Regression: Zahlenwerte. Klassifikation: Klassen.'
 	},
 	{
 		id: 'f2',
 		topic: 'NLP',
-		front: 'Was ist Sentiment Analysis?',
-		back: 'Stimmungsanalyse von Texten, z. B. positiv oder negativ.'
+		front: 'What is sentiment analysis?',
+		back: 'It analyzes sentiment in text, for example positive or negative.',
+		frontDe: 'Was ist Sentiment Analysis?',
+		backDe: 'Stimmungsanalyse von Texten, z. B. positiv oder negativ.'
 	},
 	{
 		id: 'f3',
 		topic: 'Responsible AI',
-		front: 'Nenne 2 Responsible-AI-Prinzipien.',
-		back: 'Zum Beispiel Fairness, Transparenz, Inklusivitat, Zuverlassigkeit.'
+		front: 'Name 2 Responsible AI principles.',
+		back: 'For example fairness, transparency, inclusiveness, and reliability.',
+		frontDe: 'Nenne 2 Responsible-AI-Prinzipien.',
+		backDe: 'Zum Beispiel Fairness, Transparenz, Inklusivitat, Zuverlassigkeit.'
 	},
 	{
 		id: 'f4',
 		topic: 'GenAI',
-		front: 'Was bewirkt ein Prompt?',
-		back: 'Er steuert Kontext, Ton und Ausgaberichtung eines generativen Modells.'
+		front: 'What does a prompt do?',
+		back: 'It controls the context, tone, and output direction of a generative model.',
+		frontDe: 'Was bewirkt ein Prompt?',
+		backDe: 'Er steuert Kontext, Ton und Ausgaberichtung eines generativen Modells.'
 	},
 	{
 		id: 'f5',
 		topic: 'Knowledge Mining',
-		front: 'Wofur nutzt man Azure AI Search?',
-		back: 'Fur Indexierung, semantische Suche und Wissenserschliessung.'
+		front: 'What is Azure AI Search used for?',
+		back: 'For indexing, semantic search, and knowledge discovery.',
+		frontDe: 'Wofur nutzt man Azure AI Search?',
+		backDe: 'Fur Indexierung, semantische Suche und Wissenserschliessung.'
 	},
 	{
 		id: 'f6',
 		topic: 'Document AI',
-		front: 'Typischer Use Case fur Document Intelligence',
-		back: 'Felder aus Rechnungen, Formularen und Belegen automatisch extrahieren.'
+		front: 'Typical use case for Document Intelligence',
+		back: 'Automatically extract fields from invoices, forms, and receipts.',
+		frontDe: 'Typischer Use Case fur Document Intelligence',
+		backDe: 'Felder aus Rechnungen, Formularen und Belegen automatisch extrahieren.'
 	},
 	{
 		id: 'f7',
 		topic: 'AI Workloads',
 		front: 'Batch vs. Online Inference',
-		back: 'Batch fur periodische Mengenverarbeitung, Online fur Echtzeitantworten.'
+		back: 'Batch is for periodic bulk processing, online is for real-time responses.',
+		frontDe: 'Batch vs. Online Inference',
+		backDe: 'Batch fur periodische Mengenverarbeitung, Online fur Echtzeitantworten.'
 	},
 	{
 		id: 'f8',
 		topic: 'Machine Learning',
-		front: 'Was ist Overfitting?',
-		back: 'Sehr gute Trainingswerte, aber schwache Ergebnisse auf neuen Daten.'
+		front: 'What is overfitting?',
+		back: 'Very good training results, but weak performance on new data.',
+		frontDe: 'Was ist Overfitting?',
+		backDe: 'Sehr gute Trainingswerte, aber schwache Ergebnisse auf neuen Daten.'
 	},
 	{
 		id: 'f9',
 		topic: 'NLP',
-		front: 'Wofur steht NER?',
-		back: 'Named Entity Recognition extrahiert Entitaten wie Person, Ort, Organisation.'
+		front: 'What does NER stand for?',
+		back: 'Named Entity Recognition extracts entities such as person, place, and organization.',
+		frontDe: 'Wofur steht NER?',
+		backDe: 'Named Entity Recognition extrahiert Entitaten wie Person, Ort, Organisation.'
 	},
 	{
 		id: 'f10',
 		topic: 'Responsible AI',
-		front: 'Warum ist Transparenz wichtig?',
-		back: 'Entscheidungen werden nachvollziehbar und auditierbar.'
+		front: 'Why is transparency important?',
+		back: 'Decisions become understandable and auditable.',
+		frontDe: 'Warum ist Transparenz wichtig?',
+		backDe: 'Entscheidungen werden nachvollziehbar und auditierbar.'
 	},
 	{
 		id: 'f11',
 		topic: 'Knowledge Mining',
-		front: 'Was bringt semantische Suche?',
-		back: 'Sie erkennt Bedeutung statt nur exakte Keywords.'
+		front: 'What is the benefit of semantic search?',
+		back: 'It understands meaning, not only exact keywords.',
+		frontDe: 'Was bringt semantische Suche?',
+		backDe: 'Sie erkennt Bedeutung statt nur exakte Keywords.'
 	},
 	{
 		id: 'f12',
 		topic: 'Computer Vision',
-		front: 'Objekterkennung vs. Bildklassifikation',
-		back: 'Objekterkennung lokalisiert und klassifiziert, Bildklassifikation gibt Gesamtklasse.'
+		front: 'Object detection vs. image classification',
+		back: 'Object detection localizes and classifies objects, while image classification predicts one overall class.',
+		frontDe: 'Objekterkennung vs. Bildklassifikation',
+		backDe: 'Objekterkennung lokalisiert und klassifiziert, Bildklassifikation gibt Gesamtklasse.'
 	},
 	{
 		id: 'f13',
 		topic: 'Machine Learning',
-		front: 'Supervised vs. Unsupervised Learning',
-		back: 'Supervised: gelabelte Daten (Regression, Klassifikation). Unsupervised: ohne Labels (Clustering).'
+		front: 'Supervised vs. unsupervised learning',
+		back: 'Supervised uses labeled data (regression, classification). Unsupervised works without labels (clustering).',
+		frontDe: 'Supervised vs. Unsupervised Learning',
+		backDe: 'Supervised: gelabelte Daten (Regression, Klassifikation). Unsupervised: ohne Labels (Clustering).'
 	},
 	{
 		id: 'f14',
 		topic: 'Machine Learning',
-		front: 'Was macht Azure AutoML?',
-		back: 'Testet automatisch verschiedene Algorithmen und Hyperparameter, wahlt das beste Modell.'
+		front: 'What does Azure AutoML do?',
+		back: 'It automatically tests different algorithms and hyperparameters, then selects the best model.',
+		frontDe: 'Was macht Azure AutoML?',
+		backDe: 'Testet automatisch verschiedene Algorithmen und Hyperparameter, wahlt das beste Modell.'
 	},
 	{
 		id: 'f15',
 		topic: 'Machine Learning',
-		front: 'Was ist Feature Engineering?',
-		back: 'Auswahl und Transformation von Eingabevariablen, damit das Modell besser lernt.'
+		front: 'What is feature engineering?',
+		back: 'Selecting and transforming input variables so the model can learn better.',
+		frontDe: 'Was ist Feature Engineering?',
+		backDe: 'Auswahl und Transformation von Eingabevariablen, damit das Modell besser lernt.'
 	},
 	{
 		id: 'f16',
 		topic: 'GenAI',
-		front: 'Temperature-Parameter bei GPT',
-		back: 'Niedrig = deterministisch/fokussiert. Hoch = kreativ/zufalliger.'
+		front: 'Temperature parameter in GPT',
+		back: 'Low temperature = more deterministic/focused. High temperature = more creative/random.',
+		frontDe: 'Temperature-Parameter bei GPT',
+		backDe: 'Niedrig = deterministisch/fokussiert. Hoch = kreativ/zufalliger.'
 	},
 	{
 		id: 'f17',
 		topic: 'GenAI',
-		front: 'Was ist Grounding?',
-		back: 'Modellantworten auf faktische, verifizierbare Quellen stutzen, um Halluzinationen zu reduzieren.'
+		front: 'What is grounding?',
+		back: 'Anchoring model answers to factual, verifiable sources to reduce hallucinations.',
+		frontDe: 'Was ist Grounding?',
+		backDe: 'Modellantworten auf faktische, verifizierbare Quellen stutzen, um Halluzinationen zu reduzieren.'
 	},
 	{
 		id: 'f18',
 		topic: 'GenAI',
-		front: 'System Message vs. User Message',
-		back: 'System Message: Rolle und Regeln fur das Modell. User Message: die eigentliche Anfrage.'
+		front: 'System message vs. user message',
+		back: 'System message defines role and rules. User message contains the actual request.',
+		frontDe: 'System Message vs. User Message',
+		backDe: 'System Message: Rolle und Regeln fur das Modell. User Message: die eigentliche Anfrage.'
 	},
 	{
 		id: 'f19',
 		topic: 'NLP',
 		front: 'Speech-to-Text vs. Text-to-Speech',
-		back: 'STT: Audio wird zu Text. TTS: Text wird zu gesprochener Sprache.'
+		back: 'STT converts audio to text. TTS converts text to spoken language.',
+		frontDe: 'Speech-to-Text vs. Text-to-Speech',
+		backDe: 'STT: Audio wird zu Text. TTS: Text wird zu gesprochener Sprache.'
 	},
 	{
 		id: 'f20',
 		topic: 'NLP',
-		front: 'Was ist Key Phrase Extraction?',
-		back: 'Identifiziert die wichtigsten Begriffe und Themen in einem Text.'
+		front: 'What is key phrase extraction?',
+		back: 'It identifies the most important terms and topics in a text.',
+		frontDe: 'Was ist Key Phrase Extraction?',
+		backDe: 'Identifiziert die wichtigsten Begriffe und Themen in einem Text.'
 	},
 	{
 		id: 'f21',
 		topic: 'Responsible AI',
-		front: 'Die 6 Responsible AI Prinzipien',
-		back: 'Fairness, Zuverlassigkeit & Sicherheit, Datenschutz, Inklusivitat, Transparenz, Verantwortlichkeit.'
+		front: 'The 6 Responsible AI principles',
+		back: 'Fairness, reliability & safety, privacy, inclusiveness, transparency, and accountability.',
+		frontDe: 'Die 6 Responsible AI Prinzipien',
+		backDe: 'Fairness, Zuverlassigkeit & Sicherheit, Datenschutz, Inklusivitat, Transparenz, Verantwortlichkeit.'
 	},
 	{
 		id: 'f22',
 		topic: 'Responsible AI',
-		front: 'Was macht Azure AI Content Safety?',
-		back: 'Erkennt schadliche Inhalte (Gewalt, Hass, Selbstverletzung, sexuelle Inhalte) in Text und Bildern.'
+		front: 'What does Azure AI Content Safety do?',
+		back: 'It detects harmful content (violence, hate, self-harm, sexual content) in text and images.',
+		frontDe: 'Was macht Azure AI Content Safety?',
+		backDe: 'Erkennt schadliche Inhalte (Gewalt, Hass, Selbstverletzung, sexuelle Inhalte) in Text und Bildern.'
 	},
 	{
 		id: 'f23',
 		topic: 'Computer Vision',
-		front: 'Was ist semantische Segmentierung?',
-		back: 'Jedem Pixel im Bild wird eine Klasse zugewiesen (z.B. Strasse, Himmel, Person).'
+		front: 'What is semantic segmentation?',
+		back: 'Each pixel in an image is assigned a class (for example road, sky, person).',
+		frontDe: 'Was ist semantische Segmentierung?',
+		backDe: 'Jedem Pixel im Bild wird eine Klasse zugewiesen (z.B. Strasse, Himmel, Person).'
 	},
 	{
 		id: 'f24',
 		topic: 'Document AI',
-		front: 'Prebuilt vs. Custom Models in Document Intelligence',
-		back: 'Prebuilt: fertige Modelle fur Rechnungen, Belege etc. Custom: fur spezifische Dokumentlayouts trainiert.'
+		front: 'Prebuilt vs. custom models in Document Intelligence',
+		back: 'Prebuilt models work for common document types. Custom models are trained for specific layouts.',
+		frontDe: 'Prebuilt vs. Custom Models in Document Intelligence',
+		backDe: 'Prebuilt: fertige Modelle fur Rechnungen, Belege etc. Custom: fur spezifische Dokumentlayouts trainiert.'
 	},
 	{
 		id: 'f25',
 		topic: 'Knowledge Mining',
-		front: 'Was sind Skillsets in Azure AI Search?',
-		back: 'KI-Anreicherungen (OCR, NER, Sentiment etc.) die wahrend der Indexierung ausgefuhrt werden.'
+		front: 'What are skillsets in Azure AI Search?',
+		back: 'AI enrichments (OCR, NER, sentiment, etc.) that run during indexing.',
+		frontDe: 'Was sind Skillsets in Azure AI Search?',
+		backDe: 'KI-Anreicherungen (OCR, NER, Sentiment etc.) die wahrend der Indexierung ausgefuhrt werden.'
 	},
 	{
 		id: 'f26',
 		topic: 'AI Workloads',
-		front: 'Was sind Azure AI Services?',
-		back: 'Sammlung vorgefertigter KI-APIs (Vision, Speech, Language, Decision) unter einem Dach.'
+		front: 'What are Azure AI Services?',
+		back: 'A collection of prebuilt AI APIs (Vision, Speech, Language, Decision) in one place.',
+		frontDe: 'Was sind Azure AI Services?',
+		backDe: 'Sammlung vorgefertigter KI-APIs (Vision, Speech, Language, Decision) unter einem Dach.'
 	},
 	{
 		id: 'f27',
 		topic: 'GenAI',
-		front: 'Was ist Microsoft Copilot?',
-		back: 'KI-Assistent basierend auf LLMs, eingebettet in Microsoft-Produkte (Office, Windows, etc.).'
+		front: 'What is Microsoft Copilot?',
+		back: 'An AI assistant based on LLMs, embedded in Microsoft products (Office, Windows, etc.).',
+		frontDe: 'Was ist Microsoft Copilot?',
+		backDe: 'KI-Assistent basierend auf LLMs, eingebettet in Microsoft-Produkte (Office, Windows, etc.).'
 	},
 	{
 		id: 'f28',
 		topic: 'Machine Learning',
-		front: 'Deep Learning vs. klassisches ML',
-		back: 'Deep Learning nutzt tiefe neuronale Netze und lernt Features automatisch. Klassisches ML braucht manuelle Feature-Auswahl.'
+		front: 'Deep learning vs. classical ML',
+		back: 'Deep learning uses deep neural networks and learns features automatically. Classical ML often needs manual feature selection.',
+		frontDe: 'Deep Learning vs. klassisches ML',
+		backDe: 'Deep Learning nutzt tiefe neuronale Netze und lernt Features automatisch. Klassisches ML braucht manuelle Feature-Auswahl.'
 	},
 	{
 		id: 'f29',
 		topic: 'Machine Learning',
-		front: 'Was ist die Transformer-Architektur?',
-		back: 'Neuronales Netz mit Self-Attention. Basis von GPT, BERT und modernen LLMs.'
+		front: 'What is the Transformer architecture?',
+		back: 'A neural network architecture with self-attention. It is the basis for GPT, BERT, and modern LLMs.',
+		frontDe: 'Was ist die Transformer-Architektur?',
+		backDe: 'Neuronales Netz mit Self-Attention. Basis von GPT, BERT und modernen LLMs.'
 	},
 	{
 		id: 'f30',
 		topic: 'Machine Learning',
-		front: 'Features vs. Labels',
-		back: 'Features = Eingabevariablen (X). Labels = Zielwerte die vorhergesagt werden sollen (Y).'
+		front: 'Features vs. labels',
+		back: 'Features are input variables (X). Labels are target values to predict (Y).',
+		frontDe: 'Features vs. Labels',
+		backDe: 'Features = Eingabevariablen (X). Labels = Zielwerte die vorhergesagt werden sollen (Y).'
 	},
 	{
 		id: 'f31',
 		topic: 'Machine Learning',
-		front: 'Training vs. Validation Dataset',
-		back: 'Training: Modell lernt Muster. Validation: Pruft Generalisierung auf ungesehenen Daten.'
+		front: 'Training vs. validation dataset',
+		back: 'Training data teaches the model patterns. Validation data checks generalization on unseen data.',
+		frontDe: 'Training vs. Validation Dataset',
+		backDe: 'Training: Modell lernt Muster. Validation: Pruft Generalisierung auf ungesehenen Daten.'
 	},
 	{
 		id: 'f32',
 		topic: 'GenAI',
-		front: 'Was ist Azure AI Foundry?',
-		back: 'Zentrale Plattform zum Erstellen, Testen und Bereitstellen von KI-Apps (fruher Azure AI Studio).'
+		front: 'What is Azure AI Foundry?',
+		back: 'A central platform to build, test, and deploy AI apps (formerly Azure AI Studio).',
+		frontDe: 'Was ist Azure AI Foundry?',
+		backDe: 'Zentrale Plattform zum Erstellen, Testen und Bereitstellen von KI-Apps (fruher Azure AI Studio).'
 	},
 	{
 		id: 'f33',
 		topic: 'GenAI',
 		front: 'Azure AI Foundry Model Catalog',
-		back: 'Sammlung von Modellen verschiedener Anbieter (Microsoft, OpenAI, Meta, etc.) zum Vergleichen und Deployen.'
+		back: 'A collection of models from different providers (Microsoft, OpenAI, Meta, etc.) for comparison and deployment.',
+		frontDe: 'Azure AI Foundry Model Catalog',
+		backDe: 'Sammlung von Modellen verschiedener Anbieter (Microsoft, OpenAI, Meta, etc.) zum Vergleichen und Deployen.'
 	},
 	{
 		id: 'f34',
 		topic: 'NLP',
-		front: 'Was ist Language Modeling?',
-		back: 'Vorhersage des nachsten Worts/Tokens basierend auf Kontext. Grundlage von GPT und ahnlichen Modellen.'
+		front: 'What is language modeling?',
+		back: 'Predicting the next word/token based on context. This is the foundation of GPT and similar models.',
+		frontDe: 'Was ist Language Modeling?',
+		backDe: 'Vorhersage des nachsten Worts/Tokens basierend auf Kontext. Grundlage von GPT und ahnlichen Modellen.'
 	}
 ];
 
