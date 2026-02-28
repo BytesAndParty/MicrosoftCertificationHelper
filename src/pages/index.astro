@@ -9,19 +9,25 @@ import '../styles/app.css';
 		<header class="hero reveal">
 			<p class="eyebrow">AI-900 Prep Workspace</p>
 			<h1>Microsoft Certification Helper</h1>
-			<p class="hero-copy">
-				Quiz, Exam-Mode, Karteikarten, Fehlerjournal und Glossar mit lokalem Fortschritt in der
-				Browser-DB.
+			<p class="hero-copy" data-i18n="hero.copy">
+				Quiz mode, exam mode, flashcards, an error journal, and a glossary with local progress stored
+				in the browser database.
 			</p>
 			<div class="hero-actions">
-				<p class="hint">Big-Picture-Plan: <code>ROADMAP.md</code></p>
+				<p class="hint"><span data-i18n="hero.planPrefix">Big-picture plan:</span> <code>ROADMAP.md</code></p>
+				<button id="theme-toggle" type="button" class="secondary theme-toggle">
+					Switch to dark mode
+				</button>
+				<button id="language-toggle" type="button" class="secondary language-toggle" aria-label="Switch language to German">
+					DE
+				</button>
 			</div>
 		</header>
 
 		<section class="card reveal">
 			<div class="section-head">
-				<h2>Roadmap</h2>
-				<p id="roadmap-summary" class="meta">0 / 0 To-dos erledigt</p>
+				<h2 data-i18n="roadmap.title">Roadmap</h2>
+				<p id="roadmap-summary" class="meta">0 / 0 todos completed</p>
 			</div>
 			<div class="roadmap-grid">
 				{
@@ -46,56 +52,56 @@ import '../styles/app.css';
 		</section>
 
 		<section class="metrics reveal">
-			<article class="metric"><p>Roadmap</p><strong id="metric-roadmap">0%</strong></article>
-			<article class="metric"><p>Quiz Accuracy</p><strong id="metric-accuracy">0%</strong></article>
-			<article class="metric"><p>Best Exam</p><strong id="metric-exam">0%</strong></article>
-			<article class="metric"><p>Due Cards</p><strong id="metric-due">0</strong></article>
-			<article class="metric"><p>Fehlerjournal</p><strong id="metric-journal">0</strong></article>
+			<article class="metric"><p data-i18n="metrics.roadmap">Roadmap</p><strong id="metric-roadmap">0%</strong></article>
+			<article class="metric"><p data-i18n="metrics.quizAccuracy">Quiz Accuracy</p><strong id="metric-accuracy">0%</strong></article>
+			<article class="metric"><p data-i18n="metrics.bestExam">Best Exam</p><strong id="metric-exam">0%</strong></article>
+			<article class="metric"><p data-i18n="metrics.dueCards">Due Cards</p><strong id="metric-due">0</strong></article>
+			<article class="metric"><p data-i18n="metrics.journal">Error Journal</p><strong id="metric-journal">0</strong></article>
 		</section>
 
 		<section class="workspace card reveal">
-			<div class="tabs" role="tablist" aria-label="Lernmodi">
-				<button type="button" class="tab is-active" data-tab="quiz" aria-selected="true">Quiz</button>
-				<button type="button" class="tab" data-tab="exam" aria-selected="false">Exam</button>
-				<button type="button" class="tab" data-tab="flashcards" aria-selected="false">
-					Karteikarten
-				</button>
-				<button type="button" class="tab" data-tab="journal" aria-selected="false">Fehlerjournal</button>
-				<button type="button" class="tab" data-tab="glossary" aria-selected="false">Glossar</button>
+			<div class="tabs" role="tablist" aria-label="Study modes" data-i18n-aria-label="tabs.ariaLabel">
+				<button type="button" class="tab is-active" data-tab="quiz" aria-selected="true" data-i18n="tabs.quiz">Quiz</button>
+				<button type="button" class="tab" data-tab="exam" aria-selected="false" data-i18n="tabs.exam">Exam</button>
+				<button type="button" class="tab" data-tab="flashcards" aria-selected="false" data-i18n="tabs.flashcards">Flashcards</button>
+				<button type="button" class="tab" data-tab="journal" aria-selected="false" data-i18n="tabs.journal">Error Journal</button>
+				<button type="button" class="tab" data-tab="glossary" aria-selected="false" data-i18n="tabs.glossary">Glossary</button>
 			</div>
 
 			<div class="panels">
 				<section class="panel" data-panel="quiz">
 					<div class="panel-head">
-						<h3>Quiz mit Sofort-Feedback</h3>
+						<h3 data-i18n="quiz.title">Quiz with instant feedback</h3>
 						<p id="quiz-progress" class="meta"></p>
 					</div>
 					<p id="quiz-topic" class="chip"></p>
 					<h4 id="quiz-question"></h4>
 					<div id="quiz-options" class="option-list"></div>
 					<div class="quiz-actions">
-						<button id="quiz-hint" type="button" class="secondary">Hinweis anzeigen</button>
-						<button id="quiz-skip" type="button" class="secondary">Uberspringen</button>
+						<button id="quiz-hint" type="button" class="secondary" data-i18n="quiz.showHint">Show hint</button>
+						<button id="quiz-skip" type="button" class="secondary" data-i18n="quiz.skip">Skip</button>
 					</div>
 					<p id="quiz-hint-text" class="hint-box" hidden></p>
 					<p id="quiz-feedback" class="feedback" aria-live="polite"></p>
-					<button id="quiz-next" type="button" class="primary">Nachste Frage</button>
+					<button id="quiz-next" type="button" class="primary" data-i18n="quiz.nextQuestion">Next question</button>
 				</section>
 
 				<section class="panel" data-panel="exam" hidden>
 					<div class="panel-head">
-						<h3>Prufungsmodus</h3>
-						<p class="meta">10 Fragen, 20 Minuten, Mixed Fragetypen und detaillierter Review.</p>
+						<h3 data-i18n="exam.title">Exam mode</h3>
+						<p class="meta" data-i18n="exam.meta">
+							10 questions, 20 minutes, mixed question types, and a detailed review.
+						</p>
 					</div>
 					<div class="exam-top">
-						<button id="exam-start" type="button" class="primary">Prufung starten</button>
+						<button id="exam-start" type="button" class="primary" data-i18n="exam.start">Start exam</button>
 						<p id="exam-timer" class="timer">20:00</p>
 					</div>
 					<div id="exam-stage" hidden>
 						<p id="exam-progress" class="meta"></p>
 						<h4 id="exam-question"></h4>
 						<div id="exam-options" class="option-list"></div>
-						<button id="exam-next" type="button" class="primary" disabled>Nachste Frage</button>
+						<button id="exam-next" type="button" class="primary" disabled data-i18n="exam.nextQuestion">Next question</button>
 					</div>
 					<div id="exam-result" class="exam-result" aria-live="polite"></div>
 					<div id="exam-review" class="exam-review"></div>
@@ -103,8 +109,8 @@ import '../styles/app.css';
 
 				<section class="panel" data-panel="flashcards" hidden>
 					<div class="panel-head">
-						<h3>Spaced Repetition</h3>
-						<p class="meta">Bewerte jede Karte: Nochmal, Gut, Sicher.</p>
+						<h3 data-i18n="flashcards.title">Spaced Repetition</h3>
+						<p class="meta" data-i18n="flashcards.meta">Rate each card: Again, Good, Easy.</p>
 					</div>
 					<div id="flashcard-box" class="flashcard">
 						<p id="flashcard-topic" class="chip"></p>
@@ -112,11 +118,11 @@ import '../styles/app.css';
 						<p id="flashcard-back" hidden></p>
 					</div>
 					<div class="flash-actions">
-						<button id="flashcard-show" type="button" class="secondary">Antwort zeigen</button>
+						<button id="flashcard-show" type="button" class="secondary" data-i18n="flashcards.showAnswer">Show answer</button>
 						<div id="flashcard-grade-actions" class="grade-actions" hidden>
-							<button id="flashcard-again" type="button" class="danger">Nochmal</button>
-							<button id="flashcard-good" type="button" class="primary">Gut</button>
-							<button id="flashcard-easy" type="button" class="secondary">Sicher</button>
+							<button id="flashcard-again" type="button" class="danger" data-i18n="flashcards.again">Again</button>
+							<button id="flashcard-good" type="button" class="primary" data-i18n="flashcards.good">Good</button>
+							<button id="flashcard-easy" type="button" class="secondary" data-i18n="flashcards.easy">Easy</button>
 						</div>
 					</div>
 					<p id="flashcard-meta" class="meta"></p>
@@ -124,26 +130,31 @@ import '../styles/app.css';
 
 				<section class="panel" data-panel="journal" hidden>
 					<div class="panel-head">
-						<h3>Fehlerjournal</h3>
-						<p class="meta">Priorisierte Liste deiner falschen Fragen.</p>
+						<h3 data-i18n="journal.title">Error Journal</h3>
+						<p class="meta" data-i18n="journal.meta">Prioritized list of your missed questions.</p>
 					</div>
 					<div id="journal-list" class="journal-list"></div>
 				</section>
 
 				<section class="panel" data-panel="glossary" hidden>
 					<div class="panel-head">
-						<h3>Glossar</h3>
-						<p class="meta">Schneller Zugriff auf zentrale AI-900 Begriffe.</p>
+						<h3 data-i18n="glossary.title">Glossary</h3>
+						<p class="meta" data-i18n="glossary.meta">Quick access to core AI-900 terms.</p>
 					</div>
-					<label class="search-label" for="glossary-search">Suche</label>
-					<input id="glossary-search" type="search" placeholder="Begriff oder Stichwort..." />
+					<label class="search-label" for="glossary-search" data-i18n="glossary.search">Search</label>
+					<input
+						id="glossary-search"
+						type="search"
+						placeholder="Term or keyword..."
+						data-i18n-placeholder="glossary.placeholder"
+					/>
 					<div id="glossary-list" class="glossary-list"></div>
 				</section>
 			</div>
 		</section>
 
 		<section class="reset-section reveal">
-			<button id="reset-progress" type="button" class="danger">Fortschritt zurucksetzen</button>
+			<button id="reset-progress" type="button" class="danger" data-i18n="reset.button">Reset progress</button>
 		</section>
 	</main>
 

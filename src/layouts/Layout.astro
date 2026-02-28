@@ -3,13 +3,24 @@ const { title = 'Microsoft Certification Helper' } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="de">
+<html lang="en" data-theme="light">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="generator" content={Astro.generator} />
+		<script is:inline>
+			(() => {
+				try {
+					const key = 'ai900_theme_pref';
+					const stored = localStorage.getItem(key);
+					const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+					const resolved = stored === 'dark' || stored === 'light' ? stored : prefersDark ? 'dark' : 'light';
+					document.documentElement.dataset.theme = resolved;
+				} catch {}
+			})();
+		</script>
 		<title>{title}</title>
 	</head>
 	<body>

@@ -7,6 +7,9 @@ const EXAM_SECONDS = 20 * 60;
 const EXAM_QUESTION_COUNT = 10;
 const DEFAULT_CHOICE_COUNT = 4;
 const MIN_FALSE_POOL = 6;
+const THEME_KEY = 'ai900_theme_pref';
+const LANG_KEY = 'ai900_lang_pref';
+const THEME_MEDIA = window.matchMedia('(prefers-color-scheme: dark)');
 
 const byId = (id) => document.getElementById(id);
 const questionById = new Map(quizQuestions.map((question) => [question.id, question]));
@@ -53,7 +56,150 @@ const ui = {
 	quizHintText: byId('quiz-hint-text'),
 	glossarySearch: byId('glossary-search'),
 	glossaryList: byId('glossary-list'),
-	resetProgress: byId('reset-progress')
+	resetProgress: byId('reset-progress'),
+	themeToggle: byId('theme-toggle'),
+	languageToggle: byId('language-toggle')
+};
+
+const i18n = {
+	en: {
+		'hero.copy': 'Quiz mode, exam mode, flashcards, an error journal, and a glossary with local progress stored in the browser database.',
+		'hero.planPrefix': 'Big-picture plan:',
+		'theme.toDark': 'Switch to dark mode',
+		'theme.toLight': 'Switch to light mode',
+		'theme.toggleLabelDark': 'Switch to dark mode',
+		'theme.toggleLabelLight': 'Switch to light mode',
+		'language.toggleLabel': 'Switch language to German',
+		'roadmap.title': 'Roadmap',
+		'metrics.roadmap': 'Roadmap',
+		'metrics.quizAccuracy': 'Quiz Accuracy',
+		'metrics.bestExam': 'Best Exam',
+		'metrics.dueCards': 'Due Cards',
+		'metrics.journal': 'Error Journal',
+		'tabs.ariaLabel': 'Study modes',
+		'tabs.quiz': 'Quiz',
+		'tabs.exam': 'Exam',
+		'tabs.flashcards': 'Flashcards',
+		'tabs.journal': 'Error Journal',
+		'tabs.glossary': 'Glossary',
+		'quiz.title': 'Quiz with instant feedback',
+		'quiz.showHint': 'Show hint',
+		'quiz.skip': 'Skip',
+		'quiz.nextQuestion': 'Next question',
+		'exam.title': 'Exam mode',
+		'exam.meta': '10 questions, 20 minutes, mixed question types, and a detailed review.',
+		'exam.start': 'Start exam',
+		'exam.nextQuestion': 'Next question',
+		'flashcards.meta': 'Rate each card: Again, Good, Easy.',
+		'flashcards.title': 'Spaced Repetition',
+		'flashcards.showAnswer': 'Show answer',
+		'flashcards.again': 'Again',
+		'flashcards.good': 'Good',
+		'flashcards.easy': 'Easy',
+		'journal.title': 'Error Journal',
+		'journal.meta': 'Prioritized list of your missed questions.',
+		'glossary.title': 'Glossary',
+		'glossary.meta': 'Quick access to core AI-900 terms.',
+		'glossary.search': 'Search',
+		'glossary.placeholder': 'Term or keyword...',
+		'reset.button': 'Reset progress',
+		'type.trueFalse': 'True/False',
+		'type.multipleChoice': 'Multiple Choice',
+		'roadmap.summary': '{done} / {total} todos completed',
+		'quiz.pool': ' | Pool: {count} options',
+		'quiz.progress': 'Answered: {answered} | Correct: {correct}{poolHint}',
+		'quiz.feedback.correct': 'Correct.',
+		'quiz.feedback.wrong': 'Not correct.',
+		'exam.questionProgress': 'Question {current} / {total} | {typeLabel}',
+		'exam.finish': 'Finish exam',
+		'exam.result': 'Result: {score}% ({correct}/{total})',
+		'exam.topicBreakdown': 'Topic breakdown',
+		'exam.bestSaved': 'Best score: {best}% | Saved: {savedAt}',
+		'exam.reviewTitle': 'Exam Review',
+		'exam.reviewLabel': 'Question {index} | {topic} | {typeLabel}',
+		'exam.reviewBadgeCorrect': 'Correct',
+		'exam.reviewBadgeWrong': 'Wrong',
+		'exam.reviewYourAnswerNone': 'Your answer: No answer',
+		'exam.reviewYourAnswer': 'Your answer: {answer}',
+		'exam.reviewCorrectAnswer': 'Correct answer: {answer}',
+		'exam.reviewExplanation': 'Explanation: {explanation}',
+		'flashcards.dueCards': 'Due cards: {count}',
+		'flashcards.nextCard': 'Next card: {date}',
+		'journal.empty': 'No wrong answers yet.',
+		'journal.rowMeta': 'Mistakes: {count} | Last: {last}',
+		'journal.practiceNow': 'Practice now',
+		'glossary.empty': 'No matches found.',
+		'reset.confirm': 'Reset all learning progress?'
+	},
+	de: {
+		'hero.copy': 'Quiz-Modus, Prüfungsmodus, Karteikarten, Fehlerjournal und Glossar mit lokalem Fortschritt in der Browser-Datenbank.',
+		'hero.planPrefix': 'Gesamtplan:',
+		'theme.toDark': 'Auf Dark Mode wechseln',
+		'theme.toLight': 'Auf Light Mode wechseln',
+		'theme.toggleLabelDark': 'Auf Dark Mode wechseln',
+		'theme.toggleLabelLight': 'Auf Light Mode wechseln',
+		'language.toggleLabel': 'Sprache auf Englisch wechseln',
+		'roadmap.title': 'Roadmap',
+		'metrics.roadmap': 'Roadmap',
+		'metrics.quizAccuracy': 'Quiz-Genauigkeit',
+		'metrics.bestExam': 'Bestes Prüfungsergebnis',
+		'metrics.dueCards': 'Fällige Karten',
+		'metrics.journal': 'Fehlerjournal',
+		'tabs.ariaLabel': 'Lernmodi',
+		'tabs.quiz': 'Quiz',
+		'tabs.exam': 'Prüfung',
+		'tabs.flashcards': 'Karteikarten',
+		'tabs.journal': 'Fehlerjournal',
+		'tabs.glossary': 'Glossar',
+		'quiz.title': 'Quiz mit Sofort-Feedback',
+		'quiz.showHint': 'Hinweis anzeigen',
+		'quiz.skip': 'Überspringen',
+		'quiz.nextQuestion': 'Nächste Frage',
+		'exam.title': 'Prüfungsmodus',
+		'exam.meta': '10 Fragen, 20 Minuten, gemischte Fragetypen und detaillierte Auswertung.',
+		'exam.start': 'Prüfung starten',
+		'exam.nextQuestion': 'Nächste Frage',
+		'flashcards.meta': 'Bewerte jede Karte: Nochmal, Gut, Sicher.',
+		'flashcards.title': 'Spaced Repetition',
+		'flashcards.showAnswer': 'Antwort zeigen',
+		'flashcards.again': 'Nochmal',
+		'flashcards.good': 'Gut',
+		'flashcards.easy': 'Sicher',
+		'journal.title': 'Fehlerjournal',
+		'journal.meta': 'Priorisierte Liste deiner falsch beantworteten Fragen.',
+		'glossary.title': 'Glossar',
+		'glossary.meta': 'Schneller Zugriff auf zentrale AI-900 Begriffe.',
+		'glossary.search': 'Suche',
+		'glossary.placeholder': 'Begriff oder Stichwort...',
+		'reset.button': 'Fortschritt zurücksetzen',
+		'type.trueFalse': 'Wahr/Falsch',
+		'type.multipleChoice': 'Multiple Choice',
+		'roadmap.summary': '{done} / {total} To-dos erledigt',
+		'quiz.pool': ' | Pool: {count} Optionen',
+		'quiz.progress': 'Beantwortet: {answered} | Richtig: {correct}{poolHint}',
+		'quiz.feedback.correct': 'Richtig.',
+		'quiz.feedback.wrong': 'Nicht korrekt.',
+		'exam.questionProgress': 'Frage {current} / {total} | {typeLabel}',
+		'exam.finish': 'Prüfung beenden',
+		'exam.result': 'Ergebnis: {score}% ({correct}/{total})',
+		'exam.topicBreakdown': 'Themenauswertung',
+		'exam.bestSaved': 'Bestwert: {best}% | Gespeichert: {savedAt}',
+		'exam.reviewTitle': 'Prüfungsreview',
+		'exam.reviewLabel': 'Frage {index} | {topic} | {typeLabel}',
+		'exam.reviewBadgeCorrect': 'Richtig',
+		'exam.reviewBadgeWrong': 'Falsch',
+		'exam.reviewYourAnswerNone': 'Deine Antwort: Keine Antwort',
+		'exam.reviewYourAnswer': 'Deine Antwort: {answer}',
+		'exam.reviewCorrectAnswer': 'Richtige Antwort: {answer}',
+		'exam.reviewExplanation': 'Erklärung: {explanation}',
+		'flashcards.dueCards': 'Fällige Karten: {count}',
+		'flashcards.nextCard': 'Nächste Karte: {date}',
+		'journal.empty': 'Noch keine falschen Antworten.',
+		'journal.rowMeta': 'Fehler: {count} | Zuletzt: {last}',
+		'journal.practiceNow': 'Jetzt üben',
+		'glossary.empty': 'Keine Treffer.',
+		'reset.confirm': 'Kompletten Lernfortschritt zurücksetzen?'
+	}
 };
 
 const defaults = {
@@ -75,9 +221,38 @@ let exam = null;
 let examInterval;
 let activeCard = null;
 let cardShown = false;
+let currentLanguage = 'en';
 
 function clone(value) {
 	return JSON.parse(JSON.stringify(value));
+}
+
+function resolveLanguage(language) {
+	return language === 'de' ? 'de' : 'en';
+}
+
+function readStoredLanguage() {
+	try {
+		return resolveLanguage(localStorage.getItem(LANG_KEY));
+	} catch {
+		return 'en';
+	}
+}
+
+function saveLanguage(language) {
+	try {
+		localStorage.setItem(LANG_KEY, resolveLanguage(language));
+	} catch {}
+}
+
+function t(key, vars = {}) {
+	const locale = i18n[currentLanguage] || i18n.en;
+	const fallback = i18n.en[key];
+	const template = locale[key] ?? fallback ?? key;
+	return Object.entries(vars).reduce(
+		(result, [name, value]) => result.replaceAll(`{${name}}`, String(value)),
+		template
+	);
 }
 
 function unique(list) {
@@ -94,7 +269,8 @@ function shuffle(list) {
 }
 
 function formatDate(timestamp) {
-	return new Intl.DateTimeFormat('de-DE', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(timestamp));
+	const locale = currentLanguage === 'de' ? 'de-DE' : 'en-US';
+	return new Intl.DateTimeFormat(locale, { dateStyle: 'short', timeStyle: 'short' }).format(new Date(timestamp));
 }
 
 function getQuestionType(question) {
@@ -103,8 +279,132 @@ function getQuestionType(question) {
 }
 
 function getTypeLabel(type) {
-	if (type === 'true-false') return 'Wahr/Falsch';
-	return 'Multiple Choice';
+	if (type === 'true-false') return t('type.trueFalse');
+	return t('type.multipleChoice');
+}
+
+function readStoredTheme() {
+	try {
+		const value = localStorage.getItem(THEME_KEY);
+		return value === 'dark' || value === 'light' ? value : null;
+	} catch {
+		return null;
+	}
+}
+
+function resolveTheme(preference) {
+	if (preference === 'dark' || preference === 'light') return preference;
+	return THEME_MEDIA.matches ? 'dark' : 'light';
+}
+
+function saveTheme(theme) {
+	try {
+		localStorage.setItem(THEME_KEY, theme);
+	} catch {}
+}
+
+function applyTheme(theme) {
+	document.documentElement.dataset.theme = theme;
+	if (!ui.themeToggle) return;
+
+	const isDark = theme === 'dark';
+	const label = isDark ? t('theme.toLight') : t('theme.toDark');
+	const ariaLabel = isDark ? t('theme.toggleLabelLight') : t('theme.toggleLabelDark');
+	ui.themeToggle.textContent = label;
+	ui.themeToggle.setAttribute('aria-label', ariaLabel);
+	ui.themeToggle.setAttribute('aria-pressed', isDark ? 'true' : 'false');
+}
+
+function toggleTheme() {
+	const current = document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
+	const next = current === 'dark' ? 'light' : 'dark';
+	applyTheme(next);
+	saveTheme(next);
+}
+
+function bindSystemTheme() {
+	const onChange = (event) => {
+		if (readStoredTheme()) return;
+		applyTheme(event.matches ? 'dark' : 'light');
+	};
+
+	if (typeof THEME_MEDIA.addEventListener === 'function') {
+		THEME_MEDIA.addEventListener('change', onChange);
+		return;
+	}
+	if (typeof THEME_MEDIA.addListener === 'function') {
+		THEME_MEDIA.addListener(onChange);
+	}
+}
+
+function applyLanguageToStaticUi() {
+	document.querySelectorAll('[data-i18n]').forEach((node) => {
+		const key = node.dataset.i18n;
+		if (!key) return;
+		node.textContent = t(key);
+	});
+
+	document.querySelectorAll('[data-i18n-placeholder]').forEach((node) => {
+		const key = node.dataset.i18nPlaceholder;
+		if (!key) return;
+		node.setAttribute('placeholder', t(key));
+	});
+
+	document.querySelectorAll('[data-i18n-aria-label]').forEach((node) => {
+		const key = node.dataset.i18nAriaLabel;
+		if (!key) return;
+		node.setAttribute('aria-label', t(key));
+	});
+}
+
+function applyLanguage(language, { persist = true } = {}) {
+	currentLanguage = resolveLanguage(language);
+	document.documentElement.lang = currentLanguage;
+
+	if (persist) saveLanguage(currentLanguage);
+
+	applyLanguageToStaticUi();
+
+	if (ui.languageToggle) {
+		ui.languageToggle.textContent = currentLanguage === 'en' ? 'DE' : 'EN';
+		ui.languageToggle.setAttribute('aria-label', t('language.toggleLabel'));
+	}
+
+	applyTheme(document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light');
+
+	if (activeQuestion) {
+		activeQuestion.typeLabel = getTypeLabel(getQuestionType(activeQuestion));
+		ui.quizTopic.textContent = `${activeQuestion.topic} · ${activeQuestion.typeLabel}`;
+		const poolHint =
+			activeQuestion.type === 'single-choice'
+				? t('quiz.pool', { count: activeQuestion.answerPoolCount })
+				: '';
+		ui.quizProgress.textContent = t('quiz.progress', {
+			answered: state.quiz.answered,
+			correct: state.quiz.correct,
+			poolHint
+		});
+		if (quizLocked && ui.quizFeedback.textContent) {
+			const isCorrect = ui.quizFeedback.classList.contains('is-correct');
+			ui.quizFeedback.textContent = `${isCorrect ? t('quiz.feedback.correct') : t('quiz.feedback.wrong')} ${activeQuestion.explanation}`;
+		}
+	}
+
+	if (exam && Array.isArray(exam.questions)) {
+		exam.questions.forEach((question) => {
+			question.typeLabel = getTypeLabel(getQuestionType(question));
+		});
+	}
+
+	renderStats();
+	renderJournal();
+	renderGlossary(ui.glossarySearch?.value || '');
+	if (exam) renderExamQuestion();
+	if (activeCard) renderCard();
+}
+
+function toggleLanguage() {
+	applyLanguage(currentLanguage === 'en' ? 'de' : 'en');
 }
 
 function buildOptionPools(questions) {
@@ -174,8 +474,12 @@ function getSingleChoiceRuntimeQuestion(baseQuestion) {
 
 function getTrueFalseRuntimeQuestion(baseQuestion) {
 	const type = getQuestionType(baseQuestion);
-	const correctText = baseQuestion.correctAnswer === 'Falsch' ? 'Falsch' : 'Wahr';
-	const options = shuffle(['Wahr', 'Falsch']);
+	const normalizedAnswer = String(baseQuestion.correctAnswer || '').toLowerCase();
+	const prefersFalse = normalizedAnswer === 'false' || normalizedAnswer === 'falsch';
+	const trueLabel = currentLanguage === 'de' ? 'Wahr' : 'True';
+	const falseLabel = currentLanguage === 'de' ? 'Falsch' : 'False';
+	const correctText = prefersFalse ? falseLabel : trueLabel;
+	const options = shuffle([trueLabel, falseLabel]);
 	return {
 		...baseQuestion,
 		type,
@@ -305,7 +609,7 @@ function renderRoadmapChecks() {
 
 function renderStats() {
 	const p = getRoadmapProgress();
-	ui.roadmapSummary.textContent = `${p.done} / ${p.total} To-dos erledigt`;
+	ui.roadmapSummary.textContent = t('roadmap.summary', { done: p.done, total: p.total });
 	ui.metricRoadmap.textContent = `${p.percent}%`;
 	ui.metricAccuracy.textContent = `${getAccuracy()}%`;
 	ui.metricExam.textContent = `${state.examBest}%`;
@@ -342,9 +646,13 @@ function showQuizQuestion(forcedQuestionId = null) {
 	ui.quizQuestion.textContent = activeQuestion.prompt;
 	const poolHint =
 		activeQuestion.type === 'single-choice'
-			? ` | Pool: ${activeQuestion.answerPoolCount} Antworten`
+			? t('quiz.pool', { count: activeQuestion.answerPoolCount })
 			: '';
-	ui.quizProgress.textContent = `Beantwortet: ${state.quiz.answered} | Richtig: ${state.quiz.correct}${poolHint}`;
+	ui.quizProgress.textContent = t('quiz.progress', {
+		answered: state.quiz.answered,
+		correct: state.quiz.correct,
+		poolHint
+	});
 	ui.quizFeedback.textContent = '';
 	ui.quizFeedback.className = 'feedback';
 	ui.quizHintText.textContent = '';
@@ -394,7 +702,7 @@ function submitQuizAnswer(selectedIndex) {
 	ui.quizHint.hidden = true;
 	ui.quizSkip.hidden = true;
 	ui.quizFeedback.classList.add(isCorrect ? 'is-correct' : 'is-wrong');
-	ui.quizFeedback.textContent = `${isCorrect ? 'Richtig.' : 'Nicht korrekt.'} ${activeQuestion.explanation}`;
+	ui.quizFeedback.textContent = `${isCorrect ? t('quiz.feedback.correct') : t('quiz.feedback.wrong')} ${activeQuestion.explanation}`;
 	ui.quizNext.disabled = false;
 	void saveState();
 	renderStats();
@@ -438,7 +746,11 @@ function examClockText() {
 
 function renderExamQuestion() {
 	const question = exam.questions[exam.index];
-	ui.examProgress.textContent = `Frage ${exam.index + 1} / ${exam.questions.length} | ${question.typeLabel}`;
+	ui.examProgress.textContent = t('exam.questionProgress', {
+		current: exam.index + 1,
+		total: exam.questions.length,
+		typeLabel: question.typeLabel
+	});
 	ui.examQuestion.textContent = question.prompt;
 	ui.examOptions.innerHTML = '';
 
@@ -456,18 +768,22 @@ function renderExamQuestion() {
 	});
 
 	ui.examNext.disabled = exam.answers[exam.index] === null;
-	ui.examNext.textContent = exam.index === exam.questions.length - 1 ? 'Prufung beenden' : 'Nachste Frage';
+	ui.examNext.textContent = exam.index === exam.questions.length - 1 ? t('exam.finish') : t('exam.nextQuestion');
 }
 
 function renderExamSummary({ score, correctCount, total, topicStats }) {
 	ui.examResult.innerHTML = '';
 	const scoreLine = document.createElement('p');
-	scoreLine.textContent = `Ergebnis: ${score}% (${correctCount}/${total})`;
+	scoreLine.textContent = t('exam.result', {
+		score,
+		correct: correctCount,
+		total
+	});
 	ui.examResult.append(scoreLine);
 
 	const topicTitle = document.createElement('p');
 	topicTitle.className = 'meta';
-	topicTitle.textContent = 'Themenauswertung';
+	topicTitle.textContent = t('exam.topicBreakdown');
 	ui.examResult.append(topicTitle);
 
 	const topicList = document.createElement('ul');
@@ -482,7 +798,10 @@ function renderExamSummary({ score, correctCount, total, topicStats }) {
 
 	const historyLine = document.createElement('p');
 	historyLine.className = 'meta';
-	historyLine.textContent = `Bestwert: ${state.examBest}% | Gespeichert: ${formatDate(Date.now())}`;
+	historyLine.textContent = t('exam.bestSaved', {
+		best: state.examBest,
+		savedAt: formatDate(Date.now())
+	});
 	ui.examResult.append(historyLine);
 }
 
@@ -491,7 +810,7 @@ function renderExamReview(reviewRows) {
 	if (!reviewRows.length) return;
 
 	const title = document.createElement('h4');
-	title.textContent = 'Exam Review';
+	title.textContent = t('exam.reviewTitle');
 	ui.examReview.append(title);
 
 	reviewRows.forEach((row, index) => {
@@ -502,10 +821,14 @@ function renderExamReview(reviewRows) {
 		header.className = 'review-head';
 		const label = document.createElement('p');
 		label.className = 'meta';
-		label.textContent = `Frage ${index + 1} | ${row.question.topic} | ${row.question.typeLabel}`;
+		label.textContent = t('exam.reviewLabel', {
+			index: index + 1,
+			topic: row.question.topic,
+			typeLabel: row.question.typeLabel
+		});
 		const badge = document.createElement('span');
 		badge.className = `review-badge ${row.isCorrect ? 'ok' : 'bad'}`;
-		badge.textContent = row.isCorrect ? 'Richtig' : 'Falsch';
+		badge.textContent = row.isCorrect ? t('exam.reviewBadgeCorrect') : t('exam.reviewBadgeWrong');
 		header.append(label, badge);
 
 		const prompt = document.createElement('h5');
@@ -514,15 +837,17 @@ function renderExamReview(reviewRows) {
 		const selectedLine = document.createElement('p');
 		selectedLine.className = 'review-line';
 		selectedLine.textContent =
-			row.selectedText === null ? 'Deine Antwort: Keine Antwort' : `Deine Antwort: ${row.selectedText}`;
+			row.selectedText === null
+				? t('exam.reviewYourAnswerNone')
+				: t('exam.reviewYourAnswer', { answer: row.selectedText });
 
 		const correctLine = document.createElement('p');
 		correctLine.className = 'review-line';
-		correctLine.textContent = `Richtige Antwort: ${row.correctText}`;
+		correctLine.textContent = t('exam.reviewCorrectAnswer', { answer: row.correctText });
 
 		const explanation = document.createElement('p');
 		explanation.className = 'review-line';
-		explanation.textContent = `Erklarung: ${row.question.explanation}`;
+		explanation.textContent = t('exam.reviewExplanation', { explanation: row.question.explanation });
 
 		card.append(header, prompt, selectedLine, correctLine, explanation);
 		ui.examReview.append(card);
@@ -638,15 +963,17 @@ function chooseNextCard() {
 function renderCard() {
 	if (!activeCard) return;
 	const progress = state.flashcards[activeCard.id];
+	const front = currentLanguage === 'de' && activeCard.frontDe ? activeCard.frontDe : activeCard.front;
+	const back = currentLanguage === 'de' && activeCard.backDe ? activeCard.backDe : activeCard.back;
 	ui.flashTopic.textContent = activeCard.topic;
-	ui.flashFront.textContent = activeCard.front;
-	ui.flashBack.textContent = activeCard.back;
+	ui.flashFront.textContent = front;
+	ui.flashBack.textContent = back;
 	ui.flashBack.hidden = !cardShown;
 	ui.flashShow.hidden = cardShown;
 	ui.flashGrades.hidden = !cardShown;
 	ui.flashMeta.textContent = getDueCardCount()
-		? `Fallige Karten: ${getDueCardCount()}`
-		: `Nachste Karte: ${formatDate(progress.dueAt)}`;
+		? t('flashcards.dueCards', { count: getDueCardCount() })
+		: t('flashcards.nextCard', { date: formatDate(progress.dueAt) });
 }
 
 function rateCard(grade) {
@@ -689,7 +1016,7 @@ function renderJournal() {
 
 	ui.journalList.innerHTML = '';
 	if (!items.length) {
-		ui.journalList.innerHTML = '<p class="meta">Noch keine falschen Antworten.</p>';
+		ui.journalList.innerHTML = `<p class="meta">${t('journal.empty')}</p>`;
 		return;
 	}
 
@@ -700,11 +1027,14 @@ function renderJournal() {
 		title.textContent = item.question.prompt;
 		const meta = document.createElement('p');
 		meta.className = 'meta';
-		meta.textContent = `Fehler: ${item.count} | Zuletzt: ${formatDate(item.last)}`;
+		meta.textContent = t('journal.rowMeta', {
+			count: item.count,
+			last: formatDate(item.last)
+		});
 		const button = document.createElement('button');
 		button.type = 'button';
 		button.className = 'secondary';
-		button.textContent = 'Jetzt uben';
+		button.textContent = t('journal.practiceNow');
 		button.onclick = () => {
 			switchTab('quiz');
 			showQuizQuestion(item.id);
@@ -723,7 +1053,7 @@ function renderGlossary(filter = '') {
 
 	ui.glossaryList.innerHTML = '';
 	if (!items.length) {
-		ui.glossaryList.innerHTML = '<p class="meta">Keine Treffer.</p>';
+		ui.glossaryList.innerHTML = `<p class="meta">${t('glossary.empty')}</p>`;
 		return;
 	}
 
@@ -740,7 +1070,7 @@ function renderGlossary(filter = '') {
 }
 
 async function resetAll() {
-	if (!confirm('Kompletten Lernfortschritt zurucksetzen?')) return;
+	if (!confirm(t('reset.confirm'))) return;
 	state = clone(defaults);
 	hydrate(state);
 	renderRoadmapChecks();
@@ -758,6 +1088,9 @@ async function resetAll() {
 }
 
 function bindEvents() {
+	if (ui.themeToggle) ui.themeToggle.onclick = () => toggleTheme();
+	if (ui.languageToggle) ui.languageToggle.onclick = () => toggleLanguage();
+
 	roadmapBoxes.forEach((box) => {
 		box.onchange = () => {
 			state.roadmapDone[box.dataset.roadmapKey] = box.checked;
@@ -793,6 +1126,9 @@ function bindEvents() {
 }
 
 async function init() {
+	applyLanguage(readStoredLanguage(), { persist: false });
+	applyTheme(resolveTheme(readStoredTheme()));
+	bindSystemTheme();
 	bindEvents();
 	const saved = await loadState();
 	hydrate(saved);
