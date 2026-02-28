@@ -681,9 +681,31 @@ html[data-theme='dark'] .option:hover {
 	box-shadow: -4px 0 0 0 #f2a34f;
 }
 
+html[data-theme='dark'] .option.is-correct {
+	background: #1f2c24;
+	border-color: #6fc492;
+}
+
+html[data-theme='dark'] .option.is-wrong {
+	background: #33221d;
+	border-color: #d17a68;
+}
+
 html[data-theme='dark'] .option.is-selected {
 	background: #3b2819;
 	border-color: #f2a34f;
+}
+
+html[data-theme='dark'] .feedback {
+	color: #e0cbb8;
+}
+
+html[data-theme='dark'] .feedback.is-correct {
+	color: #8ee4af;
+}
+
+html[data-theme='dark'] .feedback.is-wrong {
+	color: #f4a899;
 }
 
 html[data-theme='dark'] .hint-box {

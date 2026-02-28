@@ -13,6 +13,7 @@ const THEME_MEDIA = window.matchMedia('(prefers-color-scheme: dark)');
 
 const byId = (id) => document.getElementById(id);
 const questionById = new Map(quizQuestions.map((question) => [question.id, question]));
+const themeById = new Map(roadmapThemes.map((theme) => [theme.id, theme]));
 const tabs = [...document.querySelectorAll('[data-tab]')];
 const panels = [...document.querySelectorAll('[data-panel]')];
 const roadmapBoxes = [...document.querySelectorAll('[data-roadmap-key]')];
@@ -67,8 +68,6 @@ const i18n = {
 		'hero.planPrefix': 'Big-picture plan:',
 		'theme.toDark': 'Switch to dark mode',
 		'theme.toLight': 'Switch to light mode',
-		'theme.toggleLabelDark': 'Switch to dark mode',
-		'theme.toggleLabelLight': 'Switch to light mode',
 		'language.toggleLabel': 'Switch language to German',
 		'roadmap.title': 'Roadmap',
 		'metrics.roadmap': 'Roadmap',
@@ -136,8 +135,6 @@ const i18n = {
 		'hero.planPrefix': 'Gesamtplan:',
 		'theme.toDark': 'Auf Dark Mode wechseln',
 		'theme.toLight': 'Auf Light Mode wechseln',
-		'theme.toggleLabelDark': 'Auf Dark Mode wechseln',
-		'theme.toggleLabelLight': 'Auf Light Mode wechseln',
 		'language.toggleLabel': 'Sprache auf Englisch wechseln',
 		'roadmap.title': 'Roadmap',
 		'metrics.roadmap': 'Roadmap',
@@ -309,9 +306,8 @@ function applyTheme(theme) {
 
 	const isDark = theme === 'dark';
 	const label = isDark ? t('theme.toLight') : t('theme.toDark');
-	const ariaLabel = isDark ? t('theme.toggleLabelLight') : t('theme.toggleLabelDark');
 	ui.themeToggle.textContent = label;
-	ui.themeToggle.setAttribute('aria-label', ariaLabel);
+	ui.themeToggle.setAttribute('aria-label', label);
 	ui.themeToggle.setAttribute('aria-pressed', isDark ? 'true' : 'false');
 }
 
@@ -335,6 +331,23 @@ function bindSystemTheme() {
 	if (typeof THEME_MEDIA.addListener === 'function') {
 		THEME_MEDIA.addListener(onChange);
 	}
+}
+
+function applyLanguageToRoadmap() {
+	document.querySelectorAll('[data-roadmap-id]').forEach((card) => {
+		const theme = themeById.get(card.dataset.roadmapId);
+		if (!theme) return;
+		const isDe = currentLanguage === 'de';
+		const h3 = card.querySelector('h3');
+		const p = card.querySelector('p');
+		if (h3) h3.textContent = isDe && theme.titleDe ? theme.titleDe : theme.title;
+		if (p) p.textContent = isDe && theme.goalDe ? theme.goalDe : theme.goal;
+		const spans = card.querySelectorAll('li span');
+		const todos = isDe && theme.todosDe ? theme.todosDe : theme.todos;
+		spans.forEach((span, i) => {
+			if (todos[i]) span.textContent = todos[i];
+		});
+	});
 }
 
 function applyLanguageToStaticUi() {
@@ -364,6 +377,7 @@ function applyLanguage(language, { persist = true } = {}) {
 	if (persist) saveLanguage(currentLanguage);
 
 	applyLanguageToStaticUi();
+	applyLanguageToRoadmap();
 
 	if (ui.languageToggle) {
 		ui.languageToggle.textContent = currentLanguage === 'en' ? 'DE' : 'EN';
@@ -865,6 +879,7 @@ function startExam() {
 
 	ui.examResult.innerHTML = '';
 	ui.examReview.innerHTML = '';
+	ui.examStart.hidden = true;
 	ui.examStage.hidden = false;
 	renderExamQuestion();
 	ui.examTimer.textContent = examClockText();
@@ -933,6 +948,7 @@ function finishExam() {
 	updateJournalFromExamWrongAnswers(reviewRows);
 	void saveState();
 
+	ui.examStart.hidden = false;
 	ui.examStage.hidden = true;
 	ui.examTimer.textContent = '20:00';
 	renderExamSummary({
@@ -1080,6 +1096,7 @@ async function resetAll() {
 	refillQuizDeck();
 	showQuizQuestion();
 	chooseNextCard();
+	ui.examStart.hidden = false;
 	ui.examStage.hidden = true;
 	ui.examResult.innerHTML = '';
 	ui.examReview.innerHTML = '';
