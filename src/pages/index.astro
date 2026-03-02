@@ -6,6 +6,7 @@ import '../styles/app.css';
 
 <Layout title="AI-900 Study Companion">
 	<main class="page">
+		<a href="#workspace" class="skip-link" data-i18n="a11y.skipLink">Skip to study workspace</a>
 		<header class="hero reveal">
 			<p class="eyebrow">AI-900 Prep Workspace</p>
 			<h1>Microsoft Certification Helper</h1>
@@ -51,7 +52,7 @@ import '../styles/app.css';
 			</div>
 		</section>
 
-		<section class="metrics reveal">
+		<section class="metrics reveal" aria-label="Progress metrics">
 			<article class="metric"><p data-i18n="metrics.roadmap">Roadmap</p><strong id="metric-roadmap">0%</strong></article>
 			<article class="metric"><p data-i18n="metrics.quizAccuracy">Quiz Accuracy</p><strong id="metric-accuracy">0%</strong></article>
 			<article class="metric"><p data-i18n="metrics.bestExam">Best Exam</p><strong id="metric-exam">0%</strong></article>
@@ -59,17 +60,17 @@ import '../styles/app.css';
 			<article class="metric"><p data-i18n="metrics.journal">Error Journal</p><strong id="metric-journal">0</strong></article>
 		</section>
 
-		<section class="workspace card reveal">
+		<section class="workspace card reveal" id="workspace">
 			<div class="tabs" role="tablist" aria-label="Study modes" data-i18n-aria-label="tabs.ariaLabel">
-				<button type="button" class="tab is-active" data-tab="quiz" aria-selected="true" data-i18n="tabs.quiz">Quiz</button>
-				<button type="button" class="tab" data-tab="exam" aria-selected="false" data-i18n="tabs.exam">Exam</button>
-				<button type="button" class="tab" data-tab="flashcards" aria-selected="false" data-i18n="tabs.flashcards">Flashcards</button>
-				<button type="button" class="tab" data-tab="journal" aria-selected="false" data-i18n="tabs.journal">Error Journal</button>
-				<button type="button" class="tab" data-tab="glossary" aria-selected="false" data-i18n="tabs.glossary">Glossary</button>
+				<button type="button" role="tab" class="tab is-active" id="tab-quiz" data-tab="quiz" aria-selected="true" aria-controls="panel-quiz" data-i18n="tabs.quiz">Quiz</button>
+				<button type="button" role="tab" class="tab" id="tab-exam" data-tab="exam" aria-selected="false" aria-controls="panel-exam" tabindex="-1" data-i18n="tabs.exam">Exam</button>
+				<button type="button" role="tab" class="tab" id="tab-flashcards" data-tab="flashcards" aria-selected="false" aria-controls="panel-flashcards" tabindex="-1" data-i18n="tabs.flashcards">Flashcards</button>
+				<button type="button" role="tab" class="tab" id="tab-journal" data-tab="journal" aria-selected="false" aria-controls="panel-journal" tabindex="-1" data-i18n="tabs.journal">Error Journal</button>
+				<button type="button" role="tab" class="tab" id="tab-glossary" data-tab="glossary" aria-selected="false" aria-controls="panel-glossary" tabindex="-1" data-i18n="tabs.glossary">Glossary</button>
 			</div>
 
 			<div class="panels">
-				<section class="panel" data-panel="quiz">
+				<section class="panel" data-panel="quiz" role="tabpanel" id="panel-quiz" aria-labelledby="tab-quiz">
 					<div class="panel-head">
 						<h3 data-i18n="quiz.title">Quiz with instant feedback</h3>
 						<p id="quiz-progress" class="meta"></p>
@@ -86,7 +87,7 @@ import '../styles/app.css';
 					<button id="quiz-next" type="button" class="primary" data-i18n="quiz.nextQuestion">Next question</button>
 				</section>
 
-				<section class="panel" data-panel="exam" hidden>
+				<section class="panel" data-panel="exam" role="tabpanel" id="panel-exam" aria-labelledby="tab-exam" hidden>
 					<div class="panel-head">
 						<h3 data-i18n="exam.title">Exam mode</h3>
 						<p class="meta" data-i18n="exam.meta">
@@ -95,7 +96,7 @@ import '../styles/app.css';
 					</div>
 					<div class="exam-top">
 						<button id="exam-start" type="button" class="primary" data-i18n="exam.start">Start exam</button>
-						<p id="exam-timer" class="timer">20:00</p>
+						<p id="exam-timer" class="timer" role="timer" aria-label="Time remaining: 20:00">20:00</p>
 					</div>
 					<div id="exam-stage" hidden>
 						<p id="exam-progress" class="meta"></p>
@@ -107,12 +108,12 @@ import '../styles/app.css';
 					<div id="exam-review" class="exam-review"></div>
 				</section>
 
-				<section class="panel" data-panel="flashcards" hidden>
+				<section class="panel" data-panel="flashcards" role="tabpanel" id="panel-flashcards" aria-labelledby="tab-flashcards" hidden>
 					<div class="panel-head">
 						<h3 data-i18n="flashcards.title">Spaced Repetition</h3>
 						<p class="meta" data-i18n="flashcards.meta">Rate each card: Again, Good, Easy.</p>
 					</div>
-					<div id="flashcard-box" class="flashcard">
+					<div id="flashcard-box" class="flashcard" aria-live="polite">
 						<p id="flashcard-topic" class="chip"></p>
 						<h4 id="flashcard-front"></h4>
 						<p id="flashcard-back" hidden></p>
@@ -128,15 +129,15 @@ import '../styles/app.css';
 					<p id="flashcard-meta" class="meta"></p>
 				</section>
 
-				<section class="panel" data-panel="journal" hidden>
+				<section class="panel" data-panel="journal" role="tabpanel" id="panel-journal" aria-labelledby="tab-journal" hidden>
 					<div class="panel-head">
 						<h3 data-i18n="journal.title">Error Journal</h3>
 						<p class="meta" data-i18n="journal.meta">Prioritized list of your missed questions.</p>
 					</div>
-					<div id="journal-list" class="journal-list"></div>
+					<div id="journal-list" class="journal-list" aria-live="polite"></div>
 				</section>
 
-				<section class="panel" data-panel="glossary" hidden>
+				<section class="panel" data-panel="glossary" role="tabpanel" id="panel-glossary" aria-labelledby="tab-glossary" hidden>
 					<div class="panel-head">
 						<h3 data-i18n="glossary.title">Glossary</h3>
 						<p class="meta" data-i18n="glossary.meta">Quick access to core AI-900 terms.</p>
@@ -148,15 +149,26 @@ import '../styles/app.css';
 						placeholder="Term or keyword..."
 						data-i18n-placeholder="glossary.placeholder"
 					/>
-					<div id="glossary-list" class="glossary-list"></div>
+					<div id="glossary-list" class="glossary-list" aria-live="polite"></div>
 				</section>
 			</div>
 		</section>
+
+		<details class="shortcuts-section reveal">
+			<summary data-i18n="shortcuts.title">Keyboard shortcuts</summary>
+			<div class="shortcuts-grid">
+				<p><strong>Quiz / Exam:</strong> <span data-i18n="shortcuts.quiz">1-4 Answer | H Hint | S Skip | N Next</span></p>
+				<p><strong>Flashcards:</strong> <span data-i18n="shortcuts.flash">Space Reveal | 1 Again | 2 Good | 3 Easy</span></p>
+				<p><strong>Global:</strong> <span data-i18n="shortcuts.global">D Dark mode | L Language | ←→ Tabs</span></p>
+			</div>
+		</details>
 
 		<section class="reset-section reveal">
 			<button id="reset-progress" type="button" class="danger" data-i18n="reset.button">Reset progress</button>
 		</section>
 	</main>
 
-	<script type="module" src="../scripts/app.js"></script>
+	<script>
+		import '../scripts/app.js';
+	</script>
 </Layout>
