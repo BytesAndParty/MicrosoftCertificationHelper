@@ -18,7 +18,10 @@ const tabs = [...document.querySelectorAll('[data-tab]')];
 const panels = [...document.querySelectorAll('[data-panel]')];
 const roadmapBoxes = [...document.querySelectorAll('[data-roadmap-key]')];
 
-const { topicOptionPool, globalOptionPool } = buildOptionPools(quizQuestions);
+const optionPoolsByLanguage = {
+	en: buildOptionPools(quizQuestions, 'en'),
+	de: buildOptionPools(quizQuestions, 'de')
+};
 
 const ui = {
 	roadmapSummary: byId('roadmap-summary'),
@@ -128,7 +131,13 @@ const i18n = {
 		'journal.rowMeta': 'Mistakes: {count} | Last: {last}',
 		'journal.practiceNow': 'Practice now',
 		'glossary.empty': 'No matches found.',
-		'reset.confirm': 'Reset all learning progress?'
+		'reset.confirm': 'Reset all learning progress?',
+		'a11y.skipLink': 'Skip to study workspace',
+		'a11y.timeRemaining': 'Time remaining: {time}',
+		'shortcuts.title': 'Keyboard shortcuts',
+		'shortcuts.quiz': '1-4 Answer | H Hint | S Skip | N Next',
+		'shortcuts.flash': 'Space Reveal | 1 Again | 2 Good | 3 Easy',
+		'shortcuts.global': 'D Dark mode | L Language | \u2190\u2192 Tabs'
 	},
 	de: {
 		'hero.copy': 'Quiz-Modus, Prüfungsmodus, Karteikarten, Fehlerjournal und Glossar mit lokalem Fortschritt in der Browser-Datenbank.',
@@ -195,7 +204,13 @@ const i18n = {
 		'journal.rowMeta': 'Fehler: {count} | Zuletzt: {last}',
 		'journal.practiceNow': 'Jetzt üben',
 		'glossary.empty': 'Keine Treffer.',
-		'reset.confirm': 'Kompletten Lernfortschritt zurücksetzen?'
+		'reset.confirm': 'Kompletten Lernfortschritt zurücksetzen?',
+		'a11y.skipLink': 'Zum Lernbereich springen',
+		'a11y.timeRemaining': 'Verbleibende Zeit: {time}',
+		'shortcuts.title': 'Tastenkürzel',
+		'shortcuts.quiz': '1-4 Antwort | H Hinweis | S Überspringen | N Nächste',
+		'shortcuts.flash': 'Leertaste Aufdecken | 1 Nochmal | 2 Gut | 3 Sicher',
+		'shortcuts.global': 'D Dark Mode | L Sprache | \u2190\u2192 Tabs'
 	}
 };
 
@@ -300,13 +315,16 @@ function saveTheme(theme) {
 	} catch {}
 }
 
+const ICON_SUN = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
+const ICON_MOON = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+
 function applyTheme(theme) {
 	document.documentElement.dataset.theme = theme;
 	if (!ui.themeToggle) return;
 
 	const isDark = theme === 'dark';
 	const label = isDark ? t('theme.toLight') : t('theme.toDark');
-	ui.themeToggle.textContent = label;
+	ui.themeToggle.innerHTML = `${isDark ? ICON_SUN : ICON_MOON} <span>${label}</span>`;
 	ui.themeToggle.setAttribute('aria-label', label);
 	ui.themeToggle.setAttribute('aria-pressed', isDark ? 'true' : 'false');
 }
@@ -387,20 +405,33 @@ function applyLanguage(language, { persist = true } = {}) {
 	applyTheme(document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light');
 
 	if (activeQuestion) {
-		activeQuestion.typeLabel = getTypeLabel(getQuestionType(activeQuestion));
-		ui.quizTopic.textContent = `${activeQuestion.topic} · ${activeQuestion.typeLabel}`;
-		const poolHint =
-			activeQuestion.type === 'single-choice'
-				? t('quiz.pool', { count: activeQuestion.answerPoolCount })
-				: '';
-		ui.quizProgress.textContent = t('quiz.progress', {
-			answered: state.quiz.answered,
-			correct: state.quiz.correct,
-			poolHint
-		});
-		if (quizLocked && ui.quizFeedback.textContent) {
-			const isCorrect = ui.quizFeedback.classList.contains('is-correct');
-			ui.quizFeedback.textContent = `${isCorrect ? t('quiz.feedback.correct') : t('quiz.feedback.wrong')} ${activeQuestion.explanation}`;
+		if (!quizLocked) {
+			showQuizQuestion(activeQuestion.id);
+		} else {
+			const baseQuestion = questionById.get(activeQuestion.id);
+			const localizedBase = baseQuestion ? localizeQuestionData(baseQuestion) : null;
+			if (localizedBase) {
+				activeQuestion.prompt = localizedBase.prompt;
+				activeQuestion.hint = localizedBase.hint;
+				activeQuestion.explanation = localizedBase.explanation;
+			}
+			activeQuestion.typeLabel = getTypeLabel(getQuestionType(activeQuestion));
+			ui.quizTopic.textContent = `${activeQuestion.topic} · ${activeQuestion.typeLabel}`;
+			ui.quizQuestion.textContent = activeQuestion.prompt;
+			const poolHint =
+				activeQuestion.type === 'single-choice'
+					? t('quiz.pool', { count: activeQuestion.answerPoolCount })
+					: '';
+			ui.quizProgress.textContent = t('quiz.progress', {
+				answered: state.quiz.answered,
+				correct: state.quiz.correct,
+				poolHint
+			});
+			if (!ui.quizHintText.hidden) ui.quizHintText.textContent = activeQuestion.hint || activeQuestion.explanation;
+			if (ui.quizFeedback.textContent) {
+				const isCorrect = ui.quizFeedback.classList.contains('is-correct');
+				ui.quizFeedback.textContent = `${isCorrect ? t('quiz.feedback.correct') : t('quiz.feedback.wrong')} ${activeQuestion.explanation}`;
+			}
 		}
 	}
 
@@ -421,11 +452,29 @@ function toggleLanguage() {
 	applyLanguage(currentLanguage === 'en' ? 'de' : 'en');
 }
 
-function buildOptionPools(questions) {
+function localizeQuestionData(question, language = currentLanguage) {
+	const useGerman = language === 'de';
+
+	return {
+		...question,
+		prompt: useGerman && typeof question.promptDe === 'string' ? question.promptDe : question.prompt,
+		hint: useGerman && typeof question.hintDe === 'string' ? question.hintDe : question.hint,
+		explanation:
+			useGerman && typeof question.explanationDe === 'string' ? question.explanationDe : question.explanation,
+		options: useGerman && Array.isArray(question.optionsDe) ? question.optionsDe : question.options,
+		wrongOptions:
+			useGerman && Array.isArray(question.wrongOptionsDe) ? question.wrongOptionsDe : question.wrongOptions,
+		correctAnswer:
+			useGerman && typeof question.correctAnswerDe === 'string' ? question.correctAnswerDe : question.correctAnswer
+	};
+}
+
+function buildOptionPools(questions, language = 'en') {
 	const topicPoolMap = {};
 	const all = [];
 
-	questions.forEach((question) => {
+	questions.forEach((baseQuestion) => {
+		const question = localizeQuestionData(baseQuestion, language);
 		if (!Array.isArray(question.options)) return;
 		all.push(...question.options);
 		if (!topicPoolMap[question.topic]) topicPoolMap[question.topic] = [];
@@ -444,24 +493,27 @@ function buildOptionPools(questions) {
 }
 
 function getSingleChoiceRuntimeQuestion(baseQuestion) {
-	const type = getQuestionType(baseQuestion);
-	const ownOptions = Array.isArray(baseQuestion.options) ? baseQuestion.options : [];
-	const correctText = ownOptions[baseQuestion.answerIndex];
+	const localizedQuestion = localizeQuestionData(baseQuestion);
+	const type = getQuestionType(localizedQuestion);
+	const ownOptions = Array.isArray(localizedQuestion.options) ? localizedQuestion.options : [];
+	const correctText = ownOptions[localizedQuestion.answerIndex];
+	const optionPools = optionPoolsByLanguage[currentLanguage] || optionPoolsByLanguage.en;
+	const { topicOptionPool, globalOptionPool } = optionPools;
 	if (!correctText) {
 		return {
-			...baseQuestion,
+			...localizedQuestion,
 			type,
 			typeLabel: getTypeLabel(type),
 			options: ownOptions,
-			correctIndex: Number(baseQuestion.answerIndex) || 0,
-			correctText: ownOptions[Number(baseQuestion.answerIndex) || 0] || '',
+			correctIndex: Number(localizedQuestion.answerIndex) || 0,
+			correctText: ownOptions[Number(localizedQuestion.answerIndex) || 0] || '',
 			answerPoolCount: ownOptions.length
 		};
 	}
 
-	const ownWrong = ownOptions.filter((option, index) => index !== baseQuestion.answerIndex);
-	const customWrong = Array.isArray(baseQuestion.wrongOptions) ? baseQuestion.wrongOptions : [];
-	const topicWrong = topicOptionPool[baseQuestion.topic] || [];
+	const ownWrong = ownOptions.filter((option, index) => index !== localizedQuestion.answerIndex);
+	const customWrong = Array.isArray(localizedQuestion.wrongOptions) ? localizedQuestion.wrongOptions : [];
+	const topicWrong = topicOptionPool[localizedQuestion.topic] || [];
 	let wrongPool = unique([...customWrong, ...ownWrong, ...topicWrong]).filter((option) => option !== correctText);
 
 	if (wrongPool.length < MIN_FALSE_POOL) {
@@ -476,7 +528,7 @@ function getSingleChoiceRuntimeQuestion(baseQuestion) {
 	const correctIndex = options.indexOf(correctText);
 
 	return {
-		...baseQuestion,
+		...localizedQuestion,
 		type,
 		typeLabel: getTypeLabel(type),
 		options,
@@ -487,15 +539,16 @@ function getSingleChoiceRuntimeQuestion(baseQuestion) {
 }
 
 function getTrueFalseRuntimeQuestion(baseQuestion) {
-	const type = getQuestionType(baseQuestion);
-	const normalizedAnswer = String(baseQuestion.correctAnswer || '').toLowerCase();
+	const localizedQuestion = localizeQuestionData(baseQuestion);
+	const type = getQuestionType(localizedQuestion);
+	const normalizedAnswer = String(localizedQuestion.correctAnswer || '').toLowerCase();
 	const prefersFalse = normalizedAnswer === 'false' || normalizedAnswer === 'falsch';
 	const trueLabel = currentLanguage === 'de' ? 'Wahr' : 'True';
 	const falseLabel = currentLanguage === 'de' ? 'Falsch' : 'False';
 	const correctText = prefersFalse ? falseLabel : trueLabel;
 	const options = shuffle([trueLabel, falseLabel]);
 	return {
-		...baseQuestion,
+		...localizedQuestion,
 		type,
 		typeLabel: getTypeLabel(type),
 		options,
@@ -612,7 +665,7 @@ function getAccuracy() {
 
 function getDueCardCount() {
 	const now = Date.now();
-	return flashcards.filter((card) => state.flashcards[card.id].dueAt <= now).length;
+	return flashcards.filter((card) => state.flashcards[card.id]?.dueAt <= now).length;
 }
 
 function renderRoadmapChecks() {
@@ -636,6 +689,7 @@ function switchTab(tabId) {
 		const active = tab.dataset.tab === tabId;
 		tab.classList.toggle('is-active', active);
 		tab.setAttribute('aria-selected', active ? 'true' : 'false');
+		tab.setAttribute('tabindex', active ? '0' : '-1');
 	});
 	panels.forEach((panel) => {
 		panel.hidden = panel.dataset.panel !== tabId;
@@ -709,8 +763,14 @@ function submitQuizAnswer(selectedIndex) {
 	[...ui.quizOptions.querySelectorAll('button')].forEach((button) => {
 		const index = Number(button.dataset.index);
 		button.disabled = true;
-		if (index === activeQuestion.correctIndex) button.classList.add('is-correct');
-		if (!isCorrect && index === selectedIndex) button.classList.add('is-wrong');
+		if (index === activeQuestion.correctIndex) {
+			button.classList.add('is-correct');
+			button.textContent = '\u2713 ' + button.textContent;
+		}
+		if (!isCorrect && index === selectedIndex) {
+			button.classList.add('is-wrong');
+			button.textContent = '\u2717 ' + button.textContent;
+		}
 	});
 
 	ui.quizHint.hidden = true;
@@ -718,6 +778,7 @@ function submitQuizAnswer(selectedIndex) {
 	ui.quizFeedback.classList.add(isCorrect ? 'is-correct' : 'is-wrong');
 	ui.quizFeedback.textContent = `${isCorrect ? t('quiz.feedback.correct') : t('quiz.feedback.wrong')} ${activeQuestion.explanation}`;
 	ui.quizNext.disabled = false;
+	ui.quizNext.focus();
 	void saveState();
 	renderStats();
 	renderJournal();
@@ -883,10 +944,13 @@ function startExam() {
 	ui.examStage.hidden = false;
 	renderExamQuestion();
 	ui.examTimer.textContent = examClockText();
+	ui.examTimer.setAttribute('aria-label', t('a11y.timeRemaining', { time: examClockText() }));
 
 	if (examInterval) clearInterval(examInterval);
 	examInterval = setInterval(() => {
-		ui.examTimer.textContent = examClockText();
+		const clockText = examClockText();
+		ui.examTimer.textContent = clockText;
+		ui.examTimer.setAttribute('aria-label', t('a11y.timeRemaining', { time: clockText }));
 		if (exam && Date.now() >= exam.endsAt) finishExam();
 	}, 1000);
 }
@@ -962,14 +1026,16 @@ function finishExam() {
 	exam = null;
 	renderStats();
 	renderJournal();
+	ui.examResult.setAttribute('tabindex', '-1');
+	ui.examResult.focus();
 }
 
 function chooseNextCard() {
 	const now = Date.now();
-	const due = flashcards.filter((card) => state.flashcards[card.id].dueAt <= now);
+	const due = flashcards.filter((card) => state.flashcards[card.id]?.dueAt <= now);
 	const pool = due.length
 		? due
-		: flashcards.slice().sort((left, right) => state.flashcards[left.id].dueAt - state.flashcards[right.id].dueAt);
+		: flashcards.slice().sort((left, right) => (state.flashcards[left.id]?.dueAt ?? 0) - (state.flashcards[right.id]?.dueAt ?? 0));
 
 	activeCard = pool[0] || null;
 	cardShown = false;
@@ -1040,7 +1106,7 @@ function renderJournal() {
 		const row = document.createElement('article');
 		row.className = 'journal-item';
 		const title = document.createElement('h4');
-		title.textContent = item.question.prompt;
+		title.textContent = localizeQuestionData(item.question).prompt;
 		const meta = document.createElement('p');
 		meta.className = 'meta';
 		meta.textContent = t('journal.rowMeta', {
@@ -1054,17 +1120,25 @@ function renderJournal() {
 		button.onclick = () => {
 			switchTab('quiz');
 			showQuizQuestion(item.id);
+			ui.quizQuestion.setAttribute('tabindex', '-1');
+			ui.quizQuestion.focus();
 		};
 		row.append(title, meta, button);
 		ui.journalList.append(row);
 	});
 }
 
+function getGlossaryDefinition(item) {
+	if (currentLanguage === 'de' && item.definitionDe) return item.definitionDe;
+	return item.definition;
+}
+
 function renderGlossary(filter = '') {
 	const query = filter.trim().toLowerCase();
-	const items = glossaryTerms.filter((term) => {
+	const items = glossaryTerms.filter((item) => {
 		if (!query) return true;
-		return term.term.toLowerCase().includes(query) || term.definition.toLowerCase().includes(query);
+		const def = getGlossaryDefinition(item);
+		return item.term.toLowerCase().includes(query) || def.toLowerCase().includes(query);
 	});
 
 	ui.glossaryList.innerHTML = '';
@@ -1079,7 +1153,7 @@ function renderGlossary(filter = '') {
 		const title = document.createElement('h4');
 		title.textContent = item.term;
 		const body = document.createElement('p');
-		body.textContent = item.definition;
+		body.textContent = getGlossaryDefinition(item);
 		row.append(title, body);
 		ui.glossaryList.append(row);
 	});
@@ -1120,6 +1194,18 @@ function bindEvents() {
 		tab.onclick = () => switchTab(tab.dataset.tab);
 	});
 
+	const tablist = document.querySelector('[role="tablist"]');
+	if (tablist) {
+		tablist.addEventListener('keydown', (e) => {
+			if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+			const current = tabs.findIndex((tab) => tab.getAttribute('aria-selected') === 'true');
+			const next = e.key === 'ArrowRight' ? (current + 1) % tabs.length : (current - 1 + tabs.length) % tabs.length;
+			e.preventDefault();
+			switchTab(tabs[next].dataset.tab);
+			tabs[next].focus();
+		});
+	}
+
 	ui.quizNext.onclick = () => showQuizQuestion();
 	ui.quizHint.onclick = () => {
 		if (!activeQuestion) return;
@@ -1140,6 +1226,76 @@ function bindEvents() {
 	ui.flashEasy.onclick = () => rateCard('easy');
 	ui.glossarySearch.oninput = (event) => renderGlossary(event.target.value);
 	if (ui.resetProgress) ui.resetProgress.onclick = () => void resetAll();
+
+	document.addEventListener('keydown', (e) => {
+		if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+		const activeTab = tabs.find((tab) => tab.getAttribute('aria-selected') === 'true');
+		const activePanel = activeTab ? activeTab.dataset.tab : '';
+
+		if (activePanel === 'quiz' && !exam) {
+			if (e.key >= '1' && e.key <= '9' && !quizLocked) {
+				const index = Number(e.key) - 1;
+				const buttons = [...ui.quizOptions.querySelectorAll('button')];
+				if (buttons[index] && !buttons[index].disabled) {
+					e.preventDefault();
+					buttons[index].click();
+				}
+				return;
+			}
+			if (e.key === 'h' || e.key === 'H') {
+				if (!ui.quizHint.hidden) { e.preventDefault(); ui.quizHint.click(); }
+				return;
+			}
+			if (e.key === 's' || e.key === 'S') {
+				if (!ui.quizSkip.hidden) { e.preventDefault(); ui.quizSkip.click(); }
+				return;
+			}
+			if ((e.key === 'n' || e.key === 'N' || e.key === 'Enter') && !ui.quizNext.disabled) {
+				e.preventDefault();
+				ui.quizNext.click();
+				return;
+			}
+		}
+
+		if (activePanel === 'flashcards') {
+			if ((e.key === ' ' || e.key === 'Enter') && !ui.flashShow.hidden) {
+				e.preventDefault();
+				ui.flashShow.click();
+				return;
+			}
+			if (!ui.flashGrades.hidden) {
+				if (e.key === '1') { e.preventDefault(); ui.flashAgain.click(); return; }
+				if (e.key === '2') { e.preventDefault(); ui.flashGood.click(); return; }
+				if (e.key === '3') { e.preventDefault(); ui.flashEasy.click(); return; }
+			}
+		}
+
+		if (activePanel === 'exam' && exam) {
+			if (e.key >= '1' && e.key <= '9') {
+				const index = Number(e.key) - 1;
+				const buttons = [...ui.examOptions.querySelectorAll('button')];
+				if (buttons[index]) { e.preventDefault(); buttons[index].click(); }
+				return;
+			}
+			if ((e.key === 'n' || e.key === 'N' || e.key === 'Enter') && !ui.examNext.disabled) {
+				e.preventDefault();
+				ui.examNext.click();
+				return;
+			}
+		}
+
+		if (e.key === 'd' || e.key === 'D') {
+			e.preventDefault();
+			toggleTheme();
+			return;
+		}
+
+		if (e.key === 'l' || e.key === 'L') {
+			e.preventDefault();
+			toggleLanguage();
+		}
+	});
 }
 
 async function init() {
