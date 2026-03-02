@@ -8,6 +8,44 @@
 	color-scheme: light;
 }
 
+.skip-link {
+	position: absolute;
+	top: -100%;
+	left: 1rem;
+	padding: 0.5rem 1rem;
+	background: #c2600a;
+	color: #fef5ec;
+	border-radius: 0 0 8px 8px;
+	z-index: 1000;
+	font-weight: 600;
+	text-decoration: none;
+}
+
+.skip-link:focus {
+	top: 0;
+}
+
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+button:focus-visible,
+.option:focus-visible,
+.tab:focus-visible,
+input:focus-visible {
+	outline: 2px solid #c2600a;
+	outline-offset: 2px;
+	box-shadow: 0 0 0 4px rgba(194, 96, 10, 0.2);
+}
+
 body {
 	font-family: 'Space Grotesk', 'Segoe UI', sans-serif;
 	color: #2d1f14;
@@ -81,7 +119,7 @@ body {
 	font-size: 0.83rem;
 	letter-spacing: 0.08em;
 	text-transform: uppercase;
-	color: #ffc35a;
+	color: #e8a020;
 }
 
 h1 {
@@ -93,7 +131,7 @@ h1 {
 .hero-copy {
 	max-width: 65ch;
 	margin: 0.7rem 0 0;
-	color: #f0dcc8;
+	color: #fef5ec;
 }
 
 .hero-actions {
@@ -106,6 +144,13 @@ h1 {
 
 .theme-toggle {
 	margin-left: auto;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+}
+
+.theme-toggle svg {
+	flex-shrink: 0;
 }
 
 .language-toggle {
@@ -149,7 +194,7 @@ h4 {
 .meta {
 	margin: 0;
 	font-size: 0.92rem;
-	color: #7a5c44;
+	color: #654430;
 }
 
 .roadmap-grid {
@@ -219,7 +264,7 @@ h4 {
 .metric p {
 	margin: 0;
 	font-size: 0.82rem;
-	color: #7a5c44;
+	color: #654430;
 }
 
 .metric strong {
@@ -571,6 +616,33 @@ input[type='search']:focus {
 	box-shadow: 0 0 0 4px rgba(245, 166, 35, 0.1);
 }
 
+.shortcuts-section {
+	text-align: center;
+	font-size: 0.88rem;
+	color: #654430;
+}
+
+.shortcuts-section summary {
+	cursor: pointer;
+	font-weight: 600;
+	padding: 0.4rem 0;
+	list-style: none;
+}
+
+.shortcuts-section summary::before {
+	content: '⌨ ';
+}
+
+.shortcuts-grid {
+	margin-top: 0.5rem;
+	display: grid;
+	gap: 0.25rem;
+}
+
+.shortcuts-grid p {
+	margin: 0;
+}
+
 .reset-section {
 	text-align: center;
 	padding: 1rem 0 0;
@@ -591,12 +663,16 @@ input[type='search']:focus {
 		animation-duration: 0.01ms !important;
 		transition-duration: 0.01ms !important;
 	}
+	.reveal {
+		opacity: 1;
+		transform: none;
+	}
 }
 
 .hint {
 	margin: 0;
 	font-size: 0.9rem;
-	color: #f0dcc8;
+	color: #fef5ec;
 }
 
 html[data-theme='dark'] {
@@ -635,8 +711,17 @@ html[data-theme='dark'] .metric:hover {
 html[data-theme='dark'] .meta,
 html[data-theme='dark'] .metric p,
 html[data-theme='dark'] .review-line,
-html[data-theme='dark'] .search-label {
-	color: #cab6a2;
+html[data-theme='dark'] .search-label,
+html[data-theme='dark'] .shortcuts-section {
+	color: #dbc8b4;
+}
+
+html[data-theme='dark'] button:focus-visible,
+html[data-theme='dark'] .option:focus-visible,
+html[data-theme='dark'] .tab:focus-visible,
+html[data-theme='dark'] input:focus-visible {
+	outline-color: #f2a34f;
+	box-shadow: 0 0 0 4px rgba(250, 182, 108, 0.25);
 }
 
 html[data-theme='dark'] .theme-card {
