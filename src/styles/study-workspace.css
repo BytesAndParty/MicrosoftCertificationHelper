@@ -99,7 +99,13 @@ body {
 	color: #fef5ec;
 	box-shadow: 0 10px 35px rgba(139, 69, 19, 0.25);
 	position: relative;
+	z-index: 2;
 	overflow: hidden;
+}
+
+.hero > * {
+	position: relative;
+	z-index: 1;
 }
 
 .hero::before {
