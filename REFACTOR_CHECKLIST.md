@@ -36,11 +36,11 @@ Rule: switch `[ ]` to `[x]` only after the step is fully done (code, build, and 
 
 ## Phase 4 - UI Shell Migration
 
-- [ ] Rebuild main shell with shadcn components
-- [ ] Migrate overlays to shadcn dialogs
-- [ ] Migrate settings and welcome to React components
-- [ ] Keep current behavior parity (shortcuts, i18n, progress)
-- [ ] Commit: `refactor(ui): migrate shell and dialogs to shadcn components`
+- [x] Rebuild main shell with shadcn components
+- [x] Migrate overlays to shadcn dialogs
+- [x] Migrate settings and welcome to React components
+- [x] Keep current behavior parity (shortcuts, i18n, progress)
+- [x] Commit: `refactor(ui): migrate shell and dialogs to shadcn components`
 
 ## Phase 5 - Module-by-Module Migration
 
@@ -64,7 +64,7 @@ Rule: switch `[ ]` to `[x]` only after the step is fully done (code, build, and 
 - [x] `chore: add react + tailwind + shadcn foundation`
 - [x] `feat(theme): add shadcn-based dark/light theming`
 - [x] `refactor(state): move study logic to store and domain modules`
-- [ ] `refactor(ui): migrate shell and dialogs to shadcn components`
+- [x] `refactor(ui): migrate shell and dialogs to shadcn components`
 - [ ] `refactor(quiz): migrate quiz module`
 - [ ] `refactor(exam): migrate exam module`
 - [ ] `refactor(flashcards): migrate flashcard module`
