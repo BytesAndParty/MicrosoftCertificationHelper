@@ -37,7 +37,7 @@ export default function FlashcardsModule() {
 			<p id="flashcard-hint-text" className="hint-box" hidden></p>
 			<p id="flashcard-meta" className="meta"></p>
 			<p className="overlay-shortcut-tip" data-i18n="shortcuts.flashOverlay">
-				Shortcuts: Space/Enter reveal | H hint | 1 again | 2 good | 3 easy
+				Shortcuts: Space/Enter reveal | H hint | N next card | 1 again | 2 good | 3 easy
 			</p>
 		</OverlayDialog>
 	);

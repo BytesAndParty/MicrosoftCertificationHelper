@@ -12,7 +12,7 @@ export default function JournalModule() {
 		>
 			<div id="journal-list" className="journal-list" aria-live="polite"></div>
 			<p className="overlay-shortcut-tip" data-i18n="shortcuts.journalOverlay">
-				Shortcuts: ESC close | D dark mode | L language
+				Shortcuts: ESC close | Q/E/F/G/J switch mode | D theme | L language
 			</p>
 		</OverlayDialog>
 	);

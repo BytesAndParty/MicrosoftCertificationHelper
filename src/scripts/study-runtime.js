@@ -87,6 +87,7 @@ const ui = {
 	resetProgress: byId('reset-progress'),
 	themeToggle: byId('theme-toggle'),
 	languageToggle: byId('language-toggle'),
+	shortcutsPanel: byId('shortcuts-panel'),
 	overlayQuiz: byId('overlay-quiz'),
 	overlayExam: byId('overlay-exam'),
 	overlayFlashcards: byId('overlay-flashcards'),
@@ -188,14 +189,14 @@ const i18n = {
 		'a11y.timeRemaining': 'Time remaining: {time}',
 		'shortcuts.title': 'Keyboard shortcuts',
 		'quiz.bookmarkLabel': 'Save question',
-		'shortcuts.quiz': '1-4 Answer | H Hint | S Skip | N Next',
-		'shortcuts.flash': 'Space Reveal | H Hint (Flashcards) | 1 Again | 2 Good | 3 Easy',
-		'shortcuts.global': 'D Dark mode | L Language | ESC Close overlay',
-		'shortcuts.quizOverlay': 'Shortcuts: 1-4 answer | H hint | S skip | N/Enter next',
-		'shortcuts.examOverlay': 'Shortcuts: 1-4 answer | N/Enter next | ESC close',
-		'shortcuts.flashOverlay': 'Shortcuts: Space/Enter reveal | H hint | 1 again | 2 good | 3 easy',
-		'shortcuts.glossaryOverlay': 'Shortcuts: Space/Enter reveal | 1 again | 2 good | 3 easy | ESC close',
-		'shortcuts.journalOverlay': 'Shortcuts: ESC close | D dark mode | L language',
+		'shortcuts.quiz': '1-4 Answer | H Hint | S Skip | N Next | B Bookmark',
+		'shortcuts.flash': 'Space Reveal | H Hint (Flashcards) | N Next Card | 1 Again | 2 Good | 3 Easy | F Search (Glossary)',
+		'shortcuts.global': 'Q Quiz | E Exam | F Flashcards | G Glossary | J Journal | O Settings | D Theme | L Language | ? Shortcuts | ESC Close',
+		'shortcuts.quizOverlay': 'Shortcuts: 1-4 answer | H hint | S skip | N/Enter next | B bookmark',
+		'shortcuts.examOverlay': 'Shortcuts: S start | 1-4 answer | N/Enter next | ESC close',
+		'shortcuts.flashOverlay': 'Shortcuts: Space/Enter reveal | H hint | N next card | 1 again | 2 good | 3 easy',
+		'shortcuts.glossaryOverlay': 'Shortcuts: Space/Enter reveal | N next term | F search | 1 again | 2 good | 3 easy | ESC close',
+		'shortcuts.journalOverlay': 'Shortcuts: ESC close | Q/E/F/G/J switch mode | D theme | L language',
 		'settings.title': 'Settings',
 		'settings.newCardsDay': 'New flashcards / day',
 		'settings.newGlossaryDay': 'New glossary cards / day',
@@ -301,14 +302,14 @@ const i18n = {
 		'a11y.timeRemaining': 'Verbleibende Zeit: {time}',
 		'shortcuts.title': 'Tastenkürzel',
 		'quiz.bookmarkLabel': 'Frage speichern',
-		'shortcuts.quiz': '1-4 Antwort | H Hinweis | S Überspringen | N Nächste',
-		'shortcuts.flash': 'Leertaste Aufdecken | H Hinweis (Flashcards) | 1 Nochmal | 2 Gut | 3 Sicher',
-		'shortcuts.global': 'D Dark Mode | L Sprache | ESC Overlay schließen',
-		'shortcuts.quizOverlay': 'Tastenkürzel: 1-4 Antwort | H Hinweis | S Überspringen | N/Enter Nächste',
-		'shortcuts.examOverlay': 'Tastenkürzel: 1-4 Antwort | N/Enter Nächste | ESC Schließen',
-		'shortcuts.flashOverlay': 'Tastenkürzel: Leertaste/Enter Aufdecken | H Hinweis | 1 Nochmal | 2 Gut | 3 Sicher',
-		'shortcuts.glossaryOverlay': 'Tastenkürzel: Leertaste/Enter Aufdecken | 1 Nochmal | 2 Gut | 3 Sicher | ESC Schließen',
-		'shortcuts.journalOverlay': 'Tastenkürzel: ESC Schließen | D Dark Mode | L Sprache',
+		'shortcuts.quiz': '1-4 Antwort | H Hinweis | S Überspringen | N Nächste | B Merken',
+		'shortcuts.flash': 'Leertaste Aufdecken | H Hinweis (Flashcards) | N Nächste Karte | 1 Nochmal | 2 Gut | 3 Sicher | F Suche (Glossar)',
+		'shortcuts.global': 'Q Quiz | E Prüfung | F Flashcards | G Glossar | J Journal | O Einstellungen | D Theme | L Sprache | ? Kürzel | ESC Schließen',
+		'shortcuts.quizOverlay': 'Tastenkürzel: 1-4 Antwort | H Hinweis | S Überspringen | N/Enter Nächste | B Merken',
+		'shortcuts.examOverlay': 'Tastenkürzel: S Start | 1-4 Antwort | N/Enter Nächste | ESC Schließen',
+		'shortcuts.flashOverlay': 'Tastenkürzel: Leertaste/Enter Aufdecken | H Hinweis | N Nächste Karte | 1 Nochmal | 2 Gut | 3 Sicher',
+		'shortcuts.glossaryOverlay': 'Tastenkürzel: Leertaste/Enter Aufdecken | N Nächster Begriff | F Suche | 1 Nochmal | 2 Gut | 3 Sicher | ESC Schließen',
+		'shortcuts.journalOverlay': 'Tastenkürzel: ESC Schließen | Q/E/F/G/J Modus wechseln | D Theme | L Sprache',
 		'settings.title': 'Einstellungen',
 		'settings.newCardsDay': 'Neue Karteikarten / Tag',
 		'settings.newGlossaryDay': 'Neue Glossar-Karten / Tag',
@@ -1370,6 +1371,40 @@ function bindRoadmapGlow() {
 	});
 }
 
+function openModeOverlay(mode) {
+	if (mode === 'quiz') {
+		if (!activeQuestion) showQuizQuestion();
+		openOverlay(ui.overlayQuiz);
+		return;
+	}
+	if (mode === 'exam') {
+		openOverlay(ui.overlayExam);
+		return;
+	}
+	if (mode === 'flashcards') {
+		chooseNextCard();
+		openOverlay(ui.overlayFlashcards);
+		return;
+	}
+	if (mode === 'glossary') {
+		chooseNextGlossaryCard(ui.glossarySearch?.value || '');
+		openOverlay(ui.overlayGlossary);
+		return;
+	}
+	if (mode === 'journal') {
+		renderJournal();
+		openOverlay(ui.overlayJournal);
+	}
+}
+
+function toggleShortcutsPanel() {
+	if (!ui.shortcutsPanel) return;
+	ui.shortcutsPanel.open = !ui.shortcutsPanel.open;
+	if (ui.shortcutsPanel.open) {
+		ui.shortcutsPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+	}
+}
+
 /* ---- Event binding ---- */
 
 function bindEvents() {
@@ -1388,22 +1423,7 @@ function bindEvents() {
 	// Hero mode buttons
 	document.querySelectorAll('[data-mode]').forEach((btn) => {
 		btn.addEventListener('click', () => {
-			const mode = btn.dataset.mode;
-			if (mode === 'quiz') {
-				if (!activeQuestion) showQuizQuestion();
-				openOverlay(ui.overlayQuiz);
-			} else if (mode === 'exam') {
-				openOverlay(ui.overlayExam);
-			} else if (mode === 'flashcards') {
-				chooseNextCard();
-				openOverlay(ui.overlayFlashcards);
-			} else if (mode === 'glossary') {
-				chooseNextGlossaryCard(ui.glossarySearch?.value || '');
-				openOverlay(ui.overlayGlossary);
-			} else if (mode === 'journal') {
-				renderJournal();
-				openOverlay(ui.overlayJournal);
-			}
+			openModeOverlay(btn.dataset.mode);
 		});
 	});
 
@@ -1489,6 +1509,11 @@ function bindEvents() {
 					ui.quizNext.click();
 					return;
 				}
+				if (e.key === 'b' || e.key === 'B') {
+					e.preventDefault();
+					if (ui.quizBookmark) ui.quizBookmark.click();
+					return;
+				}
 			}
 
 			// Exam overlay shortcuts
@@ -1505,6 +1530,13 @@ function bindEvents() {
 					return;
 				}
 			}
+			if (activeOverlay === ui.overlayExam && !exam) {
+				if ((e.key === 's' || e.key === 'S' || e.key === 'Enter') && !ui.examStart.hidden) {
+					e.preventDefault();
+					ui.examStart.click();
+					return;
+				}
+			}
 
 			// Flashcard overlay shortcuts
 			if (activeOverlay === ui.overlayFlashcards) {
@@ -1516,6 +1548,11 @@ function bindEvents() {
 				if ((e.key === 'h' || e.key === 'H') && !ui.flashHint.hidden) {
 					e.preventDefault();
 					ui.flashHint.click();
+					return;
+				}
+				if (e.key === 'n' || e.key === 'N') {
+					e.preventDefault();
+					chooseNextCard();
 					return;
 				}
 				if (!ui.flashGrades.hidden) {
@@ -1532,6 +1569,17 @@ function bindEvents() {
 					ui.glossaryCardShow.click();
 					return;
 				}
+				if (e.key === 'n' || e.key === 'N') {
+					e.preventDefault();
+					chooseNextGlossaryCard(ui.glossarySearch?.value || '');
+					return;
+				}
+				if (e.key === 'f' || e.key === 'F') {
+					e.preventDefault();
+					ui.glossarySearch?.focus();
+					ui.glossarySearch?.select();
+					return;
+				}
 				if (!ui.glossaryGrades.hidden) {
 					if (e.key === '1') { e.preventDefault(); ui.glossaryCardAgain.click(); return; }
 					if (e.key === '2') { e.preventDefault(); ui.glossaryCardGood.click(); return; }
@@ -1542,10 +1590,52 @@ function bindEvents() {
 			// Global shortcuts in overlay
 			if (e.key === 'd' || e.key === 'D') { e.preventDefault(); toggleTheme(); return; }
 			if (e.key === 'l' || e.key === 'L') { e.preventDefault(); toggleLanguage(); return; }
+			if (e.key === 'q' || e.key === 'Q') { e.preventDefault(); openModeOverlay('quiz'); return; }
+			if (e.key === 'e' || e.key === 'E') { e.preventDefault(); openModeOverlay('exam'); return; }
+			if (e.key === 'f' || e.key === 'F') { e.preventDefault(); openModeOverlay('flashcards'); return; }
+			if (e.key === 'g' || e.key === 'G') { e.preventDefault(); openModeOverlay('glossary'); return; }
+			if (e.key === 'j' || e.key === 'J') { e.preventDefault(); openModeOverlay('journal'); return; }
+			if (e.key === 'o' || e.key === 'O') { e.preventDefault(); populateSettingsUi(); openOverlay(ui.overlaySettings); return; }
 			return;
 		}
 
 		// Global shortcuts when no overlay is open
+		if (e.key === 'q' || e.key === 'Q') {
+			e.preventDefault();
+			openModeOverlay('quiz');
+			return;
+		}
+		if (e.key === 'e' || e.key === 'E') {
+			e.preventDefault();
+			openModeOverlay('exam');
+			return;
+		}
+		if (e.key === 'f' || e.key === 'F') {
+			e.preventDefault();
+			openModeOverlay('flashcards');
+			return;
+		}
+		if (e.key === 'g' || e.key === 'G') {
+			e.preventDefault();
+			openModeOverlay('glossary');
+			return;
+		}
+		if (e.key === 'j' || e.key === 'J') {
+			e.preventDefault();
+			openModeOverlay('journal');
+			return;
+		}
+		if (e.key === 'o' || e.key === 'O') {
+			e.preventDefault();
+			populateSettingsUi();
+			openOverlay(ui.overlaySettings);
+			return;
+		}
+		if (e.key === '?') {
+			e.preventDefault();
+			toggleShortcutsPanel();
+			return;
+		}
 		if (e.key === 'd' || e.key === 'D') {
 			e.preventDefault();
 			toggleTheme();

@@ -26,7 +26,7 @@ export default function QuizModule() {
 				Next question
 			</button>
 			<p className="overlay-shortcut-tip" data-i18n="shortcuts.quizOverlay">
-				Shortcuts: 1-4 answer | H hint | S skip | N/Enter next
+				Shortcuts: 1-4 answer | H hint | S skip | N/Enter next | B bookmark
 			</p>
 		</OverlayDialog>
 	);

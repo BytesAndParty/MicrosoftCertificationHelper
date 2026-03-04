@@ -131,12 +131,12 @@ export default function StudyWorkspace({ roadmapThemes }: StudyWorkspaceProps) {
 				<WelcomeDialogContent />
 			</OverlayDialog>
 
-			<details className="shortcuts-section reveal">
+			<details id="shortcuts-panel" className="shortcuts-section reveal">
 				<summary data-i18n="shortcuts.title">Keyboard shortcuts</summary>
 				<div className="shortcuts-grid">
-					<p><strong>Quiz / Exam:</strong> <span data-i18n="shortcuts.quiz">1-4 Answer | H Hint | S Skip | N Next</span></p>
-					<p><strong>Flashcards / Glossary:</strong> <span data-i18n="shortcuts.flash">Space Reveal | 1 Again | 2 Good | 3 Easy</span></p>
-					<p><strong>Global:</strong> <span data-i18n="shortcuts.global">D Dark mode | L Language | ESC Close overlay</span></p>
+					<p><strong>Quiz / Exam:</strong> <span data-i18n="shortcuts.quiz">1-4 Answer | H Hint | S Skip | N Next | B Bookmark</span></p>
+					<p><strong>Flashcards / Glossary:</strong> <span data-i18n="shortcuts.flash">Space Reveal | H Hint (Flashcards) | N Next Card | 1 Again | 2 Good | 3 Easy | F Search (Glossary)</span></p>
+					<p><strong>Global:</strong> <span data-i18n="shortcuts.global">Q Quiz | E Exam | F Flashcards | G Glossary | J Journal | O Settings | D Theme | L Language | ? Shortcuts | ESC Close</span></p>
 				</div>
 			</details>
 
