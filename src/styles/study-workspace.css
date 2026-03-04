@@ -159,7 +159,7 @@ h1 {
 	flex-shrink: 0;
 }
 
-.theme-toggle {
+.hero-controls .secondary {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -168,12 +168,17 @@ h1 {
 	padding: 0;
 }
 
-.theme-toggle svg {
+.hero-controls .secondary svg {
+	width: 18px;
+	height: 18px;
 	flex-shrink: 0;
 }
 
 .language-toggle {
-	min-width: 56px;
+	font-size: 0.76rem;
+	font-weight: 700;
+	line-height: 1;
+	letter-spacing: 0.02em;
 }
 
 .hero-modes {
@@ -683,10 +688,6 @@ button {
 	transform: translateY(-1px);
 }
 
-.theme-toggle.secondary {
-	padding: 0;
-}
-
 .danger {
 	background: #fdf2ee;
 	color: #8b3f2f;
@@ -895,17 +896,6 @@ input[type='search']:focus {
 	justify-content: flex-end;
 	padding-top: 0.5rem;
 	border-top: 1px solid rgba(139, 69, 19, 0.1);
-}
-
-.settings-toggle {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	min-width: 38px;
-}
-
-.settings-toggle svg {
-	flex-shrink: 0;
 }
 
 /* ---- Welcome modal ---- */
