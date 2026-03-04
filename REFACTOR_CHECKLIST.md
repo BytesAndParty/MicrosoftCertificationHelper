@@ -47,7 +47,7 @@ Rule: switch `[ ]` to `[x]` only after the step is fully done (code, build, and 
 - [x] Quiz module migrated and verified
 - [x] Exam module migrated and verified
 - [x] Flashcards module migrated and verified
-- [ ] Glossary module migrated and verified
+- [x] Glossary module migrated and verified
 - [ ] Error Journal migrated and verified
 - [ ] Commit per module (atomic commits)
 
@@ -68,7 +68,7 @@ Rule: switch `[ ]` to `[x]` only after the step is fully done (code, build, and 
 - [x] `refactor(quiz): migrate quiz module`
 - [x] `refactor(exam): migrate exam module`
 - [x] `refactor(flashcards): migrate flashcard module`
-- [ ] `refactor(glossary): migrate glossary module`
+- [x] `refactor(glossary): migrate glossary module`
 - [ ] `refactor(journal): migrate error journal module`
 - [ ] `test: add unit and e2e coverage for study flows`
 - [ ] `chore: remove legacy app.js and old CSS paths`
