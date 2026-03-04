@@ -44,7 +44,7 @@ Rule: switch `[ ]` to `[x]` only after the step is fully done (code, build, and 
 
 ## Phase 5 - Module-by-Module Migration
 
-- [ ] Quiz module migrated and verified
+- [x] Quiz module migrated and verified
 - [ ] Exam module migrated and verified
 - [ ] Flashcards module migrated and verified
 - [ ] Glossary module migrated and verified
@@ -65,7 +65,7 @@ Rule: switch `[ ]` to `[x]` only after the step is fully done (code, build, and 
 - [x] `feat(theme): add shadcn-based dark/light theming`
 - [x] `refactor(state): move study logic to store and domain modules`
 - [x] `refactor(ui): migrate shell and dialogs to shadcn components`
-- [ ] `refactor(quiz): migrate quiz module`
+- [x] `refactor(quiz): migrate quiz module`
 - [ ] `refactor(exam): migrate exam module`
 - [ ] `refactor(flashcards): migrate flashcard module`
 - [ ] `refactor(glossary): migrate glossary module`

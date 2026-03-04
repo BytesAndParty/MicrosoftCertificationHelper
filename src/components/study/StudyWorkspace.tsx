@@ -2,6 +2,7 @@ import { Input } from '../ui/input';
 import OverlayDialog from './OverlayDialog';
 import SettingsDialogContent from './SettingsDialogContent';
 import WelcomeDialogContent from './WelcomeDialogContent';
+import QuizModule from './modules/QuizModule';
 
 interface RoadmapTheme {
 	id: string;
@@ -107,22 +108,7 @@ export default function StudyWorkspace({ roadmapThemes }: StudyWorkspaceProps) {
 				<article className="metric"><p data-i18n="metrics.journal">Error Journal</p><strong id="metric-journal">0</strong></article>
 			</section>
 
-			<OverlayDialog id="overlay-quiz" titleId="overlay-quiz-title" titleI18n="quiz.title" titleDefault="Quiz with instant feedback">
-				<p id="quiz-progress" className="meta"></p>
-				<div className="quiz-question-row">
-					<p id="quiz-topic" className="chip"></p>
-					<button id="quiz-bookmark" type="button" className="quiz-bookmark" aria-label="Save question" data-i18n-aria-label="quiz.bookmarkLabel">&#9825;</button>
-				</div>
-				<h4 id="quiz-question"></h4>
-				<div id="quiz-options" className="option-list"></div>
-				<div className="quiz-actions">
-					<button id="quiz-hint" type="button" className="secondary" data-i18n="quiz.showHint">Show hint</button>
-					<button id="quiz-skip" type="button" className="secondary" data-i18n="quiz.skip">Skip</button>
-				</div>
-				<p id="quiz-hint-text" className="hint-box" hidden></p>
-				<p id="quiz-feedback" className="feedback" aria-live="polite"></p>
-				<button id="quiz-next" type="button" className="primary" data-i18n="quiz.nextQuestion">Next question</button>
-			</OverlayDialog>
+			<QuizModule />
 
 			<OverlayDialog
 				id="overlay-exam"
