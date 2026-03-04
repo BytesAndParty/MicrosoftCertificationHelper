@@ -28,11 +28,11 @@ Rule: switch `[ ]` to `[x]` only after the step is fully done (code, build, and 
 
 ## Phase 3 - State and Domain Extraction
 
-- [ ] Split domain logic from `src/scripts/app.js` into `src/lib/study/*`
-- [ ] Introduce central store (recommended: `zustand` with persist)
-- [ ] Keep compatibility with existing saved progress format
-- [ ] Add unit tests for extracted quiz and spaced-repetition logic
-- [ ] Commit: `refactor(state): move study logic to store and domain modules`
+- [x] Split domain logic from `src/scripts/app.js` into `src/lib/study/*`
+- [x] Introduce central store (recommended: `zustand` with persist)
+- [x] Keep compatibility with existing saved progress format
+- [x] Add unit tests for extracted quiz and spaced-repetition logic
+- [x] Commit: `refactor(state): move study logic to store and domain modules`
 
 ## Phase 4 - UI Shell Migration
 
@@ -63,7 +63,7 @@ Rule: switch `[ ]` to `[x]` only after the step is fully done (code, build, and 
 
 - [x] `chore: add react + tailwind + shadcn foundation`
 - [x] `feat(theme): add shadcn-based dark/light theming`
-- [ ] `refactor(state): move study logic to store and domain modules`
+- [x] `refactor(state): move study logic to store and domain modules`
 - [ ] `refactor(ui): migrate shell and dialogs to shadcn components`
 - [ ] `refactor(quiz): migrate quiz module`
 - [ ] `refactor(exam): migrate exam module`

@@ -1,12 +1,12 @@
 import { flashcards, glossaryTerms, quizQuestions, roadmapThemes } from '../data/content';
+import { buildOptionPools, createRuntimeQuestion as buildRuntimeQuestion, getQuestionType, localizeQuestionData as localizeQuestion, shuffle } from '../lib/study/quiz';
+import { applySpacedRepetitionGrade, selectNextStudyCard } from '../lib/study/spaced-repetition';
+import { clampFloat, clampInt, DEFAULT_SETTINGS } from '../lib/study/settings';
+import { createDefaultStudyState, FALLBACK_KEY, hydrateStudyState } from '../lib/study/state';
 
 const DB = { name: 'ai900-study-helper', version: 1, store: 'kv', key: 'state' };
-const FALLBACK_KEY = 'ai900_state_fallback';
-const DAY = 86400000;
 const EXAM_SECONDS = 20 * 60;
 const EXAM_QUESTION_COUNT = 10;
-const DEFAULT_CHOICE_COUNT = 4;
-const MIN_FALSE_POOL = 6;
 const THEME_KEY = 'ai900_theme_pref';
 const LANG_KEY = 'ai900_lang_pref';
 const THEME_MEDIA = window.matchMedia('(prefers-color-scheme: dark)');
@@ -316,29 +316,7 @@ const i18n = {
 	}
 };
 
-const DEFAULT_SETTINGS = {
-	newCardsPerDay: 20,
-	newGlossaryPerDay: 10,
-	maxReviewsPerDay: 100,
-	goodMultiplier: 2.0,
-	easyMultiplier: 3.0,
-	lapseMinutes: 10
-};
-
-const defaults = {
-	roadmapDone: {},
-	quiz: { answered: 0, correct: 0, byTopic: {} },
-	wrongJournal: {},
-	savedQuestions: {},
-	examBest: 0,
-	examHistory: [],
-	flashcards: {},
-	glossaryFlashcards: {},
-	settings: { ...DEFAULT_SETTINGS },
-	hasSeenWelcome: false
-};
-
-let state = clone(defaults);
+let state = createDefaultStudyState();
 let dbPromise;
 let saveTimer;
 let quizDeck = [];
@@ -353,10 +331,6 @@ let glossaryCardShown = false;
 let currentLanguage = 'en';
 let activeOverlay = null;
 let previousFocusElement = null;
-
-function clone(value) {
-	return JSON.parse(JSON.stringify(value));
-}
 
 function resolveLanguage(language) {
 	return language === 'de' ? 'de' : 'en';
@@ -386,27 +360,9 @@ function t(key, vars = {}) {
 	);
 }
 
-function unique(list) {
-	return [...new Set(list)];
-}
-
-function shuffle(list) {
-	const copy = list.slice();
-	for (let index = copy.length - 1; index > 0; index -= 1) {
-		const randomIndex = Math.floor(Math.random() * (index + 1));
-		[copy[index], copy[randomIndex]] = [copy[randomIndex], copy[index]];
-	}
-	return copy;
-}
-
 function formatDate(timestamp) {
 	const locale = currentLanguage === 'de' ? 'de-DE' : 'en-US';
 	return new Intl.DateTimeFormat(locale, { dateStyle: 'short', timeStyle: 'short' }).format(new Date(timestamp));
-}
-
-function getQuestionType(question) {
-	if (question && typeof question.type === 'string') return question.type;
-	return 'single-choice';
 }
 
 function getTypeLabel(type) {
@@ -660,117 +616,17 @@ function toggleLanguage() {
 /* ---- Question helpers ---- */
 
 function localizeQuestionData(question, language = currentLanguage) {
-	const useGerman = language === 'de';
-
-	return {
-		...question,
-		prompt: useGerman && typeof question.promptDe === 'string' ? question.promptDe : question.prompt,
-		hint: useGerman && typeof question.hintDe === 'string' ? question.hintDe : question.hint,
-		explanation:
-			useGerman && typeof question.explanationDe === 'string' ? question.explanationDe : question.explanation,
-		options: useGerman && Array.isArray(question.optionsDe) ? question.optionsDe : question.options,
-		wrongOptions:
-			useGerman && Array.isArray(question.wrongOptionsDe) ? question.wrongOptionsDe : question.wrongOptions,
-		correctAnswer:
-			useGerman && typeof question.correctAnswerDe === 'string' ? question.correctAnswerDe : question.correctAnswer
-	};
-}
-
-function buildOptionPools(questions, language = 'en') {
-	const topicPoolMap = {};
-	const all = [];
-
-	questions.forEach((baseQuestion) => {
-		const question = localizeQuestionData(baseQuestion, language);
-		if (!Array.isArray(question.options)) return;
-		all.push(...question.options);
-		if (!topicPoolMap[question.topic]) topicPoolMap[question.topic] = [];
-		topicPoolMap[question.topic].push(...question.options);
-	});
-
-	const normalizedTopicPool = {};
-	Object.entries(topicPoolMap).forEach(([topic, options]) => {
-		normalizedTopicPool[topic] = unique(options);
-	});
-
-	return {
-		topicOptionPool: normalizedTopicPool,
-		globalOptionPool: unique(all)
-	};
-}
-
-function getSingleChoiceRuntimeQuestion(baseQuestion) {
-	const localizedQuestion = localizeQuestionData(baseQuestion);
-	const type = getQuestionType(localizedQuestion);
-	const ownOptions = Array.isArray(localizedQuestion.options) ? localizedQuestion.options : [];
-	const correctText = ownOptions[localizedQuestion.answerIndex];
-	const optionPools = optionPoolsByLanguage[currentLanguage] || optionPoolsByLanguage.en;
-	const { topicOptionPool, globalOptionPool } = optionPools;
-	if (!correctText) {
-		return {
-			...localizedQuestion,
-			type,
-			typeLabel: getTypeLabel(type),
-			options: ownOptions,
-			correctIndex: Number(localizedQuestion.answerIndex) || 0,
-			correctText: ownOptions[Number(localizedQuestion.answerIndex) || 0] || '',
-			answerPoolCount: ownOptions.length
-		};
-	}
-
-	const ownWrong = ownOptions.filter((option, index) => index !== localizedQuestion.answerIndex);
-	const customWrong = Array.isArray(localizedQuestion.wrongOptions) ? localizedQuestion.wrongOptions : [];
-	const topicWrong = topicOptionPool[localizedQuestion.topic] || [];
-	let wrongPool = unique([...customWrong, ...ownWrong, ...topicWrong]).filter((option) => option !== correctText);
-
-	if (wrongPool.length < MIN_FALSE_POOL) {
-		wrongPool = unique([...wrongPool, ...globalOptionPool]).filter((option) => option !== correctText);
-	}
-
-	const requestedCount = Number(baseQuestion.displayOptionCount) || DEFAULT_CHOICE_COUNT;
-	const optionCount = Math.max(2, Math.min(requestedCount, wrongPool.length + 1));
-	const wrongToShow = Math.max(1, optionCount - 1);
-	const selectedWrong = shuffle(wrongPool).slice(0, wrongToShow);
-	const options = shuffle([correctText, ...selectedWrong]);
-	const correctIndex = options.indexOf(correctText);
-
-	return {
-		...localizedQuestion,
-		type,
-		typeLabel: getTypeLabel(type),
-		options,
-		correctIndex,
-		correctText,
-		answerPoolCount: wrongPool.length + 1
-	};
-}
-
-function getTrueFalseRuntimeQuestion(baseQuestion) {
-	const localizedQuestion = localizeQuestionData(baseQuestion);
-	const type = getQuestionType(localizedQuestion);
-	const normalizedAnswer = String(localizedQuestion.correctAnswer || '').toLowerCase();
-	const prefersFalse = normalizedAnswer === 'false' || normalizedAnswer === 'falsch';
-	const trueLabel = currentLanguage === 'de' ? 'Wahr' : 'True';
-	const falseLabel = currentLanguage === 'de' ? 'Falsch' : 'False';
-	const correctText = prefersFalse ? falseLabel : trueLabel;
-	const options = shuffle([trueLabel, falseLabel]);
-	return {
-		...localizedQuestion,
-		type,
-		typeLabel: getTypeLabel(type),
-		options,
-		correctIndex: options.indexOf(correctText),
-		correctText,
-		answerPoolCount: 2
-	};
+	return localizeQuestion(question, language);
 }
 
 function createRuntimeQuestion(baseQuestion) {
-	const type = getQuestionType(baseQuestion);
-	if (type === 'true-false') {
-		return getTrueFalseRuntimeQuestion(baseQuestion);
-	}
-	return getSingleChoiceRuntimeQuestion(baseQuestion);
+	return buildRuntimeQuestion(baseQuestion, {
+		language: currentLanguage,
+		optionPoolsByLanguage,
+		getTypeLabel,
+		trueLabel: currentLanguage === 'de' ? 'Wahr' : 'True',
+		falseLabel: currentLanguage === 'de' ? 'Falsch' : 'False'
+	});
 }
 
 /* ---- Persistence ---- */
@@ -836,45 +692,7 @@ async function saveState(immediate = false) {
 }
 
 function hydrate(saved) {
-	state = clone(defaults);
-	if (saved && typeof saved === 'object') {
-		if (saved.roadmapDone && typeof saved.roadmapDone === 'object') {
-			state.roadmapDone = saved.roadmapDone;
-		}
-		if (saved.quiz && typeof saved.quiz === 'object') {
-			state.quiz.answered = Number(saved.quiz.answered) || 0;
-			state.quiz.correct = Number(saved.quiz.correct) || 0;
-			state.quiz.byTopic = saved.quiz.byTopic && typeof saved.quiz.byTopic === 'object' ? saved.quiz.byTopic : {};
-		}
-		if (saved.wrongJournal && typeof saved.wrongJournal === 'object') {
-			state.wrongJournal = saved.wrongJournal;
-		}
-		if (saved.savedQuestions && typeof saved.savedQuestions === 'object') {
-			state.savedQuestions = saved.savedQuestions;
-		}
-		state.examBest = Number(saved.examBest) || 0;
-		state.examHistory = Array.isArray(saved.examHistory) ? saved.examHistory.slice(0, 15) : [];
-		state.flashcards = saved.flashcards && typeof saved.flashcards === 'object' ? saved.flashcards : {};
-		state.glossaryFlashcards = saved.glossaryFlashcards && typeof saved.glossaryFlashcards === 'object' ? saved.glossaryFlashcards : {};
-		if (saved.settings && typeof saved.settings === 'object') {
-			state.settings = { ...DEFAULT_SETTINGS, ...saved.settings };
-		}
-		if (saved.hasSeenWelcome === true) {
-			state.hasSeenWelcome = true;
-		}
-	}
-
-	const now = Date.now();
-	for (const card of flashcards) {
-		if (!state.flashcards[card.id]) {
-			state.flashcards[card.id] = { interval: 1, streak: 0, dueAt: now, last: 'new' };
-		}
-	}
-	for (const card of glossaryCards) {
-		if (!state.glossaryFlashcards[card.id]) {
-			state.glossaryFlashcards[card.id] = { interval: 1, streak: 0, dueAt: now, last: 'new' };
-		}
-	}
+	state = hydrateStudyState(saved, flashcards, glossaryCards);
 }
 
 /* ---- Settings ---- */
@@ -899,15 +717,6 @@ function readSettingsFromUi() {
 	};
 }
 
-function clampInt(value, min, max) {
-	return Math.max(min, Math.min(max, Math.round(Number(value) || min)));
-}
-
-function clampFloat(value, min, max) {
-	const num = Number(value);
-	return Math.max(min, Math.min(max, Number.isFinite(num) ? Math.round(num * 10) / 10 : min));
-}
-
 function saveSettings() {
 	state.settings = readSettingsFromUi();
 	populateSettingsUi();
@@ -919,20 +728,6 @@ function resetSettings() {
 	state.settings = { ...DEFAULT_SETTINGS };
 	populateSettingsUi();
 	void saveState();
-}
-
-function getTodayKey() {
-	return new Date().toISOString().slice(0, 10);
-}
-
-function countNewCardsToday(cardStates) {
-	const today = getTodayKey();
-	let count = 0;
-	for (const id in cardStates) {
-		const card = cardStates[id];
-		if (card.last !== 'new' && card.firstSeenDate === today) count += 1;
-	}
-	return count;
 }
 
 /* ---- Stats & metrics ---- */
@@ -1342,27 +1137,10 @@ function finishExam() {
 /* ---- Flashcards (SM-2) ---- */
 
 function chooseNextCard() {
-	const now = Date.now();
-	const newSeenToday = countNewCardsToday(state.flashcards);
-	const canShowNew = newSeenToday < state.settings.newCardsPerDay;
-
-	const due = flashcards.filter((card) => {
-		const progress = state.flashcards[card.id];
-		if (!progress || progress.dueAt > now) return false;
-		if (progress.last === 'new' && !canShowNew) return false;
-		return true;
+	activeCard = selectNextStudyCard(flashcards, state.flashcards, {
+		now: Date.now(),
+		newCardsPerDay: state.settings.newCardsPerDay
 	});
-
-	const pool = due.length
-		? due
-		: flashcards.slice()
-				.filter((card) => {
-					const progress = state.flashcards[card.id];
-					return progress && (progress.last !== 'new' || canShowNew);
-				})
-				.sort((left, right) => (state.flashcards[left.id]?.dueAt ?? 0) - (state.flashcards[right.id]?.dueAt ?? 0));
-
-	activeCard = pool[0] || null;
 	cardShown = false;
 	renderCard();
 }
@@ -1387,28 +1165,7 @@ function renderCard() {
 function rateCard(grade) {
 	if (!activeCard) return;
 	const progress = state.flashcards[activeCard.id];
-	const now = Date.now();
-	const s = state.settings;
-
-	if (progress.last === 'new') progress.firstSeenDate = getTodayKey();
-
-	if (grade === 'again') {
-		progress.interval = 1;
-		progress.streak = 0;
-		progress.dueAt = now + s.lapseMinutes * 60 * 1000;
-	}
-	if (grade === 'good') {
-		progress.interval = Math.max(1, Math.round(progress.interval * s.goodMultiplier));
-		progress.streak += 1;
-		progress.dueAt = now + progress.interval * DAY;
-	}
-	if (grade === 'easy') {
-		progress.interval = Math.max(2, Math.round(progress.interval * s.easyMultiplier));
-		progress.streak += 1;
-		progress.dueAt = now + progress.interval * DAY;
-	}
-
-	progress.last = grade;
+	state.flashcards[activeCard.id] = applySpacedRepetitionGrade(progress, grade, state.settings);
 	void saveState();
 	renderStats();
 	chooseNextCard();
@@ -1417,10 +1174,7 @@ function rateCard(grade) {
 /* ---- Glossary Flashcards (SM-2) ---- */
 
 function chooseNextGlossaryCard(filter = '') {
-	const now = Date.now();
 	const query = filter.trim().toLowerCase();
-	const newSeenToday = countNewCardsToday(state.glossaryFlashcards);
-	const canShowNew = newSeenToday < state.settings.newGlossaryPerDay;
 
 	const filtered = glossaryCards.filter((card) => {
 		if (!query) return true;
@@ -1428,23 +1182,10 @@ function chooseNextGlossaryCard(filter = '') {
 		return card.front.toLowerCase().includes(query) || def.toLowerCase().includes(query);
 	});
 
-	const due = filtered.filter((card) => {
-		const progress = state.glossaryFlashcards[card.id];
-		if (!progress || progress.dueAt > now) return false;
-		if (progress.last === 'new' && !canShowNew) return false;
-		return true;
+	activeGlossaryCard = selectNextStudyCard(filtered, state.glossaryFlashcards, {
+		now: Date.now(),
+		newCardsPerDay: state.settings.newGlossaryPerDay
 	});
-
-	const pool = due.length
-		? due
-		: filtered
-				.filter((card) => {
-					const progress = state.glossaryFlashcards[card.id];
-					return progress && (progress.last !== 'new' || canShowNew);
-				})
-				.sort((left, right) => (state.glossaryFlashcards[left.id]?.dueAt ?? 0) - (state.glossaryFlashcards[right.id]?.dueAt ?? 0));
-
-	activeGlossaryCard = pool[0] || null;
 	glossaryCardShown = false;
 	renderGlossaryCard();
 }
@@ -1479,28 +1220,7 @@ function renderGlossaryCard() {
 function rateGlossaryCard(grade) {
 	if (!activeGlossaryCard) return;
 	const progress = state.glossaryFlashcards[activeGlossaryCard.id];
-	const now = Date.now();
-	const s = state.settings;
-
-	if (progress.last === 'new') progress.firstSeenDate = getTodayKey();
-
-	if (grade === 'again') {
-		progress.interval = 1;
-		progress.streak = 0;
-		progress.dueAt = now + s.lapseMinutes * 60 * 1000;
-	}
-	if (grade === 'good') {
-		progress.interval = Math.max(1, Math.round(progress.interval * s.goodMultiplier));
-		progress.streak += 1;
-		progress.dueAt = now + progress.interval * DAY;
-	}
-	if (grade === 'easy') {
-		progress.interval = Math.max(2, Math.round(progress.interval * s.easyMultiplier));
-		progress.streak += 1;
-		progress.dueAt = now + progress.interval * DAY;
-	}
-
-	progress.last = grade;
+	state.glossaryFlashcards[activeGlossaryCard.id] = applySpacedRepetitionGrade(progress, grade, state.settings);
 	void saveState();
 	renderStats();
 	chooseNextGlossaryCard(ui.glossarySearch?.value || '');
@@ -1555,8 +1275,7 @@ function renderJournal() {
 async function resetAll() {
 	if (!confirm(t('reset.confirm'))) return;
 	if (activeOverlay) closeOverlay(activeOverlay);
-	state = clone(defaults);
-	hydrate(state);
+	state = hydrateStudyState(null, flashcards, glossaryCards);
 	renderRoadmapChecks();
 	renderStats();
 	renderJournal();
