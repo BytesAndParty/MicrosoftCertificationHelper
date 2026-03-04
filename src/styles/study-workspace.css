@@ -551,6 +551,26 @@ h4 {
 	transition: border-color 0.2s, background 0.2s, transform 0.15s, box-shadow 0.2s;
 }
 
+.option-label {
+	display: block;
+}
+
+.option-reason {
+	display: block;
+	margin-top: 0.42rem;
+	font-size: 0.82rem;
+	line-height: 1.4;
+	color: #654430;
+}
+
+.option.is-correct .option-reason {
+	color: #1f6e4d;
+}
+
+.option.is-wrong .option-reason {
+	color: #8f4334;
+}
+
 .option:hover {
 	border-color: rgba(194, 96, 10, 0.45);
 	background: #fffaf5;

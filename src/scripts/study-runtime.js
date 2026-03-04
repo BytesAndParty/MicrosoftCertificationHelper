@@ -166,6 +166,8 @@ const i18n = {
 		'quiz.progress': 'Answered: {answered} | Correct: {correct}{poolHint}',
 		'quiz.feedback.correct': 'Correct.',
 		'quiz.feedback.wrong': 'Not correct.',
+		'quiz.optionReasonCorrect': 'Correct option: {answer}. {explanation}',
+		'quiz.optionReasonWrong': 'Not correct: {answer}. Correct answer: {correct}. {explanation}',
 		'exam.questionProgress': 'Question {current} / {total} | {typeLabel}',
 		'exam.finish': 'Finish exam',
 		'exam.result': 'Result: {score}% ({correct}/{total})',
@@ -279,6 +281,8 @@ const i18n = {
 		'quiz.progress': 'Beantwortet: {answered} | Richtig: {correct}{poolHint}',
 		'quiz.feedback.correct': 'Richtig.',
 		'quiz.feedback.wrong': 'Nicht korrekt.',
+		'quiz.optionReasonCorrect': 'Richtige Option: {answer}. {explanation}',
+		'quiz.optionReasonWrong': 'Nicht korrekt: {answer}. Richtige Antwort: {correct}. {explanation}',
 		'exam.questionProgress': 'Frage {current} / {total} | {typeLabel}',
 		'exam.finish': 'Prüfung beenden',
 		'exam.result': 'Ergebnis: {score}% ({correct}/{total})',
@@ -342,6 +346,7 @@ let saveTimer;
 let quizDeck = [];
 let activeQuestion = null;
 let quizLocked = false;
+let lastQuizSelectedIndex = null;
 let exam = null;
 let examInterval;
 let activeCard = null;
@@ -627,6 +632,12 @@ function applyLanguage(language, { persist = true } = {}) {
 				const isCorrect = ui.quizFeedback.classList.contains('is-correct');
 				ui.quizFeedback.textContent = `${isCorrect ? t('quiz.feedback.correct') : t('quiz.feedback.wrong')} ${activeQuestion.explanation}`;
 			}
+			if (lastQuizSelectedIndex !== null) {
+				[...ui.quizOptions.querySelectorAll('button')].forEach((button) => {
+					const index = Number(button.dataset.index);
+					renderQuizOptionOutcome(button, index, lastQuizSelectedIndex);
+				});
+			}
 		}
 	}
 
@@ -829,6 +840,42 @@ function refillQuizDeck() {
 	quizDeck = shuffle(quizQuestions);
 }
 
+function formatOptionLabel(optionIndex, optionText) {
+	return `${optionIndex + 1}. ${optionText}`;
+}
+
+function buildQuizOptionReason(optionIndex) {
+	if (!activeQuestion) return '';
+	const optionText = activeQuestion.options[optionIndex] || '';
+	if (optionIndex === activeQuestion.correctIndex) {
+		return t('quiz.optionReasonCorrect', {
+			answer: optionText,
+			explanation: activeQuestion.explanation
+		});
+	}
+	return t('quiz.optionReasonWrong', {
+		answer: optionText,
+		correct: activeQuestion.correctText,
+		explanation: activeQuestion.explanation
+	});
+}
+
+function renderQuizOptionOutcome(button, optionIndex, selectedIndex) {
+	if (!activeQuestion) return;
+	const label = button.querySelector('.option-label');
+	const reason = button.querySelector('.option-reason');
+	const isCorrectOption = optionIndex === activeQuestion.correctIndex;
+	const isWrongSelection = selectedIndex !== activeQuestion.correctIndex && optionIndex === selectedIndex;
+	const marker = isCorrectOption ? '\u2713 ' : isWrongSelection ? '\u2717 ' : '';
+	if (label) {
+		label.textContent = `${marker}${formatOptionLabel(optionIndex, activeQuestion.options[optionIndex])}`;
+	}
+	if (reason) {
+		reason.textContent = buildQuizOptionReason(optionIndex);
+		reason.hidden = false;
+	}
+}
+
 function showQuizQuestion(forcedQuestionId = null) {
 	const baseQuestion = forcedQuestionId && questionById.has(forcedQuestionId)
 		? questionById.get(forcedQuestionId)
@@ -839,6 +886,7 @@ function showQuizQuestion(forcedQuestionId = null) {
 
 	activeQuestion = createRuntimeQuestion(baseQuestion);
 	quizLocked = false;
+	lastQuizSelectedIndex = null;
 	ui.quizTopic.textContent = `${activeQuestion.topic} · ${activeQuestion.typeLabel}`;
 	ui.quizQuestion.textContent = activeQuestion.prompt;
 	const poolHint =
@@ -865,7 +913,13 @@ function showQuizQuestion(forcedQuestionId = null) {
 		button.type = 'button';
 		button.className = 'option';
 		button.dataset.index = String(optionIndex);
-		button.textContent = option;
+		const label = document.createElement('span');
+		label.className = 'option-label';
+		label.textContent = formatOptionLabel(optionIndex, option);
+		const reason = document.createElement('span');
+		reason.className = 'option-reason';
+		reason.hidden = true;
+		button.append(label, reason);
 		button.onclick = () => submitQuizAnswer(optionIndex);
 		ui.quizOptions.append(button);
 	});
@@ -898,6 +952,7 @@ function getGlossaryTooltip(optionText) {
 function submitQuizAnswer(selectedIndex) {
 	if (quizLocked || !activeQuestion) return;
 	quizLocked = true;
+	lastQuizSelectedIndex = selectedIndex;
 
 	const isCorrect = selectedIndex === activeQuestion.correctIndex;
 	const topicStats = state.quiz.byTopic[activeQuestion.topic] || { total: 0, correct: 0 };
@@ -920,12 +975,11 @@ function submitQuizAnswer(selectedIndex) {
 		button.disabled = true;
 		if (index === activeQuestion.correctIndex) {
 			button.classList.add('is-correct');
-			button.textContent = '\u2713 ' + button.textContent;
 		}
 		if (!isCorrect && index === selectedIndex) {
 			button.classList.add('is-wrong');
-			button.textContent = '\u2717 ' + button.textContent;
 		}
+		renderQuizOptionOutcome(button, index, selectedIndex);
 		const tooltip = getGlossaryTooltip(originalText);
 		if (tooltip) {
 			button.classList.add('has-tooltip');
@@ -996,7 +1050,7 @@ function renderExamQuestion() {
 		button.type = 'button';
 		button.className = 'option';
 		if (exam.answers[exam.index] === optionIndex) button.classList.add('is-selected');
-		button.textContent = option;
+		button.textContent = formatOptionLabel(optionIndex, option);
 		button.onclick = () => {
 			exam.answers[exam.index] = optionIndex;
 			renderExamQuestion();
