@@ -2,12 +2,12 @@
 import Layout from '../layouts/Layout.astro';
 import { roadmapThemes } from '../data/content';
 import StudyWorkspace from '../components/study/StudyWorkspace';
-import '../styles/app.css';
+import '../styles/study-workspace.css';
 ---
 
 <Layout title="AI-900 Study Companion">
 	<StudyWorkspace roadmapThemes={roadmapThemes} />
 	<script>
-		import '../scripts/app.js';
+		import '../scripts/study-runtime.js';
 	</script>
 </Layout>
