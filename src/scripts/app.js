@@ -439,6 +439,7 @@ const ICON_MOON = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" s
 
 function applyTheme(theme) {
 	document.documentElement.dataset.theme = theme;
+	document.documentElement.classList.toggle('dark', theme === 'dark');
 	if (!ui.themeToggle) return;
 
 	const isDark = theme === 'dark';

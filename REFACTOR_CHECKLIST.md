@@ -1,0 +1,74 @@
+# Large Refactor Checklist (Astro + shadcn)
+
+Use this file to track progress.  
+Rule: switch `[ ]` to `[x]` only after the step is fully done (code, build, and commit).
+
+## Framework Decision
+
+- [x] Confirm target stack: `Astro + React islands + shadcn/ui + Tailwind`
+- [x] Add ADR note in repo (`docs/adr/`): why this stack, tradeoffs, and migration strategy
+
+## Phase 1 - Foundation
+
+- [x] Install and configure `@astrojs/react`
+- [x] Install and configure Tailwind CSS
+- [x] Initialize `shadcn/ui` and base config
+- [x] Add core design tokens (colors, radius, typography)
+- [x] Add base UI primitives (`Button`, `Card`, `Dialog`, `Tabs`, `Tooltip`, `Input`)
+- [x] Verify build and preview work
+- [x] Commit: `chore: add react + tailwind + shadcn foundation`
+
+## Phase 2 - Theme and Providers
+
+- [ ] Add class-based dark/light theme setup
+- [ ] Add theme provider and `ModeToggle` using shadcn pattern
+- [ ] Wire persistent theme preference
+- [ ] Validate dark/light on desktop and mobile
+- [ ] Commit: `feat(theme): add shadcn-based dark/light theming`
+
+## Phase 3 - State and Domain Extraction
+
+- [ ] Split domain logic from `src/scripts/app.js` into `src/lib/study/*`
+- [ ] Introduce central store (recommended: `zustand` with persist)
+- [ ] Keep compatibility with existing saved progress format
+- [ ] Add unit tests for extracted quiz and spaced-repetition logic
+- [ ] Commit: `refactor(state): move study logic to store and domain modules`
+
+## Phase 4 - UI Shell Migration
+
+- [ ] Rebuild main shell with shadcn components
+- [ ] Migrate overlays to shadcn dialogs
+- [ ] Migrate settings and welcome to React components
+- [ ] Keep current behavior parity (shortcuts, i18n, progress)
+- [ ] Commit: `refactor(ui): migrate shell and dialogs to shadcn components`
+
+## Phase 5 - Module-by-Module Migration
+
+- [ ] Quiz module migrated and verified
+- [ ] Exam module migrated and verified
+- [ ] Flashcards module migrated and verified
+- [ ] Glossary module migrated and verified
+- [ ] Error Journal migrated and verified
+- [ ] Commit per module (atomic commits)
+
+## Phase 6 - Quality and Cleanup
+
+- [ ] Add/extend e2e smoke tests for key learning flows
+- [ ] Add accessibility checks (keyboard and focus flow)
+- [ ] Remove obsolete legacy JS/CSS paths
+- [ ] Update README and architecture docs
+- [ ] Final build verification and release commit
+
+## Atomic Commit Plan
+
+- [x] `chore: add react + tailwind + shadcn foundation`
+- [ ] `feat(theme): add shadcn-based dark/light theming`
+- [ ] `refactor(state): move study logic to store and domain modules`
+- [ ] `refactor(ui): migrate shell and dialogs to shadcn components`
+- [ ] `refactor(quiz): migrate quiz module`
+- [ ] `refactor(exam): migrate exam module`
+- [ ] `refactor(flashcards): migrate flashcard module`
+- [ ] `refactor(glossary): migrate glossary module`
+- [ ] `refactor(journal): migrate error journal module`
+- [ ] `test: add unit and e2e coverage for study flows`
+- [ ] `chore: remove legacy app.js and old CSS paths`
