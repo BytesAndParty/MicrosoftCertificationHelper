@@ -6,26 +6,56 @@ import '../styles/app.css';
 
 <Layout title="AI-900 Study Companion">
 	<main class="page">
-		<a href="#workspace" class="skip-link" data-i18n="a11y.skipLink">Skip to study workspace</a>
+		<a href="#roadmap" class="skip-link" data-i18n="a11y.skipLink">Skip to study workspace</a>
 		<header class="hero reveal">
-			<p class="eyebrow">AI-900 Prep Workspace</p>
-			<h1>Microsoft Certification Helper</h1>
-			<p class="hero-copy" data-i18n="hero.copy">
-				Quiz mode, exam mode, flashcards, an error journal, and a glossary with local progress stored
-				in the browser database.
-			</p>
-			<div class="hero-actions">
-				<p class="hint"><span data-i18n="hero.planPrefix">Big-picture plan:</span> <code>ROADMAP.md</code></p>
-				<button id="theme-toggle" type="button" class="secondary theme-toggle">
-					Switch to dark mode
-				</button>
-				<button id="language-toggle" type="button" class="secondary language-toggle" aria-label="Switch language to German">
-					DE
-				</button>
+			<div class="hero-top">
+				<div>
+					<p class="eyebrow">AI-900 Prep Workspace</p>
+					<h1>Microsoft Certification Helper</h1>
+					<p class="hero-copy" data-i18n="hero.copy">
+						Quiz mode, exam mode, flashcards, an error journal, and a glossary with local progress stored
+						in the browser database.
+					</p>
+				</div>
+				<div class="hero-controls">
+					<button id="theme-toggle" type="button" class="secondary theme-toggle">
+						Switch to dark mode
+					</button>
+					<button id="language-toggle" type="button" class="secondary language-toggle" aria-label="Switch language to German">
+						DE
+					</button>
+				</div>
 			</div>
+			<nav class="hero-modes" aria-label="Study modes" data-i18n-aria-label="tabs.ariaLabel">
+				<button type="button" class="mode-btn" data-mode="quiz">
+					<span class="mode-icon" aria-hidden="true">&#9997;</span>
+					<span class="mode-label" data-i18n="tabs.quiz">Quiz</span>
+					<span class="mode-desc" data-i18n="hero.modeQuizDesc">Instant feedback</span>
+				</button>
+				<button type="button" class="mode-btn" data-mode="exam">
+					<span class="mode-icon" aria-hidden="true">&#128221;</span>
+					<span class="mode-label" data-i18n="tabs.exam">Exam</span>
+					<span class="mode-desc" data-i18n="hero.modeExamDesc">Timed simulation</span>
+				</button>
+				<button type="button" class="mode-btn" data-mode="flashcards">
+					<span class="mode-icon" aria-hidden="true">&#127183;</span>
+					<span class="mode-label" data-i18n="tabs.flashcards">Flashcards</span>
+					<span class="mode-desc" data-i18n="hero.modeFlashcardsDesc">Spaced repetition</span>
+				</button>
+				<button type="button" class="mode-btn" data-mode="glossary">
+					<span class="mode-icon" aria-hidden="true">&#128214;</span>
+					<span class="mode-label" data-i18n="tabs.glossary">Glossary</span>
+					<span class="mode-desc" data-i18n="hero.modeGlossaryDesc">Term flashcards</span>
+				</button>
+				<button type="button" class="mode-btn" data-mode="journal">
+					<span class="mode-icon" aria-hidden="true">&#128203;</span>
+					<span class="mode-label" data-i18n="tabs.journal">Error Journal</span>
+					<span class="mode-desc" data-i18n="hero.modeJournalDesc">Review mistakes</span>
+				</button>
+			</nav>
 		</header>
 
-		<section class="card reveal">
+		<section class="card reveal" id="roadmap">
 			<div class="section-head">
 				<h2 data-i18n="roadmap.title">Roadmap</h2>
 				<p id="roadmap-summary" class="meta">0 / 0 todos completed</p>
@@ -60,21 +90,16 @@ import '../styles/app.css';
 			<article class="metric"><p data-i18n="metrics.journal">Error Journal</p><strong id="metric-journal">0</strong></article>
 		</section>
 
-		<section class="workspace card reveal" id="workspace">
-			<div class="tabs" role="tablist" aria-label="Study modes" data-i18n-aria-label="tabs.ariaLabel">
-				<button type="button" role="tab" class="tab is-active" id="tab-quiz" data-tab="quiz" aria-selected="true" aria-controls="panel-quiz" data-i18n="tabs.quiz">Quiz</button>
-				<button type="button" role="tab" class="tab" id="tab-exam" data-tab="exam" aria-selected="false" aria-controls="panel-exam" tabindex="-1" data-i18n="tabs.exam">Exam</button>
-				<button type="button" role="tab" class="tab" id="tab-flashcards" data-tab="flashcards" aria-selected="false" aria-controls="panel-flashcards" tabindex="-1" data-i18n="tabs.flashcards">Flashcards</button>
-				<button type="button" role="tab" class="tab" id="tab-journal" data-tab="journal" aria-selected="false" aria-controls="panel-journal" tabindex="-1" data-i18n="tabs.journal">Error Journal</button>
-				<button type="button" role="tab" class="tab" id="tab-glossary" data-tab="glossary" aria-selected="false" aria-controls="panel-glossary" tabindex="-1" data-i18n="tabs.glossary">Glossary</button>
-			</div>
-
-			<div class="panels">
-				<section class="panel" data-panel="quiz" role="tabpanel" id="panel-quiz" aria-labelledby="tab-quiz">
-					<div class="panel-head">
-						<h3 data-i18n="quiz.title">Quiz with instant feedback</h3>
-						<p id="quiz-progress" class="meta"></p>
-					</div>
+		<!-- Quiz Overlay -->
+		<div id="overlay-quiz" class="overlay" role="dialog" aria-modal="true" aria-labelledby="overlay-quiz-title" hidden>
+			<div class="overlay-backdrop"></div>
+			<div class="overlay-container">
+				<div class="overlay-header">
+					<h2 id="overlay-quiz-title" data-i18n="quiz.title">Quiz with instant feedback</h2>
+					<button type="button" class="overlay-close" aria-label="Close" data-i18n-aria-label="overlay.close">&times;</button>
+				</div>
+				<div class="overlay-body">
+					<p id="quiz-progress" class="meta"></p>
 					<p id="quiz-topic" class="chip"></p>
 					<h4 id="quiz-question"></h4>
 					<div id="quiz-options" class="option-list"></div>
@@ -85,15 +110,20 @@ import '../styles/app.css';
 					<p id="quiz-hint-text" class="hint-box" hidden></p>
 					<p id="quiz-feedback" class="feedback" aria-live="polite"></p>
 					<button id="quiz-next" type="button" class="primary" data-i18n="quiz.nextQuestion">Next question</button>
-				</section>
+				</div>
+			</div>
+		</div>
 
-				<section class="panel" data-panel="exam" role="tabpanel" id="panel-exam" aria-labelledby="tab-exam" hidden>
-					<div class="panel-head">
-						<h3 data-i18n="exam.title">Exam mode</h3>
-						<p class="meta" data-i18n="exam.meta">
-							10 questions, 20 minutes, mixed question types, and a detailed review.
-						</p>
-					</div>
+		<!-- Exam Overlay -->
+		<div id="overlay-exam" class="overlay" role="dialog" aria-modal="true" aria-labelledby="overlay-exam-title" hidden>
+			<div class="overlay-backdrop"></div>
+			<div class="overlay-container">
+				<div class="overlay-header">
+					<h2 id="overlay-exam-title" data-i18n="exam.title">Exam mode</h2>
+					<p class="meta" data-i18n="exam.meta">10 questions, 20 minutes, mixed question types, and a detailed review.</p>
+					<button type="button" class="overlay-close" aria-label="Close" data-i18n-aria-label="overlay.close">&times;</button>
+				</div>
+				<div class="overlay-body">
 					<div class="exam-top">
 						<button id="exam-start" type="button" class="primary" data-i18n="exam.start">Start exam</button>
 						<p id="exam-timer" class="timer" role="timer" aria-label="Time remaining: 20:00">20:00</p>
@@ -106,13 +136,20 @@ import '../styles/app.css';
 					</div>
 					<div id="exam-result" class="exam-result" aria-live="polite"></div>
 					<div id="exam-review" class="exam-review"></div>
-				</section>
+				</div>
+			</div>
+		</div>
 
-				<section class="panel" data-panel="flashcards" role="tabpanel" id="panel-flashcards" aria-labelledby="tab-flashcards" hidden>
-					<div class="panel-head">
-						<h3 data-i18n="flashcards.title">Spaced Repetition</h3>
-						<p class="meta" data-i18n="flashcards.meta">Rate each card: Again, Good, Easy.</p>
-					</div>
+		<!-- Flashcards Overlay -->
+		<div id="overlay-flashcards" class="overlay" role="dialog" aria-modal="true" aria-labelledby="overlay-flashcards-title" hidden>
+			<div class="overlay-backdrop"></div>
+			<div class="overlay-container">
+				<div class="overlay-header">
+					<h2 id="overlay-flashcards-title" data-i18n="flashcards.title">Spaced Repetition</h2>
+					<p class="meta" data-i18n="flashcards.meta">Rate each card: Again, Good, Easy.</p>
+					<button type="button" class="overlay-close" aria-label="Close" data-i18n-aria-label="overlay.close">&times;</button>
+				</div>
+				<div class="overlay-body">
 					<div id="flashcard-box" class="flashcard" aria-live="polite">
 						<p id="flashcard-topic" class="chip"></p>
 						<h4 id="flashcard-front"></h4>
@@ -127,39 +164,63 @@ import '../styles/app.css';
 						</div>
 					</div>
 					<p id="flashcard-meta" class="meta"></p>
-				</section>
-
-				<section class="panel" data-panel="journal" role="tabpanel" id="panel-journal" aria-labelledby="tab-journal" hidden>
-					<div class="panel-head">
-						<h3 data-i18n="journal.title">Error Journal</h3>
-						<p class="meta" data-i18n="journal.meta">Prioritized list of your missed questions.</p>
-					</div>
-					<div id="journal-list" class="journal-list" aria-live="polite"></div>
-				</section>
-
-				<section class="panel" data-panel="glossary" role="tabpanel" id="panel-glossary" aria-labelledby="tab-glossary" hidden>
-					<div class="panel-head">
-						<h3 data-i18n="glossary.title">Glossary</h3>
-						<p class="meta" data-i18n="glossary.meta">Quick access to core AI-900 terms.</p>
-					</div>
-					<label class="search-label" for="glossary-search" data-i18n="glossary.search">Search</label>
-					<input
-						id="glossary-search"
-						type="search"
-						placeholder="Term or keyword..."
-						data-i18n-placeholder="glossary.placeholder"
-					/>
-					<div id="glossary-list" class="glossary-list" aria-live="polite"></div>
-				</section>
+				</div>
 			</div>
-		</section>
+		</div>
+
+		<!-- Glossary Overlay -->
+		<div id="overlay-glossary" class="overlay" role="dialog" aria-modal="true" aria-labelledby="overlay-glossary-title" hidden>
+			<div class="overlay-backdrop"></div>
+			<div class="overlay-container">
+				<div class="overlay-header">
+					<h2 id="overlay-glossary-title" data-i18n="glossary.title">Glossary</h2>
+					<p class="meta" data-i18n="glossary.metaFlashcard">Flip through AI-900 terms as flashcards.</p>
+					<button type="button" class="overlay-close" aria-label="Close" data-i18n-aria-label="overlay.close">&times;</button>
+				</div>
+				<div class="overlay-body">
+					<div class="glossary-search-row">
+						<label class="search-label" for="glossary-search" data-i18n="glossary.search">Search</label>
+						<input id="glossary-search" type="search" placeholder="Term or keyword..." data-i18n-placeholder="glossary.placeholder" />
+					</div>
+					<div id="glossary-card-box" class="flashcard" aria-live="polite">
+						<p id="glossary-card-count" class="chip"></p>
+						<h4 id="glossary-card-front"></h4>
+						<p id="glossary-card-back" hidden></p>
+					</div>
+					<div class="flash-actions">
+						<button id="glossary-card-show" type="button" class="secondary" data-i18n="glossary.showDef">Show definition</button>
+						<div id="glossary-grade-actions" class="grade-actions" hidden>
+							<button id="glossary-card-again" type="button" class="danger" data-i18n="flashcards.again">Again</button>
+							<button id="glossary-card-good" type="button" class="primary" data-i18n="flashcards.good">Good</button>
+							<button id="glossary-card-easy" type="button" class="secondary" data-i18n="flashcards.easy">Easy</button>
+						</div>
+					</div>
+					<p id="glossary-card-meta" class="meta"></p>
+				</div>
+			</div>
+		</div>
+
+		<!-- Journal Overlay -->
+		<div id="overlay-journal" class="overlay" role="dialog" aria-modal="true" aria-labelledby="overlay-journal-title" hidden>
+			<div class="overlay-backdrop"></div>
+			<div class="overlay-container">
+				<div class="overlay-header">
+					<h2 id="overlay-journal-title" data-i18n="journal.title">Error Journal</h2>
+					<p class="meta" data-i18n="journal.meta">Prioritized list of your missed questions.</p>
+					<button type="button" class="overlay-close" aria-label="Close" data-i18n-aria-label="overlay.close">&times;</button>
+				</div>
+				<div class="overlay-body">
+					<div id="journal-list" class="journal-list" aria-live="polite"></div>
+				</div>
+			</div>
+		</div>
 
 		<details class="shortcuts-section reveal">
 			<summary data-i18n="shortcuts.title">Keyboard shortcuts</summary>
 			<div class="shortcuts-grid">
 				<p><strong>Quiz / Exam:</strong> <span data-i18n="shortcuts.quiz">1-4 Answer | H Hint | S Skip | N Next</span></p>
-				<p><strong>Flashcards:</strong> <span data-i18n="shortcuts.flash">Space Reveal | 1 Again | 2 Good | 3 Easy</span></p>
-				<p><strong>Global:</strong> <span data-i18n="shortcuts.global">D Dark mode | L Language | ←→ Tabs</span></p>
+				<p><strong>Flashcards / Glossary:</strong> <span data-i18n="shortcuts.flash">Space Reveal | 1 Again | 2 Good | 3 Easy</span></p>
+				<p><strong>Global:</strong> <span data-i18n="shortcuts.global">D Dark mode | L Language | ESC Close overlay</span></p>
 			</div>
 		</details>
 

@@ -14,14 +14,21 @@ const THEME_MEDIA = window.matchMedia('(prefers-color-scheme: dark)');
 const byId = (id) => document.getElementById(id);
 const questionById = new Map(quizQuestions.map((question) => [question.id, question]));
 const themeById = new Map(roadmapThemes.map((theme) => [theme.id, theme]));
-const tabs = [...document.querySelectorAll('[data-tab]')];
-const panels = [...document.querySelectorAll('[data-panel]')];
 const roadmapBoxes = [...document.querySelectorAll('[data-roadmap-key]')];
 
 const optionPoolsByLanguage = {
 	en: buildOptionPools(quizQuestions, 'en'),
 	de: buildOptionPools(quizQuestions, 'de')
 };
+
+const glossaryCards = glossaryTerms.map((item, index) => ({
+	id: `g${index + 1}`,
+	topic: 'Glossary',
+	front: item.term,
+	back: item.definition,
+	frontDe: item.term,
+	backDe: item.definitionDe || item.definition
+}));
 
 const ui = {
 	roadmapSummary: byId('roadmap-summary'),
@@ -59,16 +66,28 @@ const ui = {
 	quizSkip: byId('quiz-skip'),
 	quizHintText: byId('quiz-hint-text'),
 	glossarySearch: byId('glossary-search'),
-	glossaryList: byId('glossary-list'),
+	glossaryCardCount: byId('glossary-card-count'),
+	glossaryCardFront: byId('glossary-card-front'),
+	glossaryCardBack: byId('glossary-card-back'),
+	glossaryCardShow: byId('glossary-card-show'),
+	glossaryGrades: byId('glossary-grade-actions'),
+	glossaryCardAgain: byId('glossary-card-again'),
+	glossaryCardGood: byId('glossary-card-good'),
+	glossaryCardEasy: byId('glossary-card-easy'),
+	glossaryCardMeta: byId('glossary-card-meta'),
 	resetProgress: byId('reset-progress'),
 	themeToggle: byId('theme-toggle'),
-	languageToggle: byId('language-toggle')
+	languageToggle: byId('language-toggle'),
+	overlayQuiz: byId('overlay-quiz'),
+	overlayExam: byId('overlay-exam'),
+	overlayFlashcards: byId('overlay-flashcards'),
+	overlayGlossary: byId('overlay-glossary'),
+	overlayJournal: byId('overlay-journal')
 };
 
 const i18n = {
 	en: {
 		'hero.copy': 'Quiz mode, exam mode, flashcards, an error journal, and a glossary with local progress stored in the browser database.',
-		'hero.planPrefix': 'Big-picture plan:',
 		'theme.toDark': 'Switch to dark mode',
 		'theme.toLight': 'Switch to light mode',
 		'language.toggleLabel': 'Switch language to German',
@@ -84,6 +103,12 @@ const i18n = {
 		'tabs.flashcards': 'Flashcards',
 		'tabs.journal': 'Error Journal',
 		'tabs.glossary': 'Glossary',
+		'hero.modeQuizDesc': 'Instant feedback',
+		'hero.modeExamDesc': 'Timed simulation',
+		'hero.modeFlashcardsDesc': 'Spaced repetition',
+		'hero.modeGlossaryDesc': 'Term flashcards',
+		'hero.modeJournalDesc': 'Review mistakes',
+		'overlay.close': 'Close',
 		'quiz.title': 'Quiz with instant feedback',
 		'quiz.showHint': 'Show hint',
 		'quiz.skip': 'Skip',
@@ -101,9 +126,13 @@ const i18n = {
 		'journal.title': 'Error Journal',
 		'journal.meta': 'Prioritized list of your missed questions.',
 		'glossary.title': 'Glossary',
-		'glossary.meta': 'Quick access to core AI-900 terms.',
+		'glossary.metaFlashcard': 'Flip through AI-900 terms as flashcards.',
 		'glossary.search': 'Search',
 		'glossary.placeholder': 'Term or keyword...',
+		'glossary.showDef': 'Show definition',
+		'glossary.empty': 'No matches found.',
+		'glossary.dueCards': 'Due terms: {count}',
+		'glossary.nextCard': 'Next term: {date}',
 		'reset.button': 'Reset progress',
 		'type.trueFalse': 'True/False',
 		'type.multipleChoice': 'Multiple Choice',
@@ -130,18 +159,16 @@ const i18n = {
 		'journal.empty': 'No wrong answers yet.',
 		'journal.rowMeta': 'Mistakes: {count} | Last: {last}',
 		'journal.practiceNow': 'Practice now',
-		'glossary.empty': 'No matches found.',
 		'reset.confirm': 'Reset all learning progress?',
 		'a11y.skipLink': 'Skip to study workspace',
 		'a11y.timeRemaining': 'Time remaining: {time}',
 		'shortcuts.title': 'Keyboard shortcuts',
 		'shortcuts.quiz': '1-4 Answer | H Hint | S Skip | N Next',
 		'shortcuts.flash': 'Space Reveal | 1 Again | 2 Good | 3 Easy',
-		'shortcuts.global': 'D Dark mode | L Language | \u2190\u2192 Tabs'
+		'shortcuts.global': 'D Dark mode | L Language | ESC Close overlay'
 	},
 	de: {
 		'hero.copy': 'Quiz-Modus, Prüfungsmodus, Karteikarten, Fehlerjournal und Glossar mit lokalem Fortschritt in der Browser-Datenbank.',
-		'hero.planPrefix': 'Gesamtplan:',
 		'theme.toDark': 'Auf Dark Mode wechseln',
 		'theme.toLight': 'Auf Light Mode wechseln',
 		'language.toggleLabel': 'Sprache auf Englisch wechseln',
@@ -157,6 +184,12 @@ const i18n = {
 		'tabs.flashcards': 'Karteikarten',
 		'tabs.journal': 'Fehlerjournal',
 		'tabs.glossary': 'Glossar',
+		'hero.modeQuizDesc': 'Sofort-Feedback',
+		'hero.modeExamDesc': 'Zeitsimulation',
+		'hero.modeFlashcardsDesc': 'Spaced Repetition',
+		'hero.modeGlossaryDesc': 'Begriff-Karten',
+		'hero.modeJournalDesc': 'Fehler wiederholen',
+		'overlay.close': 'Schließen',
 		'quiz.title': 'Quiz mit Sofort-Feedback',
 		'quiz.showHint': 'Hinweis anzeigen',
 		'quiz.skip': 'Überspringen',
@@ -174,9 +207,13 @@ const i18n = {
 		'journal.title': 'Fehlerjournal',
 		'journal.meta': 'Priorisierte Liste deiner falsch beantworteten Fragen.',
 		'glossary.title': 'Glossar',
-		'glossary.meta': 'Schneller Zugriff auf zentrale AI-900 Begriffe.',
+		'glossary.metaFlashcard': 'AI-900 Begriffe als Karteikarten durchblättern.',
 		'glossary.search': 'Suche',
 		'glossary.placeholder': 'Begriff oder Stichwort...',
+		'glossary.showDef': 'Definition zeigen',
+		'glossary.empty': 'Keine Treffer.',
+		'glossary.dueCards': 'Fällige Begriffe: {count}',
+		'glossary.nextCard': 'Nächster Begriff: {date}',
 		'reset.button': 'Fortschritt zurücksetzen',
 		'type.trueFalse': 'Wahr/Falsch',
 		'type.multipleChoice': 'Multiple Choice',
@@ -203,14 +240,13 @@ const i18n = {
 		'journal.empty': 'Noch keine falschen Antworten.',
 		'journal.rowMeta': 'Fehler: {count} | Zuletzt: {last}',
 		'journal.practiceNow': 'Jetzt üben',
-		'glossary.empty': 'Keine Treffer.',
 		'reset.confirm': 'Kompletten Lernfortschritt zurücksetzen?',
 		'a11y.skipLink': 'Zum Lernbereich springen',
 		'a11y.timeRemaining': 'Verbleibende Zeit: {time}',
 		'shortcuts.title': 'Tastenkürzel',
 		'shortcuts.quiz': '1-4 Antwort | H Hinweis | S Überspringen | N Nächste',
 		'shortcuts.flash': 'Leertaste Aufdecken | 1 Nochmal | 2 Gut | 3 Sicher',
-		'shortcuts.global': 'D Dark Mode | L Sprache | \u2190\u2192 Tabs'
+		'shortcuts.global': 'D Dark Mode | L Sprache | ESC Overlay schließen'
 	}
 };
 
@@ -220,7 +256,8 @@ const defaults = {
 	wrongJournal: {},
 	examBest: 0,
 	examHistory: [],
-	flashcards: {}
+	flashcards: {},
+	glossaryFlashcards: {}
 };
 
 let state = clone(defaults);
@@ -233,7 +270,11 @@ let exam = null;
 let examInterval;
 let activeCard = null;
 let cardShown = false;
+let activeGlossaryCard = null;
+let glossaryCardShown = false;
 let currentLanguage = 'en';
+let activeOverlay = null;
+let previousFocusElement = null;
 
 function clone(value) {
 	return JSON.parse(JSON.stringify(value));
@@ -351,6 +392,85 @@ function bindSystemTheme() {
 	}
 }
 
+/* ---- Overlay management ---- */
+
+function openOverlay(overlayElement) {
+	if (activeOverlay) closeOverlay(activeOverlay);
+
+	previousFocusElement = document.activeElement;
+	activeOverlay = overlayElement;
+	overlayElement.hidden = false;
+	document.body.style.overflow = 'hidden';
+
+	overlayElement.addEventListener('keydown', handleOverlayKeydown);
+	const backdrop = overlayElement.querySelector('.overlay-backdrop');
+	if (backdrop) backdrop.addEventListener('click', handleBackdropClick);
+	const closeBtn = overlayElement.querySelector('.overlay-close');
+	if (closeBtn) closeBtn.addEventListener('click', handleCloseClick);
+
+	const firstFocusable = overlayElement.querySelector(
+		'button:not([hidden]):not([disabled]), [href], input:not([hidden]), select, textarea, [tabindex]:not([tabindex="-1"])'
+	);
+	if (firstFocusable) firstFocusable.focus();
+}
+
+function closeOverlay(overlayElement) {
+	if (!overlayElement || overlayElement.hidden) return;
+
+	overlayElement.hidden = true;
+	document.body.style.overflow = '';
+	overlayElement.removeEventListener('keydown', handleOverlayKeydown);
+	const backdrop = overlayElement.querySelector('.overlay-backdrop');
+	if (backdrop) backdrop.removeEventListener('click', handleBackdropClick);
+	const closeBtn = overlayElement.querySelector('.overlay-close');
+	if (closeBtn) closeBtn.removeEventListener('click', handleCloseClick);
+	activeOverlay = null;
+
+	if (previousFocusElement && typeof previousFocusElement.focus === 'function') {
+		previousFocusElement.focus();
+	}
+	previousFocusElement = null;
+}
+
+function handleBackdropClick() {
+	if (activeOverlay) closeOverlay(activeOverlay);
+}
+
+function handleCloseClick() {
+	if (activeOverlay) closeOverlay(activeOverlay);
+}
+
+function handleOverlayKeydown(e) {
+	if (e.key === 'Escape') {
+		e.preventDefault();
+		closeOverlay(activeOverlay);
+		return;
+	}
+
+	if (e.key === 'Tab') {
+		const overlay = activeOverlay;
+		if (!overlay) return;
+		const focusables = [...overlay.querySelectorAll(
+			'button:not([hidden]):not([disabled]), [href], input:not([hidden]), select, textarea, [tabindex]:not([tabindex="-1"])'
+		)].filter((el) => !el.closest('[hidden]'));
+
+		if (!focusables.length) return;
+
+		const first = focusables[0];
+		const last = focusables[focusables.length - 1];
+
+		if (e.shiftKey && document.activeElement === first) {
+			e.preventDefault();
+			last.focus();
+		} else if (!e.shiftKey && document.activeElement === last) {
+			e.preventDefault();
+			first.focus();
+		}
+	}
+}
+
+/* ---- i18n ---- */
+
 function applyLanguageToRoadmap() {
 	document.querySelectorAll('[data-roadmap-id]').forEach((card) => {
 		const theme = themeById.get(card.dataset.roadmapId);
@@ -443,14 +563,16 @@ function applyLanguage(language, { persist = true } = {}) {
 
 	renderStats();
 	renderJournal();
-	renderGlossary(ui.glossarySearch?.value || '');
 	if (exam) renderExamQuestion();
 	if (activeCard) renderCard();
+	if (activeGlossaryCard) renderGlossaryCard();
 }
 
 function toggleLanguage() {
 	applyLanguage(currentLanguage === 'en' ? 'de' : 'en');
 }
+
+/* ---- Question helpers ---- */
 
 function localizeQuestionData(question, language = currentLanguage) {
 	const useGerman = language === 'de';
@@ -566,6 +688,8 @@ function createRuntimeQuestion(baseQuestion) {
 	return getSingleChoiceRuntimeQuestion(baseQuestion);
 }
 
+/* ---- Persistence ---- */
+
 function openDb() {
 	if (!('indexedDB' in window)) return Promise.resolve(null);
 	if (dbPromise) return dbPromise;
@@ -643,6 +767,7 @@ function hydrate(saved) {
 		state.examBest = Number(saved.examBest) || 0;
 		state.examHistory = Array.isArray(saved.examHistory) ? saved.examHistory.slice(0, 15) : [];
 		state.flashcards = saved.flashcards && typeof saved.flashcards === 'object' ? saved.flashcards : {};
+		state.glossaryFlashcards = saved.glossaryFlashcards && typeof saved.glossaryFlashcards === 'object' ? saved.glossaryFlashcards : {};
 	}
 
 	const now = Date.now();
@@ -651,7 +776,14 @@ function hydrate(saved) {
 			state.flashcards[card.id] = { interval: 1, streak: 0, dueAt: now, last: 'new' };
 		}
 	}
+	for (const card of glossaryCards) {
+		if (!state.glossaryFlashcards[card.id]) {
+			state.glossaryFlashcards[card.id] = { interval: 1, streak: 0, dueAt: now, last: 'new' };
+		}
+	}
 }
+
+/* ---- Stats & metrics ---- */
 
 function getRoadmapProgress() {
 	const total = roadmapThemes.reduce((sum, theme) => sum + theme.todos.length, 0);
@@ -665,7 +797,9 @@ function getAccuracy() {
 
 function getDueCardCount() {
 	const now = Date.now();
-	return flashcards.filter((card) => state.flashcards[card.id]?.dueAt <= now).length;
+	const flashDue = flashcards.filter((card) => state.flashcards[card.id]?.dueAt <= now).length;
+	const glossaryDue = glossaryCards.filter((card) => state.glossaryFlashcards[card.id]?.dueAt <= now).length;
+	return flashDue + glossaryDue;
 }
 
 function renderRoadmapChecks() {
@@ -684,17 +818,7 @@ function renderStats() {
 	ui.metricJournal.textContent = String(Object.keys(state.wrongJournal).length);
 }
 
-function switchTab(tabId) {
-	tabs.forEach((tab) => {
-		const active = tab.dataset.tab === tabId;
-		tab.classList.toggle('is-active', active);
-		tab.setAttribute('aria-selected', active ? 'true' : 'false');
-		tab.setAttribute('tabindex', active ? '0' : '-1');
-	});
-	panels.forEach((panel) => {
-		panel.hidden = panel.dataset.panel !== tabId;
-	});
-}
+/* ---- Quiz ---- */
 
 function refillQuizDeck() {
 	quizDeck = shuffle(quizQuestions);
@@ -783,6 +907,8 @@ function submitQuizAnswer(selectedIndex) {
 	renderStats();
 	renderJournal();
 }
+
+/* ---- Exam ---- */
 
 function pickExamQuestions(count) {
 	const grouped = quizQuestions.reduce((acc, question) => {
@@ -1030,6 +1156,8 @@ function finishExam() {
 	ui.examResult.focus();
 }
 
+/* ---- Flashcards (SM-2) ---- */
+
 function chooseNextCard() {
 	const now = Date.now();
 	const due = flashcards.filter((card) => state.flashcards[card.id]?.dueAt <= now);
@@ -1053,8 +1181,9 @@ function renderCard() {
 	ui.flashBack.hidden = !cardShown;
 	ui.flashShow.hidden = cardShown;
 	ui.flashGrades.hidden = !cardShown;
-	ui.flashMeta.textContent = getDueCardCount()
-		? t('flashcards.dueCards', { count: getDueCardCount() })
+	const flashDueCount = flashcards.filter((c) => state.flashcards[c.id]?.dueAt <= Date.now()).length;
+	ui.flashMeta.textContent = flashDueCount
+		? t('flashcards.dueCards', { count: flashDueCount })
 		: t('flashcards.nextCard', { date: formatDate(progress.dueAt) });
 }
 
@@ -1084,6 +1213,83 @@ function rateCard(grade) {
 	renderStats();
 	chooseNextCard();
 }
+
+/* ---- Glossary Flashcards (SM-2) ---- */
+
+function chooseNextGlossaryCard(filter = '') {
+	const now = Date.now();
+	const query = filter.trim().toLowerCase();
+	const filtered = glossaryCards.filter((card) => {
+		if (!query) return true;
+		const def = currentLanguage === 'de' && card.backDe ? card.backDe : card.back;
+		return card.front.toLowerCase().includes(query) || def.toLowerCase().includes(query);
+	});
+
+	const due = filtered.filter((card) => state.glossaryFlashcards[card.id]?.dueAt <= now);
+	const pool = due.length
+		? due
+		: filtered.slice().sort((left, right) => (state.glossaryFlashcards[left.id]?.dueAt ?? 0) - (state.glossaryFlashcards[right.id]?.dueAt ?? 0));
+
+	activeGlossaryCard = pool[0] || null;
+	glossaryCardShown = false;
+	renderGlossaryCard();
+}
+
+function renderGlossaryCard() {
+	if (!activeGlossaryCard) {
+		ui.glossaryCardFront.textContent = t('glossary.empty');
+		ui.glossaryCardBack.textContent = '';
+		ui.glossaryCardBack.hidden = true;
+		ui.glossaryCardShow.hidden = true;
+		ui.glossaryGrades.hidden = true;
+		ui.glossaryCardCount.textContent = '';
+		ui.glossaryCardMeta.textContent = '';
+		return;
+	}
+
+	const progress = state.glossaryFlashcards[activeGlossaryCard.id];
+	const front = currentLanguage === 'de' && activeGlossaryCard.frontDe ? activeGlossaryCard.frontDe : activeGlossaryCard.front;
+	const back = currentLanguage === 'de' && activeGlossaryCard.backDe ? activeGlossaryCard.backDe : activeGlossaryCard.back;
+	ui.glossaryCardCount.textContent = activeGlossaryCard.topic;
+	ui.glossaryCardFront.textContent = front;
+	ui.glossaryCardBack.textContent = back;
+	ui.glossaryCardBack.hidden = !glossaryCardShown;
+	ui.glossaryCardShow.hidden = glossaryCardShown;
+	ui.glossaryGrades.hidden = !glossaryCardShown;
+	const glossaryDueCount = glossaryCards.filter((c) => state.glossaryFlashcards[c.id]?.dueAt <= Date.now()).length;
+	ui.glossaryCardMeta.textContent = glossaryDueCount
+		? t('glossary.dueCards', { count: glossaryDueCount })
+		: t('glossary.nextCard', { date: formatDate(progress.dueAt) });
+}
+
+function rateGlossaryCard(grade) {
+	if (!activeGlossaryCard) return;
+	const progress = state.glossaryFlashcards[activeGlossaryCard.id];
+	const now = Date.now();
+
+	if (grade === 'again') {
+		progress.interval = 1;
+		progress.streak = 0;
+		progress.dueAt = now + 10 * 60 * 1000;
+	}
+	if (grade === 'good') {
+		progress.interval = Math.max(1, Math.round(progress.interval * 2));
+		progress.streak += 1;
+		progress.dueAt = now + progress.interval * DAY;
+	}
+	if (grade === 'easy') {
+		progress.interval = Math.max(2, Math.round(progress.interval * 3));
+		progress.streak += 1;
+		progress.dueAt = now + progress.interval * DAY;
+	}
+
+	progress.last = grade;
+	void saveState();
+	renderStats();
+	chooseNextGlossaryCard(ui.glossarySearch?.value || '');
+}
+
+/* ---- Journal ---- */
 
 function renderJournal() {
 	const items = Object.entries(state.wrongJournal)
@@ -1118,58 +1324,29 @@ function renderJournal() {
 		button.className = 'secondary';
 		button.textContent = t('journal.practiceNow');
 		button.onclick = () => {
-			switchTab('quiz');
+			closeOverlay(activeOverlay);
 			showQuizQuestion(item.id);
-			ui.quizQuestion.setAttribute('tabindex', '-1');
-			ui.quizQuestion.focus();
+			openOverlay(ui.overlayQuiz);
 		};
 		row.append(title, meta, button);
 		ui.journalList.append(row);
 	});
 }
 
-function getGlossaryDefinition(item) {
-	if (currentLanguage === 'de' && item.definitionDe) return item.definitionDe;
-	return item.definition;
-}
-
-function renderGlossary(filter = '') {
-	const query = filter.trim().toLowerCase();
-	const items = glossaryTerms.filter((item) => {
-		if (!query) return true;
-		const def = getGlossaryDefinition(item);
-		return item.term.toLowerCase().includes(query) || def.toLowerCase().includes(query);
-	});
-
-	ui.glossaryList.innerHTML = '';
-	if (!items.length) {
-		ui.glossaryList.innerHTML = `<p class="meta">${t('glossary.empty')}</p>`;
-		return;
-	}
-
-	items.forEach((item) => {
-		const row = document.createElement('article');
-		row.className = 'glossary-item';
-		const title = document.createElement('h4');
-		title.textContent = item.term;
-		const body = document.createElement('p');
-		body.textContent = getGlossaryDefinition(item);
-		row.append(title, body);
-		ui.glossaryList.append(row);
-	});
-}
+/* ---- Reset ---- */
 
 async function resetAll() {
 	if (!confirm(t('reset.confirm'))) return;
+	if (activeOverlay) closeOverlay(activeOverlay);
 	state = clone(defaults);
 	hydrate(state);
 	renderRoadmapChecks();
 	renderStats();
 	renderJournal();
-	renderGlossary(ui.glossarySearch.value || '');
 	refillQuizDeck();
 	showQuizQuestion();
 	chooseNextCard();
+	chooseNextGlossaryCard();
 	ui.examStart.hidden = false;
 	ui.examStage.hidden = true;
 	ui.examResult.innerHTML = '';
@@ -1177,6 +1354,8 @@ async function resetAll() {
 	ui.examTimer.textContent = '20:00';
 	await saveState(true);
 }
+
+/* ---- Event binding ---- */
 
 function bindEvents() {
 	if (ui.themeToggle) ui.themeToggle.onclick = () => toggleTheme();
@@ -1190,22 +1369,29 @@ function bindEvents() {
 		};
 	});
 
-	tabs.forEach((tab) => {
-		tab.onclick = () => switchTab(tab.dataset.tab);
+	// Hero mode buttons
+	document.querySelectorAll('[data-mode]').forEach((btn) => {
+		btn.addEventListener('click', () => {
+			const mode = btn.dataset.mode;
+			if (mode === 'quiz') {
+				if (!activeQuestion) showQuizQuestion();
+				openOverlay(ui.overlayQuiz);
+			} else if (mode === 'exam') {
+				openOverlay(ui.overlayExam);
+			} else if (mode === 'flashcards') {
+				chooseNextCard();
+				openOverlay(ui.overlayFlashcards);
+			} else if (mode === 'glossary') {
+				chooseNextGlossaryCard(ui.glossarySearch?.value || '');
+				openOverlay(ui.overlayGlossary);
+			} else if (mode === 'journal') {
+				renderJournal();
+				openOverlay(ui.overlayJournal);
+			}
+		});
 	});
 
-	const tablist = document.querySelector('[role="tablist"]');
-	if (tablist) {
-		tablist.addEventListener('keydown', (e) => {
-			if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
-			const current = tabs.findIndex((tab) => tab.getAttribute('aria-selected') === 'true');
-			const next = e.key === 'ArrowRight' ? (current + 1) % tabs.length : (current - 1 + tabs.length) % tabs.length;
-			e.preventDefault();
-			switchTab(tabs[next].dataset.tab);
-			tabs[next].focus();
-		});
-	}
-
+	// Quiz events
 	ui.quizNext.onclick = () => showQuizQuestion();
 	ui.quizHint.onclick = () => {
 		if (!activeQuestion) return;
@@ -1215,8 +1401,12 @@ function bindEvents() {
 		ui.quizHint.hidden = true;
 	};
 	ui.quizSkip.onclick = () => showQuizQuestion();
+
+	// Exam events
 	ui.examStart.onclick = () => startExam();
 	ui.examNext.onclick = () => nextExamQuestion();
+
+	// Flashcard events
 	ui.flashShow.onclick = () => {
 		cardShown = true;
 		renderCard();
@@ -1224,79 +1414,113 @@ function bindEvents() {
 	ui.flashAgain.onclick = () => rateCard('again');
 	ui.flashGood.onclick = () => rateCard('good');
 	ui.flashEasy.onclick = () => rateCard('easy');
-	ui.glossarySearch.oninput = (event) => renderGlossary(event.target.value);
+
+	// Glossary flashcard events
+	ui.glossaryCardShow.onclick = () => {
+		glossaryCardShown = true;
+		renderGlossaryCard();
+	};
+	ui.glossaryCardAgain.onclick = () => rateGlossaryCard('again');
+	ui.glossaryCardGood.onclick = () => rateGlossaryCard('good');
+	ui.glossaryCardEasy.onclick = () => rateGlossaryCard('easy');
+	ui.glossarySearch.oninput = (event) => chooseNextGlossaryCard(event.target.value);
+
 	if (ui.resetProgress) ui.resetProgress.onclick = () => void resetAll();
 
+	// Global keyboard shortcuts
 	document.addEventListener('keydown', (e) => {
 		if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
 
-		const activeTab = tabs.find((tab) => tab.getAttribute('aria-selected') === 'true');
-		const activePanel = activeTab ? activeTab.dataset.tab : '';
-
-		if (activePanel === 'quiz' && !exam) {
-			if (e.key >= '1' && e.key <= '9' && !quizLocked) {
-				const index = Number(e.key) - 1;
-				const buttons = [...ui.quizOptions.querySelectorAll('button')];
-				if (buttons[index] && !buttons[index].disabled) {
-					e.preventDefault();
-					buttons[index].click();
+		if (activeOverlay) {
+			// Quiz overlay shortcuts
+			if (activeOverlay === ui.overlayQuiz && !exam) {
+				if (e.key >= '1' && e.key <= '9' && !quizLocked) {
+					const index = Number(e.key) - 1;
+					const buttons = [...ui.quizOptions.querySelectorAll('button')];
+					if (buttons[index] && !buttons[index].disabled) {
+						e.preventDefault();
+						buttons[index].click();
+					}
+					return;
 				}
-				return;
+				if (e.key === 'h' || e.key === 'H') {
+					if (!ui.quizHint.hidden) { e.preventDefault(); ui.quizHint.click(); }
+					return;
+				}
+				if (e.key === 's' || e.key === 'S') {
+					if (!ui.quizSkip.hidden) { e.preventDefault(); ui.quizSkip.click(); }
+					return;
+				}
+				if ((e.key === 'n' || e.key === 'N' || e.key === 'Enter') && !ui.quizNext.disabled) {
+					e.preventDefault();
+					ui.quizNext.click();
+					return;
+				}
 			}
-			if (e.key === 'h' || e.key === 'H') {
-				if (!ui.quizHint.hidden) { e.preventDefault(); ui.quizHint.click(); }
-				return;
+
+			// Exam overlay shortcuts
+			if (activeOverlay === ui.overlayExam && exam) {
+				if (e.key >= '1' && e.key <= '9') {
+					const index = Number(e.key) - 1;
+					const buttons = [...ui.examOptions.querySelectorAll('button')];
+					if (buttons[index]) { e.preventDefault(); buttons[index].click(); }
+					return;
+				}
+				if ((e.key === 'n' || e.key === 'N' || e.key === 'Enter') && !ui.examNext.disabled) {
+					e.preventDefault();
+					ui.examNext.click();
+					return;
+				}
 			}
-			if (e.key === 's' || e.key === 'S') {
-				if (!ui.quizSkip.hidden) { e.preventDefault(); ui.quizSkip.click(); }
-				return;
+
+			// Flashcard overlay shortcuts
+			if (activeOverlay === ui.overlayFlashcards) {
+				if ((e.key === ' ' || e.key === 'Enter') && !ui.flashShow.hidden) {
+					e.preventDefault();
+					ui.flashShow.click();
+					return;
+				}
+				if (!ui.flashGrades.hidden) {
+					if (e.key === '1') { e.preventDefault(); ui.flashAgain.click(); return; }
+					if (e.key === '2') { e.preventDefault(); ui.flashGood.click(); return; }
+					if (e.key === '3') { e.preventDefault(); ui.flashEasy.click(); return; }
+				}
 			}
-			if ((e.key === 'n' || e.key === 'N' || e.key === 'Enter') && !ui.quizNext.disabled) {
-				e.preventDefault();
-				ui.quizNext.click();
-				return;
+
+			// Glossary overlay shortcuts
+			if (activeOverlay === ui.overlayGlossary) {
+				if ((e.key === ' ' || e.key === 'Enter') && !ui.glossaryCardShow.hidden) {
+					e.preventDefault();
+					ui.glossaryCardShow.click();
+					return;
+				}
+				if (!ui.glossaryGrades.hidden) {
+					if (e.key === '1') { e.preventDefault(); ui.glossaryCardAgain.click(); return; }
+					if (e.key === '2') { e.preventDefault(); ui.glossaryCardGood.click(); return; }
+					if (e.key === '3') { e.preventDefault(); ui.glossaryCardEasy.click(); return; }
+				}
 			}
+
+			// Global shortcuts in overlay
+			if (e.key === 'd' || e.key === 'D') { e.preventDefault(); toggleTheme(); return; }
+			if (e.key === 'l' || e.key === 'L') { e.preventDefault(); toggleLanguage(); return; }
+			return;
 		}
 
-		if (activePanel === 'flashcards') {
-			if ((e.key === ' ' || e.key === 'Enter') && !ui.flashShow.hidden) {
-				e.preventDefault();
-				ui.flashShow.click();
-				return;
-			}
-			if (!ui.flashGrades.hidden) {
-				if (e.key === '1') { e.preventDefault(); ui.flashAgain.click(); return; }
-				if (e.key === '2') { e.preventDefault(); ui.flashGood.click(); return; }
-				if (e.key === '3') { e.preventDefault(); ui.flashEasy.click(); return; }
-			}
-		}
-
-		if (activePanel === 'exam' && exam) {
-			if (e.key >= '1' && e.key <= '9') {
-				const index = Number(e.key) - 1;
-				const buttons = [...ui.examOptions.querySelectorAll('button')];
-				if (buttons[index]) { e.preventDefault(); buttons[index].click(); }
-				return;
-			}
-			if ((e.key === 'n' || e.key === 'N' || e.key === 'Enter') && !ui.examNext.disabled) {
-				e.preventDefault();
-				ui.examNext.click();
-				return;
-			}
-		}
-
+		// Global shortcuts when no overlay is open
 		if (e.key === 'd' || e.key === 'D') {
 			e.preventDefault();
 			toggleTheme();
 			return;
 		}
-
 		if (e.key === 'l' || e.key === 'L') {
 			e.preventDefault();
 			toggleLanguage();
 		}
 	});
 }
+
+/* ---- Init ---- */
 
 async function init() {
 	applyLanguage(readStoredLanguage(), { persist: false });
@@ -1308,11 +1532,10 @@ async function init() {
 	renderRoadmapChecks();
 	renderStats();
 	renderJournal();
-	renderGlossary('');
 	refillQuizDeck();
 	showQuizQuestion();
 	chooseNextCard();
-	switchTab('quiz');
+	chooseNextGlossaryCard();
 	await saveState(true);
 }
 
