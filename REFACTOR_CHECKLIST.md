@@ -53,8 +53,8 @@ Rule: switch `[ ]` to `[x]` only after the step is fully done (code, build, and 
 
 ## Phase 6 - Quality and Cleanup
 
-- [ ] Add/extend e2e smoke tests for key learning flows
-- [ ] Add accessibility checks (keyboard and focus flow)
+- [x] Add/extend e2e smoke tests for key learning flows
+- [x] Add accessibility checks (keyboard and focus flow)
 - [ ] Remove obsolete legacy JS/CSS paths
 - [ ] Update README and architecture docs
 - [ ] Final build verification and release commit
@@ -70,5 +70,5 @@ Rule: switch `[ ]` to `[x]` only after the step is fully done (code, build, and 
 - [x] `refactor(flashcards): migrate flashcard module`
 - [x] `refactor(glossary): migrate glossary module`
 - [x] `refactor(journal): migrate error journal module`
-- [ ] `test: add unit and e2e coverage for study flows`
+- [x] `test: add unit and e2e coverage for study flows`
 - [ ] `chore: remove legacy app.js and old CSS paths`
