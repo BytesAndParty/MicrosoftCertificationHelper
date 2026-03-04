@@ -15,6 +15,7 @@ const byId = (id) => document.getElementById(id);
 const questionById = new Map(quizQuestions.map((question) => [question.id, question]));
 const themeById = new Map(roadmapThemes.map((theme) => [theme.id, theme]));
 const roadmapBoxes = [...document.querySelectorAll('[data-roadmap-key]')];
+const roadmapCards = [...document.querySelectorAll('.theme-card[data-roadmap-id]')];
 
 const optionPoolsByLanguage = {
 	en: buildOptionPools(quizQuestions, 'en'),
@@ -61,6 +62,8 @@ const ui = {
 	flashFront: byId('flashcard-front'),
 	flashBack: byId('flashcard-back'),
 	flashShow: byId('flashcard-show'),
+	flashHint: byId('flashcard-hint'),
+	flashHintText: byId('flashcard-hint-text'),
 	flashGrades: byId('flashcard-grade-actions'),
 	flashAgain: byId('flashcard-again'),
 	flashGood: byId('flashcard-good'),
@@ -138,9 +141,12 @@ const i18n = {
 		'flashcards.meta': 'Rate each card: Again, Good, Easy.',
 		'flashcards.title': 'Spaced Repetition',
 		'flashcards.showAnswer': 'Show answer',
+		'flashcards.showHint': 'Show hint',
 		'flashcards.again': 'Again',
 		'flashcards.good': 'Good',
 		'flashcards.easy': 'Easy',
+		'flashcards.hintPrefix': 'Keyword hint: {keywords}',
+		'flashcards.hintFallback': 'Hint: Focus on the core distinction and Azure service purpose.',
 		'journal.title': 'Error Journal',
 		'journal.meta': 'Prioritized list of your missed questions.',
 		'glossary.title': 'Glossary',
@@ -183,8 +189,13 @@ const i18n = {
 		'shortcuts.title': 'Keyboard shortcuts',
 		'quiz.bookmarkLabel': 'Save question',
 		'shortcuts.quiz': '1-4 Answer | H Hint | S Skip | N Next',
-		'shortcuts.flash': 'Space Reveal | 1 Again | 2 Good | 3 Easy',
+		'shortcuts.flash': 'Space Reveal | H Hint (Flashcards) | 1 Again | 2 Good | 3 Easy',
 		'shortcuts.global': 'D Dark mode | L Language | ESC Close overlay',
+		'shortcuts.quizOverlay': 'Shortcuts: 1-4 answer | H hint | S skip | N/Enter next',
+		'shortcuts.examOverlay': 'Shortcuts: 1-4 answer | N/Enter next | ESC close',
+		'shortcuts.flashOverlay': 'Shortcuts: Space/Enter reveal | H hint | 1 again | 2 good | 3 easy',
+		'shortcuts.glossaryOverlay': 'Shortcuts: Space/Enter reveal | 1 again | 2 good | 3 easy | ESC close',
+		'shortcuts.journalOverlay': 'Shortcuts: ESC close | D dark mode | L language',
 		'settings.title': 'Settings',
 		'settings.newCardsDay': 'New flashcards / day',
 		'settings.newGlossaryDay': 'New glossary cards / day',
@@ -243,9 +254,12 @@ const i18n = {
 		'flashcards.meta': 'Bewerte jede Karte: Nochmal, Gut, Sicher.',
 		'flashcards.title': 'Spaced Repetition',
 		'flashcards.showAnswer': 'Antwort zeigen',
+		'flashcards.showHint': 'Hinweis anzeigen',
 		'flashcards.again': 'Nochmal',
 		'flashcards.good': 'Gut',
 		'flashcards.easy': 'Sicher',
+		'flashcards.hintPrefix': 'Stichwort-Hinweis: {keywords}',
+		'flashcards.hintFallback': 'Hinweis: Achte auf den Kernunterschied und den Azure-Dienstzweck.',
 		'journal.title': 'Fehlerjournal',
 		'journal.meta': 'Priorisierte Liste deiner falsch beantworteten Fragen.',
 		'glossary.title': 'Glossar',
@@ -288,8 +302,13 @@ const i18n = {
 		'shortcuts.title': 'Tastenkürzel',
 		'quiz.bookmarkLabel': 'Frage speichern',
 		'shortcuts.quiz': '1-4 Antwort | H Hinweis | S Überspringen | N Nächste',
-		'shortcuts.flash': 'Leertaste Aufdecken | 1 Nochmal | 2 Gut | 3 Sicher',
+		'shortcuts.flash': 'Leertaste Aufdecken | H Hinweis (Flashcards) | 1 Nochmal | 2 Gut | 3 Sicher',
 		'shortcuts.global': 'D Dark Mode | L Sprache | ESC Overlay schließen',
+		'shortcuts.quizOverlay': 'Tastenkürzel: 1-4 Antwort | H Hinweis | S Überspringen | N/Enter Nächste',
+		'shortcuts.examOverlay': 'Tastenkürzel: 1-4 Antwort | N/Enter Nächste | ESC Schließen',
+		'shortcuts.flashOverlay': 'Tastenkürzel: Leertaste/Enter Aufdecken | H Hinweis | 1 Nochmal | 2 Gut | 3 Sicher',
+		'shortcuts.glossaryOverlay': 'Tastenkürzel: Leertaste/Enter Aufdecken | 1 Nochmal | 2 Gut | 3 Sicher | ESC Schließen',
+		'shortcuts.journalOverlay': 'Tastenkürzel: ESC Schließen | D Dark Mode | L Sprache',
 		'settings.title': 'Einstellungen',
 		'settings.newCardsDay': 'Neue Karteikarten / Tag',
 		'settings.newGlossaryDay': 'Neue Glossar-Karten / Tag',
@@ -326,11 +345,24 @@ let exam = null;
 let examInterval;
 let activeCard = null;
 let cardShown = false;
+let flashHintShown = false;
 let activeGlossaryCard = null;
 let glossaryCardShown = false;
 let currentLanguage = 'en';
 let activeOverlay = null;
 let previousFocusElement = null;
+
+const HINT_STOPWORDS_EN = new Set([
+	'the', 'and', 'for', 'with', 'from', 'that', 'this', 'into', 'your', 'you', 'are', 'can', 'also', 'than',
+	'only', 'more', 'most', 'used', 'using', 'when', 'what', 'where', 'which', 'about', 'core', 'azure', 'service',
+	'model', 'models', 'card', 'cards', 'data', 'text', 'through', 'into', 'each', 'their', 'them', 'they', 'its'
+]);
+const HINT_STOPWORDS_DE = new Set([
+	'der', 'die', 'das', 'den', 'dem', 'des', 'und', 'oder', 'ein', 'eine', 'einer', 'einem', 'eines', 'mit',
+	'für', 'fuer', 'von', 'auf', 'aus', 'bei', 'als', 'auch', 'nur', 'mehr', 'wenn', 'was', 'wie', 'welche',
+	'welcher', 'welches', 'diese', 'dieser', 'dieses', 'dass', 'ist', 'sind', 'wird', 'werden', 'kann', 'können',
+	'koennen', 'durch', 'über', 'ueber', 'dein', 'deine', 'deiner', 'deinem', 'deines', 'karte', 'karten'
+]);
 
 function resolveLanguage(language) {
 	return language === 'de' ? 'de' : 'en';
@@ -400,8 +432,9 @@ function applyTheme(theme) {
 
 	const isDark = theme === 'dark';
 	const label = isDark ? t('theme.toLight') : t('theme.toDark');
-	ui.themeToggle.innerHTML = `${isDark ? ICON_SUN : ICON_MOON} <span>${label}</span>`;
+	ui.themeToggle.innerHTML = isDark ? ICON_SUN : ICON_MOON;
 	ui.themeToggle.setAttribute('aria-label', label);
+	ui.themeToggle.setAttribute('title', label);
 	ui.themeToggle.setAttribute('aria-pressed', isDark ? 'true' : 'false');
 }
 
@@ -627,6 +660,30 @@ function createRuntimeQuestion(baseQuestion) {
 		trueLabel: currentLanguage === 'de' ? 'Wahr' : 'True',
 		falseLabel: currentLanguage === 'de' ? 'Falsch' : 'False'
 	});
+}
+
+function extractHintKeywords(text, language = currentLanguage) {
+	if (!text) return [];
+	const stopwords = language === 'de' ? HINT_STOPWORDS_DE : HINT_STOPWORDS_EN;
+	const tokens = text
+		.toLowerCase()
+		.replace(/[^\p{L}\p{N}\s-]/gu, ' ')
+		.split(/\s+/)
+		.filter((token) => token.length >= 4 && !stopwords.has(token));
+	const uniqueTokens = [];
+	for (const token of tokens) {
+		if (uniqueTokens.includes(token)) continue;
+		uniqueTokens.push(token);
+		if (uniqueTokens.length >= 3) break;
+	}
+	return uniqueTokens;
+}
+
+function buildFlashcardHint(card) {
+	const back = currentLanguage === 'de' && card.backDe ? card.backDe : card.back;
+	const keywords = extractHintKeywords(back);
+	if (!keywords.length) return t('flashcards.hintFallback');
+	return t('flashcards.hintPrefix', { keywords: keywords.join(', ') });
 }
 
 /* ---- Persistence ---- */
@@ -1142,6 +1199,7 @@ function chooseNextCard() {
 		newCardsPerDay: state.settings.newCardsPerDay
 	});
 	cardShown = false;
+	flashHintShown = false;
 	renderCard();
 }
 
@@ -1156,6 +1214,10 @@ function renderCard() {
 	ui.flashBack.hidden = !cardShown;
 	ui.flashShow.hidden = cardShown;
 	ui.flashGrades.hidden = !cardShown;
+	const hintText = buildFlashcardHint(activeCard);
+	ui.flashHintText.textContent = hintText;
+	ui.flashHintText.hidden = !flashHintShown;
+	ui.flashHint.hidden = flashHintShown || !hintText;
 	const flashDueCount = flashcards.filter((c) => state.flashcards[c.id]?.dueAt <= Date.now()).length;
 	ui.flashMeta.textContent = flashDueCount
 		? t('flashcards.dueCards', { count: flashDueCount })
@@ -1291,11 +1353,29 @@ async function resetAll() {
 	await saveState(true);
 }
 
+function bindRoadmapGlow() {
+	roadmapCards.forEach((card) => {
+		card.addEventListener('mousemove', (event) => {
+			const rect = card.getBoundingClientRect();
+			const x = event.clientX - rect.left;
+			const y = event.clientY - rect.top;
+			card.style.setProperty('--glow-x', `${x}px`);
+			card.style.setProperty('--glow-y', `${y}px`);
+		});
+
+		card.addEventListener('mouseleave', () => {
+			card.style.removeProperty('--glow-x');
+			card.style.removeProperty('--glow-y');
+		});
+	});
+}
+
 /* ---- Event binding ---- */
 
 function bindEvents() {
 	if (ui.themeToggle) ui.themeToggle.onclick = () => toggleTheme();
 	if (ui.languageToggle) ui.languageToggle.onclick = () => toggleLanguage();
+	bindRoadmapGlow();
 
 	roadmapBoxes.forEach((box) => {
 		box.onchange = () => {
@@ -1346,6 +1426,10 @@ function bindEvents() {
 	// Flashcard events
 	ui.flashShow.onclick = () => {
 		cardShown = true;
+		renderCard();
+	};
+	ui.flashHint.onclick = () => {
+		flashHintShown = true;
 		renderCard();
 	};
 	ui.flashAgain.onclick = () => rateCard('again');
@@ -1427,6 +1511,11 @@ function bindEvents() {
 				if ((e.key === ' ' || e.key === 'Enter') && !ui.flashShow.hidden) {
 					e.preventDefault();
 					ui.flashShow.click();
+					return;
+				}
+				if ((e.key === 'h' || e.key === 'H') && !ui.flashHint.hidden) {
+					e.preventDefault();
+					ui.flashHint.click();
 					return;
 				}
 				if (!ui.flashGrades.hidden) {

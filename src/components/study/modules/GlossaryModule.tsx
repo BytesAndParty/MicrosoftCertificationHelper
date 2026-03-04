@@ -39,6 +39,9 @@ export default function GlossaryModule() {
 				</div>
 			</div>
 			<p id="glossary-card-meta" className="meta"></p>
+			<p className="overlay-shortcut-tip" data-i18n="shortcuts.glossaryOverlay">
+				Shortcuts: Space/Enter reveal | 1 again | 2 good | 3 easy | ESC close
+			</p>
 		</OverlayDialog>
 	);
 }

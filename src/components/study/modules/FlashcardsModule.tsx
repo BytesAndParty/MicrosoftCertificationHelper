@@ -19,6 +19,9 @@ export default function FlashcardsModule() {
 				<button id="flashcard-show" type="button" className="secondary" data-i18n="flashcards.showAnswer">
 					Show answer
 				</button>
+				<button id="flashcard-hint" type="button" className="secondary" data-i18n="flashcards.showHint">
+					Show hint
+				</button>
 				<div id="flashcard-grade-actions" className="grade-actions" hidden>
 					<button id="flashcard-again" type="button" className="danger" data-i18n="flashcards.again">
 						Again
@@ -31,7 +34,11 @@ export default function FlashcardsModule() {
 					</button>
 				</div>
 			</div>
+			<p id="flashcard-hint-text" className="hint-box" hidden></p>
 			<p id="flashcard-meta" className="meta"></p>
+			<p className="overlay-shortcut-tip" data-i18n="shortcuts.flashOverlay">
+				Shortcuts: Space/Enter reveal | H hint | 1 again | 2 good | 3 easy
+			</p>
 		</OverlayDialog>
 	);
 }

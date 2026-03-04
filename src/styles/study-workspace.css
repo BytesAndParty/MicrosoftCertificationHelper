@@ -6,6 +6,13 @@
 
 :root {
 	color-scheme: light;
+	--tooltip-delay: 5s;
+	--tooltip-enter-duration: 220ms;
+	--tooltip-z-index: 2147483640;
+	--roadmap-glow-light: rgba(255, 195, 127, 0.95);
+	--roadmap-glow-light-soft: rgba(255, 195, 127, 0.35);
+	--roadmap-glow-dark: rgba(255, 220, 172, 0.95);
+	--roadmap-glow-dark-soft: rgba(255, 220, 172, 0.4);
 }
 
 .skip-link {
@@ -149,7 +156,10 @@ h1 {
 .theme-toggle {
 	display: inline-flex;
 	align-items: center;
-	gap: 0.4rem;
+	justify-content: center;
+	width: 38px;
+	height: 38px;
+	padding: 0;
 }
 
 .theme-toggle svg {
@@ -259,7 +269,43 @@ h4 {
 	border: 1px solid rgba(194, 96, 10, 0.14);
 	border-radius: 14px;
 	padding: 0.85rem;
+	position: relative;
+	isolation: isolate;
+	--glow-x: 50%;
+	--glow-y: 50%;
 	transition: transform 0.25s, border-color 0.3s, box-shadow 0.3s;
+}
+
+.theme-card::before {
+	content: '';
+	position: absolute;
+	inset: -1px;
+	border-radius: inherit;
+	padding: 1px;
+	background: radial-gradient(
+		220px circle at var(--glow-x) var(--glow-y),
+		var(--roadmap-glow-light) 0%,
+		var(--roadmap-glow-light-soft) 35%,
+		transparent 72%
+	);
+	-webkit-mask:
+		linear-gradient(#000 0 0) content-box,
+		linear-gradient(#000 0 0);
+	-webkit-mask-composite: xor;
+	mask-composite: exclude;
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 0.18s ease;
+}
+
+.theme-card:hover::before,
+.theme-card:focus-within::before {
+	opacity: 1;
+}
+
+.theme-card > * {
+	position: relative;
+	z-index: 1;
 }
 
 .theme-card:hover {
@@ -400,6 +446,17 @@ h4 {
 	gap: 0.85rem;
 }
 
+.overlay-shortcut-tip {
+	margin: 0.1rem 0 0;
+	padding: 0.45rem 0.6rem;
+	border-radius: 8px;
+	font-size: 0.8rem;
+	line-height: 1.4;
+	color: #6d4a33;
+	background: rgba(248, 225, 198, 0.5);
+	border: 1px dashed rgba(194, 96, 10, 0.32);
+}
+
 .glossary-search-row {
 	display: grid;
 	gap: 0.3rem;
@@ -505,14 +562,17 @@ h4 {
 	font-weight: 400;
 	line-height: 1.4;
 	border-radius: 8px;
-	z-index: 10;
+	z-index: var(--tooltip-z-index);
 	pointer-events: none;
-	animation: tooltip-in 0.15s ease;
+	opacity: 0;
+	transform: translateY(-6px) scale(0.97);
+	will-change: opacity, transform;
+	animation: tooltip-in-option var(--tooltip-enter-duration) cubic-bezier(0.16, 1, 0.3, 1) var(--tooltip-delay) forwards;
 }
 
-@keyframes tooltip-in {
-	from { opacity: 0; transform: translateY(-4px); }
-	to { opacity: 1; transform: translateY(0); }
+@keyframes tooltip-in-option {
+	from { opacity: 0; transform: translateY(-6px) scale(0.97); }
+	to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .option.is-correct {
@@ -615,6 +675,10 @@ button {
 	background: #fdf0e0;
 	border-color: rgba(194, 96, 10, 0.45);
 	transform: translateY(-1px);
+}
+
+.theme-toggle.secondary {
+	padding: 0;
 }
 
 .danger {
@@ -869,7 +933,7 @@ input[type='search']:focus {
 	content: attr(data-tooltip);
 	position: absolute;
 	left: 50%;
-	transform: translateX(-50%);
+	transform: translateX(-50%) translateY(-6px) scale(0.97);
 	top: 100%;
 	margin-top: 8px;
 	padding: 0.55rem 0.7rem;
@@ -879,13 +943,20 @@ input[type='search']:focus {
 	font-weight: 400;
 	line-height: 1.4;
 	border-radius: 8px;
-	z-index: 10;
+	z-index: var(--tooltip-z-index);
 	pointer-events: none;
 	white-space: normal;
 	width: max-content;
 	max-width: 240px;
 	text-align: center;
-	animation: tooltip-in 0.15s ease;
+	opacity: 0;
+	will-change: opacity, transform;
+	animation: tooltip-in-mode var(--tooltip-enter-duration) cubic-bezier(0.16, 1, 0.3, 1) var(--tooltip-delay) forwards;
+}
+
+@keyframes tooltip-in-mode {
+	from { opacity: 0; transform: translateX(-50%) translateY(-6px) scale(0.97); }
+	to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
 }
 
 .shortcuts-section {
@@ -992,6 +1063,15 @@ html[data-theme='dark'] input:focus-visible {
 html[data-theme='dark'] .theme-card {
 	background: #241b15;
 	border-color: rgba(236, 175, 111, 0.23);
+}
+
+html[data-theme='dark'] .theme-card::before {
+	background: radial-gradient(
+		220px circle at var(--glow-x) var(--glow-y),
+		var(--roadmap-glow-dark) 0%,
+		var(--roadmap-glow-dark-soft) 35%,
+		transparent 72%
+	);
 }
 
 html[data-theme='dark'] .theme-card:hover {
@@ -1186,6 +1266,12 @@ html[data-theme='dark'] .settings-row input[type='number']:focus {
 
 html[data-theme='dark'] .settings-actions {
 	border-top-color: rgba(236, 175, 111, 0.15);
+}
+
+html[data-theme='dark'] .overlay-shortcut-tip {
+	color: #f0dbc3;
+	background: rgba(55, 39, 28, 0.64);
+	border-color: rgba(250, 182, 108, 0.42);
 }
 
 html[data-theme='dark'] .mode-btn[data-tooltip]:hover::after {

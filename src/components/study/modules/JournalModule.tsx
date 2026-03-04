@@ -11,6 +11,9 @@ export default function JournalModule() {
 			metaDefault="Prioritized list of your missed questions."
 		>
 			<div id="journal-list" className="journal-list" aria-live="polite"></div>
+			<p className="overlay-shortcut-tip" data-i18n="shortcuts.journalOverlay">
+				Shortcuts: ESC close | D dark mode | L language
+			</p>
 		</OverlayDialog>
 	);
 }

@@ -28,6 +28,9 @@ export default function ExamModule() {
 			</div>
 			<div id="exam-result" className="exam-result" aria-live="polite"></div>
 			<div id="exam-review" className="exam-review"></div>
+			<p className="overlay-shortcut-tip" data-i18n="shortcuts.examOverlay">
+				Shortcuts: 1-4 answer | N/Enter next | ESC close
+			</p>
 		</OverlayDialog>
 	);
 }
