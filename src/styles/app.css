@@ -427,12 +427,52 @@ h4 {
 	width: fit-content;
 }
 
+/* ---- Quiz question prominence ---- */
+#quiz-question {
+	font-size: clamp(1.15rem, 2.5vw, 1.4rem);
+	font-weight: 600;
+	line-height: 1.45;
+	padding: 0.9rem 1rem;
+	background: linear-gradient(135deg, #fef5e7 0%, #fdecd0 100%);
+	border-left: 4px solid #c2600a;
+	border-radius: 0 10px 10px 0;
+	margin: 0;
+}
+
+/* ---- Quiz question row ---- */
+.quiz-question-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.5rem;
+}
+
+.quiz-bookmark {
+	background: none;
+	border: none;
+	cursor: pointer;
+	font-size: 1.4rem;
+	padding: 0.2rem 0.4rem;
+	line-height: 1;
+	transition: transform 0.15s;
+	color: #b5846a;
+}
+
+.quiz-bookmark:hover {
+	transform: scale(1.2);
+}
+
+.quiz-bookmark.is-saved {
+	color: #c2600a;
+}
+
 .option-list {
 	display: grid;
 	gap: 0.55rem;
 }
 
 .option {
+	position: relative;
 	text-align: left;
 	border: 1px solid rgba(139, 69, 19, 0.2);
 	background: #ffffff;
@@ -448,6 +488,31 @@ h4 {
 	background: #fffaf5;
 	transform: translateX(4px);
 	box-shadow: -4px 0 0 0 #e8912a;
+}
+
+/* ---- Option tooltips ---- */
+.option.has-tooltip:hover::after {
+	content: attr(data-tooltip);
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 100%;
+	margin-top: 4px;
+	padding: 0.55rem 0.7rem;
+	background: #2d1f14;
+	color: #fef5ec;
+	font-size: 0.82rem;
+	font-weight: 400;
+	line-height: 1.4;
+	border-radius: 8px;
+	z-index: 10;
+	pointer-events: none;
+	animation: tooltip-in 0.15s ease;
+}
+
+@keyframes tooltip-in {
+	from { opacity: 0; transform: translateY(-4px); }
+	to { opacity: 1; transform: translateY(0); }
 }
 
 .option.is-correct {
@@ -874,6 +939,25 @@ html[data-theme='dark'] .mode-btn:hover {
 html[data-theme='dark'] .chip {
 	background: #3a281b;
 	color: #ffdcb9;
+}
+
+html[data-theme='dark'] #quiz-question {
+	background: linear-gradient(135deg, #2c2018 0%, #3a2a1f 100%);
+	border-left-color: #f2a34f;
+	color: #f7ead9;
+}
+
+html[data-theme='dark'] .quiz-bookmark {
+	color: #9a7a65;
+}
+
+html[data-theme='dark'] .quiz-bookmark.is-saved {
+	color: #f2a34f;
+}
+
+html[data-theme='dark'] .option.has-tooltip:hover::after {
+	background: #f7ead9;
+	color: #1a130e;
 }
 
 html[data-theme='dark'] .option {

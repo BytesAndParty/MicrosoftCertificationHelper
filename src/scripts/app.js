@@ -30,6 +30,11 @@ const glossaryCards = glossaryTerms.map((item, index) => ({
 	backDe: item.definitionDe || item.definition
 }));
 
+const glossaryLookup = new Map();
+glossaryTerms.forEach((item) => {
+	glossaryLookup.set(item.term.toLowerCase(), item);
+});
+
 const ui = {
 	roadmapSummary: byId('roadmap-summary'),
 	metricRoadmap: byId('metric-roadmap'),
@@ -65,6 +70,7 @@ const ui = {
 	quizHint: byId('quiz-hint'),
 	quizSkip: byId('quiz-skip'),
 	quizHintText: byId('quiz-hint-text'),
+	quizBookmark: byId('quiz-bookmark'),
 	glossarySearch: byId('glossary-search'),
 	glossaryCardCount: byId('glossary-card-count'),
 	glossaryCardFront: byId('glossary-card-front'),
@@ -163,6 +169,7 @@ const i18n = {
 		'a11y.skipLink': 'Skip to study workspace',
 		'a11y.timeRemaining': 'Time remaining: {time}',
 		'shortcuts.title': 'Keyboard shortcuts',
+		'quiz.bookmarkLabel': 'Save question',
 		'shortcuts.quiz': '1-4 Answer | H Hint | S Skip | N Next',
 		'shortcuts.flash': 'Space Reveal | 1 Again | 2 Good | 3 Easy',
 		'shortcuts.global': 'D Dark mode | L Language | ESC Close overlay'
@@ -244,6 +251,7 @@ const i18n = {
 		'a11y.skipLink': 'Zum Lernbereich springen',
 		'a11y.timeRemaining': 'Verbleibende Zeit: {time}',
 		'shortcuts.title': 'Tastenkürzel',
+		'quiz.bookmarkLabel': 'Frage speichern',
 		'shortcuts.quiz': '1-4 Antwort | H Hinweis | S Überspringen | N Nächste',
 		'shortcuts.flash': 'Leertaste Aufdecken | 1 Nochmal | 2 Gut | 3 Sicher',
 		'shortcuts.global': 'D Dark Mode | L Sprache | ESC Overlay schließen'
@@ -254,6 +262,7 @@ const defaults = {
 	roadmapDone: {},
 	quiz: { answered: 0, correct: 0, byTopic: {} },
 	wrongJournal: {},
+	savedQuestions: {},
 	examBest: 0,
 	examHistory: [],
 	flashcards: {},
@@ -764,6 +773,9 @@ function hydrate(saved) {
 		if (saved.wrongJournal && typeof saved.wrongJournal === 'object') {
 			state.wrongJournal = saved.wrongJournal;
 		}
+		if (saved.savedQuestions && typeof saved.savedQuestions === 'object') {
+			state.savedQuestions = saved.savedQuestions;
+		}
 		state.examBest = Number(saved.examBest) || 0;
 		state.examHistory = Array.isArray(saved.examHistory) ? saved.examHistory.slice(0, 15) : [];
 		state.flashcards = saved.flashcards && typeof saved.flashcards === 'object' ? saved.flashcards : {};
@@ -853,6 +865,7 @@ function showQuizQuestion(forcedQuestionId = null) {
 	ui.quizSkip.hidden = false;
 	ui.quizOptions.innerHTML = '';
 	ui.quizNext.disabled = true;
+	updateBookmarkIcon();
 
 	activeQuestion.options.forEach((option, optionIndex) => {
 		const button = document.createElement('button');
@@ -863,6 +876,30 @@ function showQuizQuestion(forcedQuestionId = null) {
 		button.onclick = () => submitQuizAnswer(optionIndex);
 		ui.quizOptions.append(button);
 	});
+}
+
+function updateBookmarkIcon() {
+	if (!activeQuestion || !ui.quizBookmark) return;
+	const isSaved = Boolean(state.savedQuestions[activeQuestion.id]);
+	ui.quizBookmark.classList.toggle('is-saved', isSaved);
+	ui.quizBookmark.innerHTML = isSaved ? '&#9829;' : '&#9825;';
+}
+
+function toggleBookmark() {
+	if (!activeQuestion) return;
+	if (state.savedQuestions[activeQuestion.id]) {
+		delete state.savedQuestions[activeQuestion.id];
+	} else {
+		state.savedQuestions[activeQuestion.id] = { savedAt: Date.now() };
+	}
+	updateBookmarkIcon();
+	void saveState();
+}
+
+function getGlossaryTooltip(optionText) {
+	const match = glossaryLookup.get(optionText.toLowerCase());
+	if (!match) return null;
+	return currentLanguage === 'de' && match.definitionDe ? match.definitionDe : match.definition;
 }
 
 function submitQuizAnswer(selectedIndex) {
@@ -886,6 +923,7 @@ function submitQuizAnswer(selectedIndex) {
 
 	[...ui.quizOptions.querySelectorAll('button')].forEach((button) => {
 		const index = Number(button.dataset.index);
+		const originalText = activeQuestion.options[index];
 		button.disabled = true;
 		if (index === activeQuestion.correctIndex) {
 			button.classList.add('is-correct');
@@ -894,6 +932,11 @@ function submitQuizAnswer(selectedIndex) {
 		if (!isCorrect && index === selectedIndex) {
 			button.classList.add('is-wrong');
 			button.textContent = '\u2717 ' + button.textContent;
+		}
+		const tooltip = getGlossaryTooltip(originalText);
+		if (tooltip) {
+			button.classList.add('has-tooltip');
+			button.dataset.tooltip = tooltip;
 		}
 	});
 
@@ -1392,6 +1435,7 @@ function bindEvents() {
 	});
 
 	// Quiz events
+	if (ui.quizBookmark) ui.quizBookmark.onclick = () => toggleBookmark();
 	ui.quizNext.onclick = () => showQuizQuestion();
 	ui.quizHint.onclick = () => {
 		if (!activeQuestion) return;

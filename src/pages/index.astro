@@ -100,7 +100,10 @@ import '../styles/app.css';
 				</div>
 				<div class="overlay-body">
 					<p id="quiz-progress" class="meta"></p>
-					<p id="quiz-topic" class="chip"></p>
+					<div class="quiz-question-row">
+						<p id="quiz-topic" class="chip"></p>
+						<button id="quiz-bookmark" type="button" class="quiz-bookmark" aria-label="Save question" data-i18n-aria-label="quiz.bookmarkLabel">&#9825;</button>
+					</div>
 					<h4 id="quiz-question"></h4>
 					<div id="quiz-options" class="option-list"></div>
 					<div class="quiz-actions">
