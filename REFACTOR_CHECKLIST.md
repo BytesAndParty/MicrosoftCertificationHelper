@@ -48,8 +48,8 @@ Rule: switch `[ ]` to `[x]` only after the step is fully done (code, build, and 
 - [x] Exam module migrated and verified
 - [x] Flashcards module migrated and verified
 - [x] Glossary module migrated and verified
-- [ ] Error Journal migrated and verified
-- [ ] Commit per module (atomic commits)
+- [x] Error Journal migrated and verified
+- [x] Commit per module (atomic commits)
 
 ## Phase 6 - Quality and Cleanup
 
@@ -69,6 +69,6 @@ Rule: switch `[ ]` to `[x]` only after the step is fully done (code, build, and 
 - [x] `refactor(exam): migrate exam module`
 - [x] `refactor(flashcards): migrate flashcard module`
 - [x] `refactor(glossary): migrate glossary module`
-- [ ] `refactor(journal): migrate error journal module`
+- [x] `refactor(journal): migrate error journal module`
 - [ ] `test: add unit and e2e coverage for study flows`
 - [ ] `chore: remove legacy app.js and old CSS paths`

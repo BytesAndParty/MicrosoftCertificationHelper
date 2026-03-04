@@ -4,6 +4,7 @@ import WelcomeDialogContent from './WelcomeDialogContent';
 import ExamModule from './modules/ExamModule';
 import FlashcardsModule from './modules/FlashcardsModule';
 import GlossaryModule from './modules/GlossaryModule';
+import JournalModule from './modules/JournalModule';
 import QuizModule from './modules/QuizModule';
 
 interface RoadmapTheme {
@@ -118,16 +119,7 @@ export default function StudyWorkspace({ roadmapThemes }: StudyWorkspaceProps) {
 
 			<GlossaryModule />
 
-			<OverlayDialog
-				id="overlay-journal"
-				titleId="overlay-journal-title"
-				titleI18n="journal.title"
-				titleDefault="Error Journal"
-				metaI18n="journal.meta"
-				metaDefault="Prioritized list of your missed questions."
-			>
-				<div id="journal-list" className="journal-list" aria-live="polite"></div>
-			</OverlayDialog>
+			<JournalModule />
 
 			<OverlayDialog id="overlay-settings" titleId="overlay-settings-title" titleI18n="settings.title" titleDefault="Settings">
 				<SettingsDialogContent />
