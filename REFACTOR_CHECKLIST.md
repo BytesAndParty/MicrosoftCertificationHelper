@@ -57,7 +57,7 @@ Rule: switch `[ ]` to `[x]` only after the step is fully done (code, build, and 
 - [x] Add accessibility checks (keyboard and focus flow)
 - [x] Remove obsolete legacy JS/CSS paths
 - [x] Update README and architecture docs
-- [ ] Final build verification and release commit
+- [x] Final build verification and release commit
 
 ## Atomic Commit Plan
 
