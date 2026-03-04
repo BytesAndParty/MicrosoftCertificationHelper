@@ -88,7 +88,19 @@ const ui = {
 	overlayExam: byId('overlay-exam'),
 	overlayFlashcards: byId('overlay-flashcards'),
 	overlayGlossary: byId('overlay-glossary'),
-	overlayJournal: byId('overlay-journal')
+	overlayJournal: byId('overlay-journal'),
+	overlaySettings: byId('overlay-settings'),
+	overlayWelcome: byId('overlay-welcome'),
+	settingsToggle: byId('settings-toggle'),
+	settingNewCards: byId('setting-new-cards'),
+	settingNewGlossary: byId('setting-new-glossary'),
+	settingMaxReviews: byId('setting-max-reviews'),
+	settingGoodMult: byId('setting-good-mult'),
+	settingEasyMult: byId('setting-easy-mult'),
+	settingLapse: byId('setting-lapse'),
+	settingsSave: byId('settings-save'),
+	settingsReset: byId('settings-reset'),
+	welcomeStart: byId('welcome-start')
 };
 
 const i18n = {
@@ -172,7 +184,30 @@ const i18n = {
 		'quiz.bookmarkLabel': 'Save question',
 		'shortcuts.quiz': '1-4 Answer | H Hint | S Skip | N Next',
 		'shortcuts.flash': 'Space Reveal | 1 Again | 2 Good | 3 Easy',
-		'shortcuts.global': 'D Dark mode | L Language | ESC Close overlay'
+		'shortcuts.global': 'D Dark mode | L Language | ESC Close overlay',
+		'settings.title': 'Settings',
+		'settings.newCardsDay': 'New flashcards / day',
+		'settings.newGlossaryDay': 'New glossary cards / day',
+		'settings.maxReviews': 'Max reviews / day',
+		'settings.goodMultiplier': 'Interval multiplier "Good"',
+		'settings.easyMultiplier': 'Interval multiplier "Easy"',
+		'settings.lapseMinutes': 'Lapse interval (minutes)',
+		'settings.save': 'Save',
+		'settings.reset': 'Reset defaults',
+		'welcome.title': 'Welcome to AI-900 Study Companion',
+		'welcome.intro': 'This app helps you prepare for the Microsoft AI-900 certification. Here are the study modes:',
+		'welcome.quiz': 'Answer questions with instant feedback and track your accuracy.',
+		'welcome.exam': 'Simulate a timed exam with 10 questions and detailed review.',
+		'welcome.flashcards': 'Study concepts with spaced repetition scheduling.',
+		'welcome.glossary': 'Browse and memorize AI-900 terms as flashcards.',
+		'welcome.journal': 'Review and practice your most frequent mistakes.',
+		'welcome.hint': 'Tip: Use keyboard shortcuts (D for dark mode, L for language) and the settings gear to customize your experience.',
+		'welcome.start': 'Get started',
+		'tooltip.quiz': 'Answer questions with instant feedback and track your accuracy over time.',
+		'tooltip.exam': 'Simulate a timed exam with 10 questions in 20 minutes and get a detailed review.',
+		'tooltip.flashcards': 'Study AI-900 concepts with spaced repetition. Rate cards as Again, Good, or Easy.',
+		'tooltip.glossary': 'Browse and memorize AI-900 terms as flashcards with search and spaced repetition.',
+		'tooltip.journal': 'Review your most frequent mistakes and practice the questions you got wrong.'
 	},
 	de: {
 		'hero.copy': 'Quiz-Modus, Prüfungsmodus, Karteikarten, Fehlerjournal und Glossar mit lokalem Fortschritt in der Browser-Datenbank.',
@@ -254,8 +289,40 @@ const i18n = {
 		'quiz.bookmarkLabel': 'Frage speichern',
 		'shortcuts.quiz': '1-4 Antwort | H Hinweis | S Überspringen | N Nächste',
 		'shortcuts.flash': 'Leertaste Aufdecken | 1 Nochmal | 2 Gut | 3 Sicher',
-		'shortcuts.global': 'D Dark Mode | L Sprache | ESC Overlay schließen'
+		'shortcuts.global': 'D Dark Mode | L Sprache | ESC Overlay schließen',
+		'settings.title': 'Einstellungen',
+		'settings.newCardsDay': 'Neue Karteikarten / Tag',
+		'settings.newGlossaryDay': 'Neue Glossar-Karten / Tag',
+		'settings.maxReviews': 'Max. Wiederholungen / Tag',
+		'settings.goodMultiplier': 'Intervall-Multiplikator „Gut"',
+		'settings.easyMultiplier': 'Intervall-Multiplikator „Sicher"',
+		'settings.lapseMinutes': 'Lapse-Intervall (Minuten)',
+		'settings.save': 'Speichern',
+		'settings.reset': 'Standardwerte',
+		'welcome.title': 'Willkommen beim AI-900 Lernbegleiter',
+		'welcome.intro': 'Diese App hilft dir bei der Vorbereitung auf die Microsoft AI-900 Zertifizierung. Hier sind die Lernmodi:',
+		'welcome.quiz': 'Beantworte Fragen mit Sofort-Feedback und verfolge deine Genauigkeit.',
+		'welcome.exam': 'Simuliere eine Zeitprüfung mit 10 Fragen und detaillierter Auswertung.',
+		'welcome.flashcards': 'Lerne Konzepte mit Spaced-Repetition-Planung.',
+		'welcome.glossary': 'Durchsuche und merke dir AI-900 Begriffe als Karteikarten.',
+		'welcome.journal': 'Wiederhole und übe deine häufigsten Fehler.',
+		'welcome.hint': 'Tipp: Nutze Tastenkürzel (D für Dark Mode, L für Sprache) und das Zahnrad-Symbol für Einstellungen.',
+		'welcome.start': 'Los geht\'s',
+		'tooltip.quiz': 'Beantworte Fragen mit Sofort-Feedback und verfolge deine Genauigkeit über die Zeit.',
+		'tooltip.exam': 'Simuliere eine Zeitprüfung mit 10 Fragen in 20 Minuten und erhalte eine detaillierte Auswertung.',
+		'tooltip.flashcards': 'Lerne AI-900 Konzepte mit Spaced Repetition. Bewerte Karten als Nochmal, Gut oder Sicher.',
+		'tooltip.glossary': 'Durchsuche und merke dir AI-900 Begriffe als Karteikarten mit Suche und Spaced Repetition.',
+		'tooltip.journal': 'Wiederhole deine häufigsten Fehler und übe die Fragen, die du falsch beantwortet hast.'
 	}
+};
+
+const DEFAULT_SETTINGS = {
+	newCardsPerDay: 20,
+	newGlossaryPerDay: 10,
+	maxReviewsPerDay: 100,
+	goodMultiplier: 2.0,
+	easyMultiplier: 3.0,
+	lapseMinutes: 10
 };
 
 const defaults = {
@@ -266,7 +333,9 @@ const defaults = {
 	examBest: 0,
 	examHistory: [],
 	flashcards: {},
-	glossaryFlashcards: {}
+	glossaryFlashcards: {},
+	settings: { ...DEFAULT_SETTINGS },
+	hasSeenWelcome: false
 };
 
 let state = clone(defaults);
@@ -514,6 +583,12 @@ function applyLanguageToStaticUi() {
 		const key = node.dataset.i18nAriaLabel;
 		if (!key) return;
 		node.setAttribute('aria-label', t(key));
+	});
+
+	document.querySelectorAll('[data-i18n-tooltip]').forEach((node) => {
+		const key = node.dataset.i18nTooltip;
+		if (!key) return;
+		node.setAttribute('data-tooltip', t(key));
 	});
 }
 
@@ -780,6 +855,12 @@ function hydrate(saved) {
 		state.examHistory = Array.isArray(saved.examHistory) ? saved.examHistory.slice(0, 15) : [];
 		state.flashcards = saved.flashcards && typeof saved.flashcards === 'object' ? saved.flashcards : {};
 		state.glossaryFlashcards = saved.glossaryFlashcards && typeof saved.glossaryFlashcards === 'object' ? saved.glossaryFlashcards : {};
+		if (saved.settings && typeof saved.settings === 'object') {
+			state.settings = { ...DEFAULT_SETTINGS, ...saved.settings };
+		}
+		if (saved.hasSeenWelcome === true) {
+			state.hasSeenWelcome = true;
+		}
 	}
 
 	const now = Date.now();
@@ -793,6 +874,64 @@ function hydrate(saved) {
 			state.glossaryFlashcards[card.id] = { interval: 1, streak: 0, dueAt: now, last: 'new' };
 		}
 	}
+}
+
+/* ---- Settings ---- */
+
+function populateSettingsUi() {
+	ui.settingNewCards.value = state.settings.newCardsPerDay;
+	ui.settingNewGlossary.value = state.settings.newGlossaryPerDay;
+	ui.settingMaxReviews.value = state.settings.maxReviewsPerDay;
+	ui.settingGoodMult.value = state.settings.goodMultiplier;
+	ui.settingEasyMult.value = state.settings.easyMultiplier;
+	ui.settingLapse.value = state.settings.lapseMinutes;
+}
+
+function readSettingsFromUi() {
+	return {
+		newCardsPerDay: clampInt(ui.settingNewCards.value, 1, 50),
+		newGlossaryPerDay: clampInt(ui.settingNewGlossary.value, 1, 70),
+		maxReviewsPerDay: clampInt(ui.settingMaxReviews.value, 10, 500),
+		goodMultiplier: clampFloat(ui.settingGoodMult.value, 1.0, 5.0),
+		easyMultiplier: clampFloat(ui.settingEasyMult.value, 1.5, 7.0),
+		lapseMinutes: clampInt(ui.settingLapse.value, 1, 60)
+	};
+}
+
+function clampInt(value, min, max) {
+	return Math.max(min, Math.min(max, Math.round(Number(value) || min)));
+}
+
+function clampFloat(value, min, max) {
+	const num = Number(value);
+	return Math.max(min, Math.min(max, Number.isFinite(num) ? Math.round(num * 10) / 10 : min));
+}
+
+function saveSettings() {
+	state.settings = readSettingsFromUi();
+	populateSettingsUi();
+	void saveState();
+	closeOverlay(activeOverlay);
+}
+
+function resetSettings() {
+	state.settings = { ...DEFAULT_SETTINGS };
+	populateSettingsUi();
+	void saveState();
+}
+
+function getTodayKey() {
+	return new Date().toISOString().slice(0, 10);
+}
+
+function countNewCardsToday(cardStates) {
+	const today = getTodayKey();
+	let count = 0;
+	for (const id in cardStates) {
+		const card = cardStates[id];
+		if (card.last !== 'new' && card.firstSeenDate === today) count += 1;
+	}
+	return count;
 }
 
 /* ---- Stats & metrics ---- */
@@ -811,7 +950,7 @@ function getDueCardCount() {
 	const now = Date.now();
 	const flashDue = flashcards.filter((card) => state.flashcards[card.id]?.dueAt <= now).length;
 	const glossaryDue = glossaryCards.filter((card) => state.glossaryFlashcards[card.id]?.dueAt <= now).length;
-	return flashDue + glossaryDue;
+	return Math.min(flashDue + glossaryDue, state.settings.maxReviewsPerDay);
 }
 
 function renderRoadmapChecks() {
@@ -1203,10 +1342,24 @@ function finishExam() {
 
 function chooseNextCard() {
 	const now = Date.now();
-	const due = flashcards.filter((card) => state.flashcards[card.id]?.dueAt <= now);
+	const newSeenToday = countNewCardsToday(state.flashcards);
+	const canShowNew = newSeenToday < state.settings.newCardsPerDay;
+
+	const due = flashcards.filter((card) => {
+		const progress = state.flashcards[card.id];
+		if (!progress || progress.dueAt > now) return false;
+		if (progress.last === 'new' && !canShowNew) return false;
+		return true;
+	});
+
 	const pool = due.length
 		? due
-		: flashcards.slice().sort((left, right) => (state.flashcards[left.id]?.dueAt ?? 0) - (state.flashcards[right.id]?.dueAt ?? 0));
+		: flashcards.slice()
+				.filter((card) => {
+					const progress = state.flashcards[card.id];
+					return progress && (progress.last !== 'new' || canShowNew);
+				})
+				.sort((left, right) => (state.flashcards[left.id]?.dueAt ?? 0) - (state.flashcards[right.id]?.dueAt ?? 0));
 
 	activeCard = pool[0] || null;
 	cardShown = false;
@@ -1234,19 +1387,22 @@ function rateCard(grade) {
 	if (!activeCard) return;
 	const progress = state.flashcards[activeCard.id];
 	const now = Date.now();
+	const s = state.settings;
+
+	if (progress.last === 'new') progress.firstSeenDate = getTodayKey();
 
 	if (grade === 'again') {
 		progress.interval = 1;
 		progress.streak = 0;
-		progress.dueAt = now + 10 * 60 * 1000;
+		progress.dueAt = now + s.lapseMinutes * 60 * 1000;
 	}
 	if (grade === 'good') {
-		progress.interval = Math.max(1, Math.round(progress.interval * 2));
+		progress.interval = Math.max(1, Math.round(progress.interval * s.goodMultiplier));
 		progress.streak += 1;
 		progress.dueAt = now + progress.interval * DAY;
 	}
 	if (grade === 'easy') {
-		progress.interval = Math.max(2, Math.round(progress.interval * 3));
+		progress.interval = Math.max(2, Math.round(progress.interval * s.easyMultiplier));
 		progress.streak += 1;
 		progress.dueAt = now + progress.interval * DAY;
 	}
@@ -1262,16 +1418,30 @@ function rateCard(grade) {
 function chooseNextGlossaryCard(filter = '') {
 	const now = Date.now();
 	const query = filter.trim().toLowerCase();
+	const newSeenToday = countNewCardsToday(state.glossaryFlashcards);
+	const canShowNew = newSeenToday < state.settings.newGlossaryPerDay;
+
 	const filtered = glossaryCards.filter((card) => {
 		if (!query) return true;
 		const def = currentLanguage === 'de' && card.backDe ? card.backDe : card.back;
 		return card.front.toLowerCase().includes(query) || def.toLowerCase().includes(query);
 	});
 
-	const due = filtered.filter((card) => state.glossaryFlashcards[card.id]?.dueAt <= now);
+	const due = filtered.filter((card) => {
+		const progress = state.glossaryFlashcards[card.id];
+		if (!progress || progress.dueAt > now) return false;
+		if (progress.last === 'new' && !canShowNew) return false;
+		return true;
+	});
+
 	const pool = due.length
 		? due
-		: filtered.slice().sort((left, right) => (state.glossaryFlashcards[left.id]?.dueAt ?? 0) - (state.glossaryFlashcards[right.id]?.dueAt ?? 0));
+		: filtered
+				.filter((card) => {
+					const progress = state.glossaryFlashcards[card.id];
+					return progress && (progress.last !== 'new' || canShowNew);
+				})
+				.sort((left, right) => (state.glossaryFlashcards[left.id]?.dueAt ?? 0) - (state.glossaryFlashcards[right.id]?.dueAt ?? 0));
 
 	activeGlossaryCard = pool[0] || null;
 	glossaryCardShown = false;
@@ -1309,19 +1479,22 @@ function rateGlossaryCard(grade) {
 	if (!activeGlossaryCard) return;
 	const progress = state.glossaryFlashcards[activeGlossaryCard.id];
 	const now = Date.now();
+	const s = state.settings;
+
+	if (progress.last === 'new') progress.firstSeenDate = getTodayKey();
 
 	if (grade === 'again') {
 		progress.interval = 1;
 		progress.streak = 0;
-		progress.dueAt = now + 10 * 60 * 1000;
+		progress.dueAt = now + s.lapseMinutes * 60 * 1000;
 	}
 	if (grade === 'good') {
-		progress.interval = Math.max(1, Math.round(progress.interval * 2));
+		progress.interval = Math.max(1, Math.round(progress.interval * s.goodMultiplier));
 		progress.streak += 1;
 		progress.dueAt = now + progress.interval * DAY;
 	}
 	if (grade === 'easy') {
-		progress.interval = Math.max(2, Math.round(progress.interval * 3));
+		progress.interval = Math.max(2, Math.round(progress.interval * s.easyMultiplier));
 		progress.streak += 1;
 		progress.dueAt = now + progress.interval * DAY;
 	}
@@ -1469,6 +1642,18 @@ function bindEvents() {
 	ui.glossaryCardEasy.onclick = () => rateGlossaryCard('easy');
 	ui.glossarySearch.oninput = (event) => chooseNextGlossaryCard(event.target.value);
 
+	if (ui.settingsToggle) ui.settingsToggle.onclick = () => {
+		populateSettingsUi();
+		openOverlay(ui.overlaySettings);
+	};
+	if (ui.settingsSave) ui.settingsSave.onclick = () => saveSettings();
+	if (ui.settingsReset) ui.settingsReset.onclick = () => resetSettings();
+	if (ui.welcomeStart) ui.welcomeStart.onclick = () => {
+		state.hasSeenWelcome = true;
+		void saveState();
+		closeOverlay(activeOverlay);
+	};
+
 	if (ui.resetProgress) ui.resetProgress.onclick = () => void resetAll();
 
 	// Global keyboard shortcuts
@@ -1581,6 +1766,10 @@ async function init() {
 	chooseNextCard();
 	chooseNextGlossaryCard();
 	await saveState(true);
+
+	if (!state.hasSeenWelcome && !saved) {
+		openOverlay(ui.overlayWelcome);
+	}
 }
 
 void init();

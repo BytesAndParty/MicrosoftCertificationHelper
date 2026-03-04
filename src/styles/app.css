@@ -787,6 +787,107 @@ input[type='search']:focus {
 	box-shadow: 0 0 0 4px rgba(245, 166, 35, 0.1);
 }
 
+/* ---- Settings form ---- */
+.settings-form {
+	display: grid;
+	gap: 0.7rem;
+}
+
+.settings-row {
+	display: grid;
+	grid-template-columns: 1fr 100px;
+	align-items: center;
+	gap: 0.75rem;
+	font-size: 0.93rem;
+	font-weight: 500;
+	color: #3d2815;
+}
+
+.settings-row input[type='number'] {
+	width: 100%;
+	padding: 0.45rem 0.6rem;
+	border-radius: 8px;
+	border: 1px solid rgba(139, 69, 19, 0.22);
+	font: inherit;
+	font-size: 0.92rem;
+	text-align: right;
+}
+
+.settings-row input[type='number']:focus {
+	outline: 2px solid rgba(194, 96, 10, 0.3);
+	outline-offset: 1px;
+	box-shadow: 0 0 0 4px rgba(245, 166, 35, 0.1);
+}
+
+.settings-actions {
+	display: flex;
+	gap: 0.5rem;
+	justify-content: flex-end;
+	padding-top: 0.5rem;
+	border-top: 1px solid rgba(139, 69, 19, 0.1);
+}
+
+.settings-toggle {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 38px;
+}
+
+.settings-toggle svg {
+	flex-shrink: 0;
+}
+
+/* ---- Welcome modal ---- */
+.welcome-features {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	display: grid;
+	gap: 0.6rem;
+}
+
+.welcome-features li {
+	display: flex;
+	align-items: baseline;
+	gap: 0.4rem;
+	font-size: 0.94rem;
+	line-height: 1.5;
+}
+
+.welcome-features .mode-icon {
+	font-size: 1.2rem;
+	flex-shrink: 0;
+}
+
+/* ---- Mode button tooltips ---- */
+.mode-btn {
+	position: relative;
+}
+
+.mode-btn[data-tooltip]:hover::after {
+	content: attr(data-tooltip);
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+	top: 100%;
+	margin-top: 8px;
+	padding: 0.55rem 0.7rem;
+	background: #2d1f14;
+	color: #fef5ec;
+	font-size: 0.8rem;
+	font-weight: 400;
+	line-height: 1.4;
+	border-radius: 8px;
+	z-index: 10;
+	pointer-events: none;
+	white-space: normal;
+	width: max-content;
+	max-width: 240px;
+	text-align: center;
+	animation: tooltip-in 0.15s ease;
+}
+
 .shortcuts-section {
 	text-align: center;
 	font-size: 0.88rem;
@@ -1066,6 +1167,30 @@ html[data-theme='dark'] .flashcard {
 html[data-theme='dark'] .flashcard:hover {
 	border-color: rgba(250, 182, 108, 0.44);
 	box-shadow: 0 0 20px rgba(250, 182, 108, 0.15), 0 8px 25px rgba(250, 182, 108, 0.07);
+}
+
+html[data-theme='dark'] .settings-row {
+	color: #e9d6c2;
+}
+
+html[data-theme='dark'] .settings-row input[type='number'] {
+	background: #241b15;
+	color: #f7ead9;
+	border-color: rgba(236, 175, 111, 0.35);
+}
+
+html[data-theme='dark'] .settings-row input[type='number']:focus {
+	outline: 2px solid rgba(250, 182, 108, 0.5);
+	box-shadow: 0 0 0 4px rgba(250, 182, 108, 0.18);
+}
+
+html[data-theme='dark'] .settings-actions {
+	border-top-color: rgba(236, 175, 111, 0.15);
+}
+
+html[data-theme='dark'] .mode-btn[data-tooltip]:hover::after {
+	background: #f7ead9;
+	color: #1a130e;
 }
 
 html[data-theme='dark'] input[type='search'] {

@@ -24,30 +24,33 @@ import '../styles/app.css';
 					<button id="language-toggle" type="button" class="secondary language-toggle" aria-label="Switch language to German">
 						DE
 					</button>
+					<button id="settings-toggle" type="button" class="secondary settings-toggle" aria-label="Settings" data-i18n-aria-label="settings.title">
+						<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+					</button>
 				</div>
 			</div>
 			<nav class="hero-modes" aria-label="Study modes" data-i18n-aria-label="tabs.ariaLabel">
-				<button type="button" class="mode-btn" data-mode="quiz">
+				<button type="button" class="mode-btn" data-mode="quiz" data-tooltip="Answer questions with instant feedback and track your accuracy over time." data-i18n-tooltip="tooltip.quiz">
 					<span class="mode-icon" aria-hidden="true">&#9997;</span>
 					<span class="mode-label" data-i18n="tabs.quiz">Quiz</span>
 					<span class="mode-desc" data-i18n="hero.modeQuizDesc">Instant feedback</span>
 				</button>
-				<button type="button" class="mode-btn" data-mode="exam">
+				<button type="button" class="mode-btn" data-mode="exam" data-tooltip="Simulate a timed exam with 10 questions in 20 minutes and get a detailed review." data-i18n-tooltip="tooltip.exam">
 					<span class="mode-icon" aria-hidden="true">&#128221;</span>
 					<span class="mode-label" data-i18n="tabs.exam">Exam</span>
 					<span class="mode-desc" data-i18n="hero.modeExamDesc">Timed simulation</span>
 				</button>
-				<button type="button" class="mode-btn" data-mode="flashcards">
+				<button type="button" class="mode-btn" data-mode="flashcards" data-tooltip="Study AI-900 concepts with spaced repetition. Rate cards as Again, Good, or Easy." data-i18n-tooltip="tooltip.flashcards">
 					<span class="mode-icon" aria-hidden="true">&#127183;</span>
 					<span class="mode-label" data-i18n="tabs.flashcards">Flashcards</span>
 					<span class="mode-desc" data-i18n="hero.modeFlashcardsDesc">Spaced repetition</span>
 				</button>
-				<button type="button" class="mode-btn" data-mode="glossary">
+				<button type="button" class="mode-btn" data-mode="glossary" data-tooltip="Browse and memorize AI-900 terms as flashcards with search and spaced repetition." data-i18n-tooltip="tooltip.glossary">
 					<span class="mode-icon" aria-hidden="true">&#128214;</span>
 					<span class="mode-label" data-i18n="tabs.glossary">Glossary</span>
 					<span class="mode-desc" data-i18n="hero.modeGlossaryDesc">Term flashcards</span>
 				</button>
-				<button type="button" class="mode-btn" data-mode="journal">
+				<button type="button" class="mode-btn" data-mode="journal" data-tooltip="Review your most frequent mistakes and practice the questions you got wrong." data-i18n-tooltip="tooltip.journal">
 					<span class="mode-icon" aria-hidden="true">&#128203;</span>
 					<span class="mode-label" data-i18n="tabs.journal">Error Journal</span>
 					<span class="mode-desc" data-i18n="hero.modeJournalDesc">Review mistakes</span>
@@ -214,6 +217,72 @@ import '../styles/app.css';
 				</div>
 				<div class="overlay-body">
 					<div id="journal-list" class="journal-list" aria-live="polite"></div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Settings Overlay -->
+		<div id="overlay-settings" class="overlay" role="dialog" aria-modal="true" aria-labelledby="overlay-settings-title" hidden>
+			<div class="overlay-backdrop"></div>
+			<div class="overlay-container">
+				<div class="overlay-header">
+					<h2 id="overlay-settings-title" data-i18n="settings.title">Settings</h2>
+					<button type="button" class="overlay-close" aria-label="Close" data-i18n-aria-label="overlay.close">&times;</button>
+				</div>
+				<div class="overlay-body">
+					<div class="settings-form">
+						<label class="settings-row">
+							<span data-i18n="settings.newCardsDay">New flashcards / day</span>
+							<input id="setting-new-cards" type="number" min="1" max="50" value="20" />
+						</label>
+						<label class="settings-row">
+							<span data-i18n="settings.newGlossaryDay">New glossary cards / day</span>
+							<input id="setting-new-glossary" type="number" min="1" max="70" value="10" />
+						</label>
+						<label class="settings-row">
+							<span data-i18n="settings.maxReviews">Max reviews / day</span>
+							<input id="setting-max-reviews" type="number" min="10" max="500" value="100" />
+						</label>
+						<label class="settings-row">
+							<span data-i18n="settings.goodMultiplier">Interval multiplier "Good"</span>
+							<input id="setting-good-mult" type="number" min="1.0" max="5.0" step="0.1" value="2.0" />
+						</label>
+						<label class="settings-row">
+							<span data-i18n="settings.easyMultiplier">Interval multiplier "Easy"</span>
+							<input id="setting-easy-mult" type="number" min="1.5" max="7.0" step="0.1" value="3.0" />
+						</label>
+						<label class="settings-row">
+							<span data-i18n="settings.lapseMinutes">Lapse interval (minutes)</span>
+							<input id="setting-lapse" type="number" min="1" max="60" value="10" />
+						</label>
+					</div>
+					<div class="settings-actions">
+						<button id="settings-save" type="button" class="primary" data-i18n="settings.save">Save</button>
+						<button id="settings-reset" type="button" class="secondary" data-i18n="settings.reset">Reset defaults</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Welcome Overlay -->
+		<div id="overlay-welcome" class="overlay" role="dialog" aria-modal="true" aria-labelledby="overlay-welcome-title" hidden>
+			<div class="overlay-backdrop"></div>
+			<div class="overlay-container">
+				<div class="overlay-header">
+					<h2 id="overlay-welcome-title" data-i18n="welcome.title">Welcome to AI-900 Study Companion</h2>
+					<button type="button" class="overlay-close" aria-label="Close" data-i18n-aria-label="overlay.close">&times;</button>
+				</div>
+				<div class="overlay-body">
+					<p data-i18n="welcome.intro">This app helps you prepare for the Microsoft AI-900 certification. Here are the study modes:</p>
+					<ul class="welcome-features">
+						<li><span class="mode-icon" aria-hidden="true">&#9997;</span> <strong data-i18n="tabs.quiz">Quiz</strong> &mdash; <span data-i18n="welcome.quiz">Answer questions with instant feedback and track your accuracy.</span></li>
+						<li><span class="mode-icon" aria-hidden="true">&#128221;</span> <strong data-i18n="tabs.exam">Exam</strong> &mdash; <span data-i18n="welcome.exam">Simulate a timed exam with 10 questions and detailed review.</span></li>
+						<li><span class="mode-icon" aria-hidden="true">&#127183;</span> <strong data-i18n="tabs.flashcards">Flashcards</strong> &mdash; <span data-i18n="welcome.flashcards">Study concepts with spaced repetition scheduling.</span></li>
+						<li><span class="mode-icon" aria-hidden="true">&#128214;</span> <strong data-i18n="tabs.glossary">Glossary</strong> &mdash; <span data-i18n="welcome.glossary">Browse and memorize AI-900 terms as flashcards.</span></li>
+						<li><span class="mode-icon" aria-hidden="true">&#128203;</span> <strong data-i18n="tabs.journal">Error Journal</strong> &mdash; <span data-i18n="welcome.journal">Review and practice your most frequent mistakes.</span></li>
+					</ul>
+					<p class="meta" data-i18n="welcome.hint">Tip: Use keyboard shortcuts (D for dark mode, L for language) and the settings gear to customize your experience.</p>
+					<button id="welcome-start" type="button" class="primary" data-i18n="welcome.start">Get started</button>
 				</div>
 			</div>
 		</div>
