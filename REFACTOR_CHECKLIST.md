@@ -20,11 +20,11 @@ Rule: switch `[ ]` to `[x]` only after the step is fully done (code, build, and 
 
 ## Phase 2 - Theme and Providers
 
-- [ ] Add class-based dark/light theme setup
-- [ ] Add theme provider and `ModeToggle` using shadcn pattern
-- [ ] Wire persistent theme preference
-- [ ] Validate dark/light on desktop and mobile
-- [ ] Commit: `feat(theme): add shadcn-based dark/light theming`
+- [x] Add class-based dark/light theme setup
+- [x] Add theme provider and `ModeToggle` using shadcn pattern
+- [x] Wire persistent theme preference
+- [x] Validate dark/light on desktop and mobile
+- [x] Commit: `feat(theme): add shadcn-based dark/light theming`
 
 ## Phase 3 - State and Domain Extraction
 
@@ -62,7 +62,7 @@ Rule: switch `[ ]` to `[x]` only after the step is fully done (code, build, and 
 ## Atomic Commit Plan
 
 - [x] `chore: add react + tailwind + shadcn foundation`
-- [ ] `feat(theme): add shadcn-based dark/light theming`
+- [x] `feat(theme): add shadcn-based dark/light theming`
 - [ ] `refactor(state): move study logic to store and domain modules`
 - [ ] `refactor(ui): migrate shell and dialogs to shadcn components`
 - [ ] `refactor(quiz): migrate quiz module`

@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import { ModeToggle } from '../mode-toggle';
+import { ThemeProvider } from '../theme-provider';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
@@ -7,11 +9,14 @@ import { Input } from '../ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
 
-export default function ShadcnFoundationPreview() {
+function PreviewContent() {
 	const [name, setName] = useState('AI-900 Learner');
 
 	return (
 		<div className="mx-auto w-full max-w-2xl space-y-4">
+			<div className="flex justify-end">
+				<ModeToggle />
+			</div>
 			<Card>
 				<CardHeader>
 					<CardTitle>shadcn Foundation Ready</CardTitle>
@@ -60,5 +65,13 @@ export default function ShadcnFoundationPreview() {
 				</CardFooter>
 			</Card>
 		</div>
+	);
+}
+
+export default function ShadcnFoundationPreview() {
+	return (
+		<ThemeProvider>
+			<PreviewContent />
+		</ThemeProvider>
 	);
 }
