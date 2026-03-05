@@ -30,6 +30,9 @@ export default function WelcomeDialogContent() {
 				Tip: Use keyboard shortcuts (D for dark mode, L for language) and the settings gear to customize your
 				experience.
 			</p>
+			<p className="meta" data-i18n="welcome.aiHint">
+				Optional: enable AI chat in settings and add your own Azure OpenAI API key.
+			</p>
 			<button id="welcome-start" type="button" className="primary" data-i18n="welcome.start">
 				Get started
 			</button>
