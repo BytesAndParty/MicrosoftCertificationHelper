@@ -7,7 +7,9 @@ describe('study state hydration', () => {
 		const stateA = createDefaultStudyState();
 		const stateB = createDefaultStudyState();
 		stateA.settings.newCardsPerDay = 99;
+		stateA.quiz.correctByQuestion.q1 = 1;
 		expect(stateB.settings.newCardsPerDay).not.toBe(99);
+		expect(stateB.quiz.correctByQuestion.q1).toBeUndefined();
 	});
 
 	it('hydrates legacy state and seeds missing card progress', () => {
@@ -25,6 +27,7 @@ describe('study state hydration', () => {
 
 		expect(hydrated.quiz.answered).toBe(10);
 		expect(hydrated.quiz.correct).toBe(7);
+		expect(hydrated.quiz.correctByQuestion).toEqual({});
 		expect(hydrated.settings.newCardsPerDay).toBe(50);
 		expect(hydrated.settings.goodMultiplier).toBe(5);
 		expect(hydrated.settings.easyMultiplier).toBe(1.5);
@@ -41,7 +44,8 @@ describe('study state hydration', () => {
 		const wrapped = {
 			state: {
 				examBest: 88,
-				settings: { newGlossaryPerDay: 42 }
+				settings: { newGlossaryPerDay: 42 },
+				quiz: { correctByQuestion: { q42: 3 } }
 			},
 			version: 0
 		};
@@ -49,5 +53,6 @@ describe('study state hydration', () => {
 		const hydrated = hydrateStudyState(wrapped, [], []);
 		expect(hydrated.examBest).toBe(88);
 		expect(hydrated.settings.newGlossaryPerDay).toBe(42);
+		expect(hydrated.quiz.correctByQuestion.q42).toBe(3);
 	});
 });

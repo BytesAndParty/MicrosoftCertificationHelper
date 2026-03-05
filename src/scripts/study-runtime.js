@@ -238,8 +238,8 @@ const i18n = {
 				'metrics.dueCards': 'Due Cards',
 				'metrics.journal': 'Error Journal',
 				'readiness.label': 'Exam readiness',
-				'readiness.metaIdle': 'Answer quiz questions to build your readiness score.',
-				'readiness.meta': 'Quiz {accuracy}% | Best exam {exam}% | Topic coverage {coverage}% ({answered} answered)',
+				'readiness.metaIdle': 'Readiness is reliable after each question is answered correctly at least once.',
+				'readiness.meta': 'Quiz {accuracy}% | Best exam {exam}% | Mastered {mastered}/{total} questions',
 				'session.title': 'Session Goal',
 			'session.goalSprint': 'Sprint 10',
 			'session.goalFocus': 'Focus 20',
@@ -417,8 +417,8 @@ const i18n = {
 				'metrics.dueCards': 'Fällige Karten',
 				'metrics.journal': 'Fehlerjournal',
 				'readiness.label': 'Prüfungs-Readiness',
-				'readiness.metaIdle': 'Beantworte Quizfragen, um deinen Readiness-Score aufzubauen.',
-				'readiness.meta': 'Quiz {accuracy}% | Beste Prüfung {exam}% | Themen-Abdeckung {coverage}% ({answered} beantwortet)',
+				'readiness.metaIdle': 'Der Score wird erst verlässlich, wenn jede Frage mindestens einmal richtig beantwortet wurde.',
+				'readiness.meta': 'Quiz {accuracy}% | Beste Prüfung {exam}% | Beherrscht {mastered}/{total} Fragen',
 				'session.title': 'Session-Ziel',
 			'session.goalSprint': 'Sprint 10',
 			'session.goalFocus': 'Fokus 20',
@@ -2178,20 +2178,41 @@ function getQuizTopicCoveragePercent() {
 	return totalTopics ? Math.round((practicedTopics / totalTopics) * 100) : 0;
 }
 
+function getQuestionMasterySnapshot() {
+	const masteredMap = state.quiz.correctByQuestion && typeof state.quiz.correctByQuestion === 'object'
+		? state.quiz.correctByQuestion
+		: {};
+	const mastered = Object.values(masteredMap).reduce((count, value) => {
+		const hits = Number(value);
+		return count + (hits > 0 ? 1 : 0);
+	}, 0);
+	const total = quizQuestions.length || mastered;
+	const coverage = total ? Math.round((mastered / total) * 100) : 0;
+	return { mastered, total, coverage };
+}
+
 function getExamReadinessSnapshot() {
-	const answered = Number(state.quiz.answered) || 0;
 	const quizAccuracy = getAccuracy();
+	const mastery = getQuestionMasterySnapshot();
 	const hasExamData = (Array.isArray(state.examHistory) && state.examHistory.length > 0) || state.examBest > 0;
 	const examSignal = hasExamData
 		? Math.max(0, Math.min(100, Number(state.examBest) || 0))
-		: (answered ? Math.max(0, Math.round(quizAccuracy * 0.92)) : 0);
-	const coverage = getQuizTopicCoveragePercent();
-	const volume = Math.min(100, answered * 5);
-	const readiness = (answered > 0 || hasExamData)
-		? Math.round((quizAccuracy * 0.4) + (examSignal * 0.35) + (coverage * 0.15) + (volume * 0.1))
+		: Math.max(0, Math.min(100, quizAccuracy));
+	const topicCoverage = getQuizTopicCoveragePercent();
+	const baseReadiness = Math.round((quizAccuracy * 0.4) + (examSignal * 0.35) + (topicCoverage * 0.25));
+	const confidenceFactor = mastery.coverage / 100;
+	const readiness = mastery.total > 0
+		? Math.round(baseReadiness * confidenceFactor)
 		: 0;
 	const score = Math.max(0, Math.min(100, readiness));
-	return { score, answered, quizAccuracy, examSignal, coverage };
+	return {
+		score,
+		quizAccuracy,
+		examSignal,
+		mastered: mastery.mastered,
+		totalQuestions: mastery.total,
+		masteryCoverage: mastery.coverage
+	};
 }
 
 function renderExamReadiness() {
@@ -2200,16 +2221,16 @@ function renderExamReadiness() {
 	const snapshot = getExamReadinessSnapshot();
 	ui.heroReadinessProgress.value = snapshot.score;
 	ui.heroReadinessValue.textContent = `${snapshot.score}%`;
-	ui.heroReadinessMeta.textContent = snapshot.answered > 0 || snapshot.examSignal > 0
+	ui.heroReadinessMeta.textContent = snapshot.totalQuestions > 0 || snapshot.examSignal > 0
 		? t('readiness.meta', {
 			accuracy: snapshot.quizAccuracy,
 			exam: snapshot.examSignal,
-			coverage: snapshot.coverage,
-			answered: snapshot.answered
+			mastered: snapshot.mastered,
+			total: snapshot.totalQuestions
 		})
 		: t('readiness.metaIdle');
 
-	const level = snapshot.score >= 80 ? 'high' : snapshot.score >= 55 ? 'mid' : 'low';
+	const level = snapshot.score >= 80 ? 'high' : snapshot.score >= 50 ? 'mid' : 'low';
 	ui.heroReadiness.dataset.level = level;
 }
 
@@ -2472,6 +2493,14 @@ function submitQuizAnswer(selectedIndex) {
 	if (isCorrect) {
 		state.quiz.correct += 1;
 		topicStats.correct += 1;
+		const questionId = String(activeQuestion.id || '').trim();
+		if (questionId) {
+			if (!state.quiz.correctByQuestion || typeof state.quiz.correctByQuestion !== 'object') {
+				state.quiz.correctByQuestion = {};
+			}
+			const currentHits = Number(state.quiz.correctByQuestion[questionId]) || 0;
+			state.quiz.correctByQuestion[questionId] = currentHits + 1;
+		}
 	} else {
 		const wrong = state.wrongJournal[activeQuestion.id] || { count: 0, lastWrongAt: 0 };
 		wrong.count += 1;
@@ -3360,6 +3389,7 @@ async function init() {
 	restoreAiChatPanelLayout();
 	const saved = await loadState();
 	hydrate(saved);
+	await ensureQuestionPoolLoaded();
 	renderRoadmapChecks();
 	renderStats();
 	chooseNextCard();

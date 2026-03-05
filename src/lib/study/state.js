@@ -4,7 +4,7 @@ export const FALLBACK_KEY = 'ai900_state_fallback';
 
 export const DEFAULT_STUDY_STATE = {
 	roadmapDone: {},
-	quiz: { answered: 0, correct: 0, byTopic: {} },
+	quiz: { answered: 0, correct: 0, byTopic: {}, correctByQuestion: {} },
 	wrongJournal: {},
 	savedQuestions: {},
 	sessionGoal: {
@@ -63,6 +63,10 @@ export function hydrateStudyState(saved, flashcards = [], glossaryCards = [], no
 			state.quiz.answered = Number(source.quiz.answered) || 0;
 			state.quiz.correct = Number(source.quiz.correct) || 0;
 			state.quiz.byTopic = source.quiz.byTopic && typeof source.quiz.byTopic === 'object' ? source.quiz.byTopic : {};
+			state.quiz.correctByQuestion =
+				source.quiz.correctByQuestion && typeof source.quiz.correctByQuestion === 'object'
+					? source.quiz.correctByQuestion
+					: {};
 		}
 		if (source.wrongJournal && typeof source.wrongJournal === 'object') {
 			state.wrongJournal = source.wrongJournal;

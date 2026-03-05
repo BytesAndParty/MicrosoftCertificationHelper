@@ -227,48 +227,52 @@ h1 {
 }
 
 .hero-readiness {
-	margin-top: 0.95rem;
+	margin: 0 0 0.7rem;
 	display: grid;
-	gap: 0.38rem;
-	padding: 0.62rem 0.74rem;
-	border-radius: 12px;
-	border: 1px solid rgba(254, 245, 236, 0.24);
-	background: rgba(255, 255, 255, 0.12);
+	gap: 0.24rem;
+	padding: 0.42rem 0.58rem;
+	width: min(620px, 100%);
+	border-radius: 10px;
+	border: 1px solid rgba(254, 245, 236, 0.18);
+	background: rgba(255, 255, 255, 0.08);
 	backdrop-filter: blur(4px);
+	opacity: 0.9;
 }
 
 .hero-readiness-head {
 	display: flex;
 	align-items: center;
-	justify-content: space-between;
-	gap: 0.5rem;
+	justify-content: flex-start;
+	gap: 0.35rem;
 }
 
 .hero-readiness-head p {
 	margin: 0;
-	font-size: 0.8rem;
-	color: rgba(254, 245, 236, 0.88);
+	font-size: 0.74rem;
+	color: rgba(254, 245, 236, 0.76);
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
 }
 
 #hero-readiness-value {
-	font-size: 1.02rem;
-	font-weight: 700;
+	font-size: 0.88rem;
+	font-weight: 650;
 	font-variant-numeric: tabular-nums;
-	color: #ffe6c9;
+	color: rgba(255, 230, 201, 0.95);
 }
 
 #hero-readiness-progress {
 	width: 100%;
-	height: 9px;
+	height: 4px;
 	appearance: none;
 	border: 0;
 	border-radius: 999px;
 	overflow: hidden;
-	background: rgba(255, 244, 230, 0.3);
+	background: rgba(255, 244, 230, 0.22);
 }
 
 #hero-readiness-progress::-webkit-progress-bar {
-	background: rgba(255, 244, 230, 0.3);
+	background: rgba(255, 244, 230, 0.22);
 	border-radius: 999px;
 }
 
@@ -284,14 +288,13 @@ h1 {
 
 .hero-readiness-meta {
 	margin: 0;
-	font-size: 0.76rem;
+	font-size: 0.72rem;
 	line-height: 1.35;
-	color: rgba(254, 245, 236, 0.82);
+	color: rgba(254, 245, 236, 0.72);
 }
 
 .hero-readiness[data-level='high'] #hero-readiness-value {
 	color: #fff2dd;
-	text-shadow: 0 0 10px rgba(255, 236, 196, 0.28);
 }
 
 .hero-modes {
@@ -2009,22 +2012,22 @@ html[data-theme='dark'] .hero {
 }
 
 html[data-theme='dark'] .hero-readiness {
-	border-color: rgba(250, 182, 108, 0.28);
-	background: rgba(23, 20, 17, 0.36);
+	border-color: rgba(250, 182, 108, 0.2);
+	background: rgba(23, 20, 17, 0.28);
 }
 
 html[data-theme='dark'] .hero-readiness-head p,
 html[data-theme='dark'] .hero-readiness-meta {
-	color: #e7cfb6;
+	color: rgba(231, 207, 182, 0.78);
 }
 
 html[data-theme='dark'] #hero-readiness-value {
-	color: #ffd8ad;
+	color: rgba(255, 216, 173, 0.95);
 }
 
 html[data-theme='dark'] #hero-readiness-progress,
 html[data-theme='dark'] #hero-readiness-progress::-webkit-progress-bar {
-	background: rgba(255, 194, 128, 0.2);
+	background: rgba(255, 194, 128, 0.14);
 }
 
 html[data-theme='dark'] #hero-readiness-progress::-webkit-progress-value,
