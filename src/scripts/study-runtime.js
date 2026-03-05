@@ -96,10 +96,14 @@ async function ensureQuestionPoolLoaded() {
 				de: buildOptionRationaleMap('de')
 			};
 			refillQuizDeck();
+			renderQuizTopicFilterOptions();
+			renderStats();
 		}).catch(() => {
 			quizQuestions = [];
 			optionPoolsByLanguage = createEmptyOptionPools();
 			optionRationaleByLanguage = { en: {}, de: {} };
+			renderQuizTopicFilterOptions();
+			renderStats();
 		});
 	}
 	await quizDataPromise;
@@ -112,6 +116,10 @@ const ui = {
 	metricExam: byId('metric-exam'),
 	metricDue: byId('metric-due'),
 	metricJournal: byId('metric-journal'),
+	heroReadiness: byId('hero-readiness'),
+	heroReadinessProgress: byId('hero-readiness-progress'),
+	heroReadinessValue: byId('hero-readiness-value'),
+	heroReadinessMeta: byId('hero-readiness-meta'),
 	sessionStatus: byId('session-status'),
 	sessionProgress: byId('session-progress'),
 	sessionProgressValue: byId('session-progress-value'),
@@ -121,6 +129,8 @@ const ui = {
 	historyHeatmap: byId('history-heatmap'),
 	historyTopicTrend: byId('history-topic-trend'),
 	quizProgress: byId('quiz-progress'),
+	quizTopicFilter: byId('quiz-topic-filter'),
+	quizTopicFocus: byId('quiz-topic-focus'),
 	quizTopic: byId('quiz-topic'),
 	quizQuestion: byId('quiz-question'),
 	quizOptions: byId('quiz-options'),
@@ -188,6 +198,7 @@ const ui = {
 	settingAiEndpoint: byId('setting-ai-endpoint'),
 	settingAiApiKey: byId('setting-ai-api-key'),
 	settingAiModel: byId('setting-ai-model'),
+	settingAiWindowReset: byId('setting-ai-window-reset'),
 	settingsSave: byId('settings-save'),
 	settingsReset: byId('settings-reset'),
 	welcomeStart: byId('welcome-start'),
@@ -202,6 +213,8 @@ const ui = {
 	aiChatError: byId('ai-chat-error')
 };
 
+const aiChatQuickButtons = [...document.querySelectorAll('[data-chat-quick]')];
+
 const i18n = {
 	en: {
 		'hero.copy': 'Quiz mode, exam mode, flashcards, an error journal, and a glossary with local progress stored in the browser database.',
@@ -209,12 +222,15 @@ const i18n = {
 		'theme.toLight': 'Switch to light mode',
 		'language.toggleLabel': 'Switch language to German',
 		'roadmap.title': 'Roadmap',
-		'metrics.roadmap': 'Roadmap',
-			'metrics.quizAccuracy': 'Quiz Accuracy',
-			'metrics.bestExam': 'Best Exam',
-			'metrics.dueCards': 'Due Cards',
-			'metrics.journal': 'Error Journal',
-			'session.title': 'Session Goal',
+			'metrics.roadmap': 'Roadmap',
+				'metrics.quizAccuracy': 'Quiz Accuracy',
+				'metrics.bestExam': 'Best Exam',
+				'metrics.dueCards': 'Due Cards',
+				'metrics.journal': 'Error Journal',
+				'readiness.label': 'Exam readiness',
+				'readiness.metaIdle': 'Answer quiz questions to build your readiness score.',
+				'readiness.meta': 'Quiz {accuracy}% | Best exam {exam}% | Topic coverage {coverage}% ({answered} answered)',
+				'session.title': 'Session Goal',
 			'session.goalSprint': 'Sprint 10',
 			'session.goalFocus': 'Focus 20',
 			'session.goalAccuracy': 'Accuracy 90',
@@ -245,11 +261,19 @@ const i18n = {
 		'hero.modeGlossaryDesc': 'Term flashcards',
 		'hero.modeJournalDesc': 'Review mistakes',
 		'overlay.close': 'Close',
-		'quiz.title': 'Quiz with instant feedback',
-		'quiz.showHint': 'Show hint',
-		'quiz.skip': 'Skip',
-		'quiz.nextQuestion': 'Next question',
-		'quiz.learnRefPrefix': 'Learn more:',
+			'quiz.title': 'Quiz with instant feedback',
+			'quiz.showHint': 'Show hint',
+			'quiz.skip': 'Skip',
+			'quiz.nextQuestion': 'Next question',
+			'quiz.focusLabel': 'Focus',
+			'quiz.focusAll': 'All topics',
+			'quiz.focusWeakest': 'Weakest topic',
+			'quiz.focusWeakestWithTopic': 'Weakest topic ({topic}, {accuracy}%)',
+			'quiz.focusHintAll': 'All topics are active.',
+			'quiz.focusHintTopic': 'Focused topic: {topic}',
+			'quiz.focusHintWeakest': 'Weakest topic right now: {topic} ({accuracy}%, {total} answered)',
+			'quiz.focusHintWeakestUnknown': 'Weakest topic will appear after your first answers.',
+			'quiz.learnRefPrefix': 'Learn more:',
 		'exam.title': 'Exam mode',
 		'exam.meta': '10 questions, 20 minutes, mixed question types, and a detailed review.',
 		'exam.start': 'Start exam',
@@ -332,6 +356,7 @@ const i18n = {
 			'settings.aiApiKey': 'API key',
 			'settings.aiModel': 'Model / deployment',
 			'settings.aiKeyHowTo': 'Azure Portal -> your Azure OpenAI resource -> Deployments + Endpoint -> copy endpoint + key.',
+			'settings.aiWindowReset': 'Reset chat window size/position',
 		'settings.save': 'Save',
 		'settings.reset': 'Reset defaults',
 		'welcome.title': 'Welcome to AI-900 Study Companion',
@@ -353,6 +378,11 @@ const i18n = {
 			'chat.send': 'Send',
 			'chat.empty': 'No messages yet. Ask a question to the AI helper.',
 			'chat.pending': 'Assistant is writing...',
+			'chat.quick.label': 'Quick actions',
+			'chat.quick.simplify': 'Simplify',
+			'chat.quick.example': 'Give example',
+			'chat.quick.compare': 'Compare',
+			'chat.quick.quiz': 'Quiz me',
 			'chat.errorConfig': 'Add endpoint and API key in settings to use AI chat.',
 			'chat.errorExam': 'AI chat is disabled during exam mode.',
 			'chat.errorRequest': 'Request failed.',
@@ -368,12 +398,15 @@ const i18n = {
 		'theme.toLight': 'Auf Light Mode wechseln',
 		'language.toggleLabel': 'Sprache auf Englisch wechseln',
 		'roadmap.title': 'Roadmap',
-		'metrics.roadmap': 'Roadmap',
-			'metrics.quizAccuracy': 'Quiz-Genauigkeit',
-			'metrics.bestExam': 'Bestes Prüfungsergebnis',
-			'metrics.dueCards': 'Fällige Karten',
-			'metrics.journal': 'Fehlerjournal',
-			'session.title': 'Session-Ziel',
+			'metrics.roadmap': 'Roadmap',
+				'metrics.quizAccuracy': 'Quiz-Genauigkeit',
+				'metrics.bestExam': 'Bestes Prüfungsergebnis',
+				'metrics.dueCards': 'Fällige Karten',
+				'metrics.journal': 'Fehlerjournal',
+				'readiness.label': 'Prüfungs-Readiness',
+				'readiness.metaIdle': 'Beantworte Quizfragen, um deinen Readiness-Score aufzubauen.',
+				'readiness.meta': 'Quiz {accuracy}% | Beste Prüfung {exam}% | Themen-Abdeckung {coverage}% ({answered} beantwortet)',
+				'session.title': 'Session-Ziel',
 			'session.goalSprint': 'Sprint 10',
 			'session.goalFocus': 'Fokus 20',
 			'session.goalAccuracy': 'Accuracy 90',
@@ -404,11 +437,19 @@ const i18n = {
 		'hero.modeGlossaryDesc': 'Begriff-Karten',
 		'hero.modeJournalDesc': 'Fehler wiederholen',
 		'overlay.close': 'Schließen',
-		'quiz.title': 'Quiz mit Sofort-Feedback',
-		'quiz.showHint': 'Hinweis anzeigen',
-		'quiz.skip': 'Überspringen',
-		'quiz.nextQuestion': 'Nächste Frage',
-		'quiz.learnRefPrefix': 'Weiterlesen:',
+			'quiz.title': 'Quiz mit Sofort-Feedback',
+			'quiz.showHint': 'Hinweis anzeigen',
+			'quiz.skip': 'Überspringen',
+			'quiz.nextQuestion': 'Nächste Frage',
+			'quiz.focusLabel': 'Fokus',
+			'quiz.focusAll': 'Alle Themen',
+			'quiz.focusWeakest': 'Schwächstes Thema',
+			'quiz.focusWeakestWithTopic': 'Schwächstes Thema ({topic}, {accuracy}%)',
+			'quiz.focusHintAll': 'Alle Themen sind aktiv.',
+			'quiz.focusHintTopic': 'Fokusthema: {topic}',
+			'quiz.focusHintWeakest': 'Aktuell schwächstes Thema: {topic} ({accuracy}%, {total} beantwortet)',
+			'quiz.focusHintWeakestUnknown': 'Das schwächste Thema erscheint nach deinen ersten Antworten.',
+			'quiz.learnRefPrefix': 'Weiterlesen:',
 		'exam.title': 'Prüfungsmodus',
 		'exam.meta': '10 Fragen, 20 Minuten, gemischte Fragetypen und detaillierte Auswertung.',
 		'exam.start': 'Prüfung starten',
@@ -491,6 +532,7 @@ const i18n = {
 			'settings.aiApiKey': 'API-Key',
 			'settings.aiModel': 'Modell / Deployment',
 			'settings.aiKeyHowTo': 'Azure Portal -> deine Azure OpenAI Ressource -> Deployments + Endpoint -> Endpoint + Key kopieren.',
+			'settings.aiWindowReset': 'Chatfenster-Größe/Position zurücksetzen',
 		'settings.save': 'Speichern',
 		'settings.reset': 'Standardwerte',
 		'welcome.title': 'Willkommen beim AI-900 Lernbegleiter',
@@ -512,6 +554,11 @@ const i18n = {
 			'chat.send': 'Senden',
 			'chat.empty': 'Noch keine Nachrichten. Stelle eine Frage an den AI-Assistenten.',
 			'chat.pending': 'Assistent schreibt...',
+			'chat.quick.label': 'Schnellaktionen',
+			'chat.quick.simplify': 'Vereinfachen',
+			'chat.quick.example': 'Beispiel geben',
+			'chat.quick.compare': 'Vergleichen',
+			'chat.quick.quiz': 'Quiz mich',
 			'chat.errorConfig': 'Trage Endpoint und API-Key in den Einstellungen ein, um den AI-Chat zu nutzen.',
 			'chat.errorExam': 'AI-Chat ist im Prüfungsmodus deaktiviert.',
 			'chat.errorRequest': 'Anfrage fehlgeschlagen.',
@@ -550,6 +597,8 @@ const AZURE_RESPONSES_MODEL = DEFAULT_SETTINGS.aiModel;
 const AI_CHAT_MIN_WIDTH = 320;
 const AI_CHAT_MIN_HEIGHT = 280;
 const AI_CHAT_VIEWPORT_MARGIN = 10;
+const QUIZ_TOPIC_FILTER_ALL = 'all';
+const QUIZ_TOPIC_FILTER_WEAKEST = 'weakest';
 const AI_CHAT_ALLOWED_TAGS = new Set([
 	'p', 'br', 'strong', 'em', 'b', 'i', 'u', 'del', 'ul', 'ol', 'li', 'code', 'pre', 'blockquote',
 	'a', 'hr', 'h1', 'h2', 'h3', 'h4', 'table', 'thead', 'tbody', 'tr', 'th', 'td'
@@ -672,6 +721,12 @@ function saveAiChatLayout(layout) {
 			width: Math.round(width),
 			height: Math.round(height)
 		}));
+	} catch {}
+}
+
+function clearStoredAiChatLayout() {
+	try {
+		localStorage.removeItem(AI_CHAT_LAYOUT_KEY);
 	} catch {}
 }
 
@@ -847,6 +902,7 @@ function applyLanguage(language, { persist = true } = {}) {
 
 	applyLanguageToStaticUi();
 	applyLanguageToRoadmap();
+	renderQuizTopicFilterOptions();
 
 	if (ui.languageToggle) {
 		ui.languageToggle.textContent = currentLanguage === 'en' ? 'DE' : 'EN';
@@ -1062,6 +1118,7 @@ function hydrate(saved) {
 	if (!state.historyDaily || typeof state.historyDaily !== 'object') {
 		state.historyDaily = {};
 	}
+	renderQuizTopicFilterOptions();
 }
 
 /* ---- Settings ---- */
@@ -1341,6 +1398,9 @@ function createAiChatPendingElement() {
 function syncAiChatBusyState() {
 	if (ui.aiChatSend) ui.aiChatSend.disabled = aiChatPending;
 	if (ui.aiChatInput) ui.aiChatInput.disabled = aiChatPending;
+	aiChatQuickButtons.forEach((button) => {
+		button.disabled = aiChatPending || Boolean(exam);
+	});
 	if (ui.aiChatPanel) ui.aiChatPanel.classList.toggle('is-busy', aiChatPending);
 }
 
@@ -1409,6 +1469,12 @@ function clearAiChatPanelCustomRect() {
 	ui.aiChatPanel.style.height = '';
 	ui.aiChatPanel.style.right = '';
 	ui.aiChatPanel.style.bottom = '';
+}
+
+function resetAiChatWindowLayout() {
+	clearStoredAiChatLayout();
+	clearAiChatPanelCustomRect();
+	clampAiChatPanelToViewport();
 }
 
 function clampAiChatPanelToViewport() {
@@ -1644,6 +1710,34 @@ function getActiveStudyContext() {
 	}
 
 	return lines.join('\n');
+}
+
+function buildAiChatQuickActionPrompt(action) {
+	const mode = String(action || '').trim().toLowerCase();
+	const isDe = currentLanguage === 'de';
+	if (mode === 'simplify') {
+		return isDe
+			? 'Erkläre mir das aktuelle Thema bitte ganz einfach in 5 kurzen Punkten.'
+			: 'Explain the current topic in very simple words using 5 short bullet points.';
+	}
+	if (mode === 'example') {
+		return isDe
+			? 'Gib mir bitte ein konkretes Praxisbeispiel zum aktuellen Thema.'
+			: 'Give me one concrete real-world example for the current topic.';
+	}
+	if (mode === 'compare') {
+		return isDe
+			? 'Vergleiche die wichtigsten Begriffe im aktuellen Thema und zeige die Unterschiede klar.'
+			: 'Compare the key terms in the current topic and highlight the important differences.';
+	}
+	if (mode === 'quiz') {
+		return isDe
+			? 'Stelle mir 3 kurze Quizfragen zum aktuellen Thema und gib die Lösungen danach an.'
+			: 'Ask me 3 short quiz questions about the current topic and provide the solutions afterward.';
+	}
+	return isDe
+		? 'Hilf mir bitte beim aktuellen Thema.'
+		: 'Please help me with the current topic.';
 }
 
 function buildAiSystemPrompt() {
@@ -1888,6 +1982,18 @@ function renderSessionGoal() {
 	if (changed) void saveState();
 }
 
+function getTopicMasteryRows(minAnswered = 1) {
+	return Object.entries(state.quiz.byTopic || {})
+		.map(([topic, values]) => {
+			const total = Number(values.total) || 0;
+			const correct = Number(values.correct) || 0;
+			const accuracy = total ? Math.round((correct / total) * 100) : 0;
+			return { topic, total, accuracy };
+		})
+		.filter((row) => row.total >= minAnswered)
+		.sort((left, right) => left.accuracy - right.accuracy || right.total - left.total);
+}
+
 function renderHistoryPanel() {
 	if (!ui.historyStreak || !ui.historyHeatmap || !ui.historyTopicTrend) return;
 
@@ -1925,16 +2031,7 @@ function renderHistoryPanel() {
 	}
 
 	ui.historyTopicTrend.innerHTML = '';
-	const topicRows = Object.entries(state.quiz.byTopic || {})
-		.map(([topic, values]) => {
-			const total = Number(values.total) || 0;
-			const correct = Number(values.correct) || 0;
-			const accuracy = total ? Math.round((correct / total) * 100) : 0;
-			return { topic, total, accuracy };
-		})
-		.filter((row) => row.total > 0)
-		.sort((left, right) => left.accuracy - right.accuracy || right.total - left.total)
-		.slice(0, 6);
+	const topicRows = getTopicMasteryRows(1).slice(0, 6);
 
 	if (!topicRows.length) {
 		const empty = document.createElement('p');
@@ -1973,6 +2070,49 @@ function getDueCardCount() {
 	return Math.min(flashDue + glossaryDue, state.settings.maxReviewsPerDay);
 }
 
+function getQuizTopicCoveragePercent() {
+	const practicedTopics = getTopicMasteryRows(1).length;
+	const totalTopics = quizQuestions.length
+		? new Set(quizQuestions.map((question) => question.topic)).size
+		: Object.keys(state.quiz.byTopic || {}).length;
+	return totalTopics ? Math.round((practicedTopics / totalTopics) * 100) : 0;
+}
+
+function getExamReadinessSnapshot() {
+	const answered = Number(state.quiz.answered) || 0;
+	const quizAccuracy = getAccuracy();
+	const hasExamData = (Array.isArray(state.examHistory) && state.examHistory.length > 0) || state.examBest > 0;
+	const examSignal = hasExamData
+		? Math.max(0, Math.min(100, Number(state.examBest) || 0))
+		: (answered ? Math.max(0, Math.round(quizAccuracy * 0.92)) : 0);
+	const coverage = getQuizTopicCoveragePercent();
+	const volume = Math.min(100, answered * 5);
+	const readiness = (answered > 0 || hasExamData)
+		? Math.round((quizAccuracy * 0.4) + (examSignal * 0.35) + (coverage * 0.15) + (volume * 0.1))
+		: 0;
+	const score = Math.max(0, Math.min(100, readiness));
+	return { score, answered, quizAccuracy, examSignal, coverage };
+}
+
+function renderExamReadiness() {
+	if (!ui.heroReadiness || !ui.heroReadinessProgress || !ui.heroReadinessValue || !ui.heroReadinessMeta) return;
+
+	const snapshot = getExamReadinessSnapshot();
+	ui.heroReadinessProgress.value = snapshot.score;
+	ui.heroReadinessValue.textContent = `${snapshot.score}%`;
+	ui.heroReadinessMeta.textContent = snapshot.answered > 0 || snapshot.examSignal > 0
+		? t('readiness.meta', {
+			accuracy: snapshot.quizAccuracy,
+			exam: snapshot.examSignal,
+			coverage: snapshot.coverage,
+			answered: snapshot.answered
+		})
+		: t('readiness.metaIdle');
+
+	const level = snapshot.score >= 80 ? 'high' : snapshot.score >= 55 ? 'mid' : 'low';
+	ui.heroReadiness.dataset.level = level;
+}
+
 function renderRoadmapChecks() {
 	roadmapBoxes.forEach((box) => {
 		box.checked = Boolean(state.roadmapDone[box.dataset.roadmapKey]);
@@ -1987,6 +2127,7 @@ function renderStats() {
 	ui.metricExam.textContent = `${state.examBest}%`;
 	ui.metricDue.textContent = String(getDueCardCount());
 	ui.metricJournal.textContent = String(Object.keys(state.wrongJournal).length);
+	renderExamReadiness();
 	renderSessionGoal();
 	renderHistoryPanel();
 }
@@ -1995,6 +2136,97 @@ function renderStats() {
 
 function refillQuizDeck() {
 	quizDeck = shuffle(quizQuestions);
+}
+
+function getWeakestTopicRow() {
+	const rows = getTopicMasteryRows(1);
+	return rows.length ? rows[0] : null;
+}
+
+function getQuizTopicFilterValue() {
+	if (!ui.quizTopicFilter) return QUIZ_TOPIC_FILTER_ALL;
+	const value = String(ui.quizTopicFilter.value || QUIZ_TOPIC_FILTER_ALL);
+	if (value === QUIZ_TOPIC_FILTER_ALL || value === QUIZ_TOPIC_FILTER_WEAKEST) return value;
+	if (quizQuestions.some((question) => question.topic === value)) return value;
+	return QUIZ_TOPIC_FILTER_ALL;
+}
+
+function renderQuizTopicFocusHint() {
+	if (!ui.quizTopicFocus) return;
+	const filterValue = getQuizTopicFilterValue();
+	if (filterValue === QUIZ_TOPIC_FILTER_ALL) {
+		ui.quizTopicFocus.textContent = t('quiz.focusHintAll');
+		return;
+	}
+	if (filterValue === QUIZ_TOPIC_FILTER_WEAKEST) {
+		const weakest = getWeakestTopicRow();
+		ui.quizTopicFocus.textContent = weakest
+			? t('quiz.focusHintWeakest', { topic: weakest.topic, accuracy: weakest.accuracy, total: weakest.total })
+			: t('quiz.focusHintWeakestUnknown');
+		return;
+	}
+	ui.quizTopicFocus.textContent = t('quiz.focusHintTopic', { topic: filterValue });
+}
+
+function renderQuizTopicFilterOptions() {
+	if (!ui.quizTopicFilter) return;
+	const previous = getQuizTopicFilterValue();
+	const locale = currentLanguage === 'de' ? 'de' : 'en';
+	const topics = [...new Set(quizQuestions.map((question) => String(question.topic || '').trim()).filter(Boolean))]
+		.sort((left, right) => left.localeCompare(right, locale));
+	const weakest = getWeakestTopicRow();
+	const weakestLabel = weakest
+		? t('quiz.focusWeakestWithTopic', { topic: weakest.topic, accuracy: weakest.accuracy })
+		: t('quiz.focusWeakest');
+
+	ui.quizTopicFilter.innerHTML = '';
+	const optionRows = [
+		{ value: QUIZ_TOPIC_FILTER_ALL, label: t('quiz.focusAll') },
+		{ value: QUIZ_TOPIC_FILTER_WEAKEST, label: weakestLabel },
+		...topics.map((topic) => ({ value: topic, label: topic }))
+	];
+	optionRows.forEach((row) => {
+		const option = document.createElement('option');
+		option.value = row.value;
+		option.textContent = row.label;
+		ui.quizTopicFilter.append(option);
+	});
+	ui.quizTopicFilter.value = optionRows.some((row) => row.value === previous)
+		? previous
+		: QUIZ_TOPIC_FILTER_ALL;
+	renderQuizTopicFocusHint();
+}
+
+function resolveQuizFocusTopic() {
+	const filterValue = getQuizTopicFilterValue();
+	if (filterValue === QUIZ_TOPIC_FILTER_ALL) return '';
+	if (filterValue === QUIZ_TOPIC_FILTER_WEAKEST) {
+		return getWeakestTopicRow()?.topic || '';
+	}
+	return filterValue;
+}
+
+function pickQuestionFromDeck(topic = '') {
+	if (!quizDeck.length) refillQuizDeck();
+	if (!quizDeck.length) return null;
+	if (!topic) return quizDeck.pop();
+
+	for (let index = quizDeck.length - 1; index >= 0; index -= 1) {
+		if (quizDeck[index]?.topic === topic) {
+			const [question] = quizDeck.splice(index, 1);
+			return question;
+		}
+	}
+
+	refillQuizDeck();
+	for (let index = quizDeck.length - 1; index >= 0; index -= 1) {
+		if (quizDeck[index]?.topic === topic) {
+			const [question] = quizDeck.splice(index, 1);
+			return question;
+		}
+	}
+
+	return quizDeck.pop();
 }
 
 function formatOptionLabel(optionIndex, optionText) {
@@ -2056,15 +2288,13 @@ function showQuizQuestion(forcedQuestionId = null) {
 	if (!quizQuestions.length) return;
 	const baseQuestion = forcedQuestionId && questionById.has(forcedQuestionId)
 		? questionById.get(forcedQuestionId)
-		: (() => {
-				if (!quizDeck.length) refillQuizDeck();
-				return quizDeck.pop();
-			})();
+		: pickQuestionFromDeck(resolveQuizFocusTopic());
 	if (!baseQuestion) return;
 
 	activeQuestion = createRuntimeQuestion(baseQuestion);
 	quizLocked = false;
 	lastQuizSelectedIndex = null;
+	renderQuizTopicFocusHint();
 	ui.quizTopic.textContent = `${activeQuestion.topic} · ${activeQuestion.typeLabel}`;
 	ui.quizQuestion.textContent = activeQuestion.prompt;
 	const poolHint =
@@ -2148,6 +2378,7 @@ function submitQuizAnswer(selectedIndex) {
 	}
 	state.quiz.byTopic[activeQuestion.topic] = topicStats;
 	trackDailyHistory({ answered: 1, correct: isCorrect ? 1 : 0 });
+	renderQuizTopicFilterOptions();
 
 	[...ui.quizOptions.querySelectorAll('button')].forEach((button) => {
 		const index = Number(button.dataset.index);
@@ -2765,6 +2996,12 @@ function bindEvents() {
 
 	// Quiz events
 	if (ui.quizBookmark) ui.quizBookmark.onclick = () => toggleBookmark();
+	if (ui.quizTopicFilter) {
+		ui.quizTopicFilter.onchange = () => {
+			renderQuizTopicFocusHint();
+			if (quizQuestions.length) showQuizQuestion();
+		};
+	}
 	ui.quizNext.onclick = () => showQuizQuestion();
 	ui.quizHint.onclick = () => {
 		if (!activeQuestion) return;
@@ -2816,6 +3053,7 @@ function bindEvents() {
 	};
 	if (ui.settingsSave) ui.settingsSave.onclick = () => saveSettings();
 	if (ui.settingsReset) ui.settingsReset.onclick = () => resetSettings();
+	if (ui.settingAiWindowReset) ui.settingAiWindowReset.onclick = () => resetAiChatWindowLayout();
 	if (ui.welcomeStart) ui.welcomeStart.onclick = () => {
 		state.hasSeenWelcome = true;
 		void saveState();
@@ -2838,6 +3076,12 @@ function bindEvents() {
 			}
 		});
 	}
+	aiChatQuickButtons.forEach((button) => {
+		button.addEventListener('click', () => {
+			const action = String(button.dataset.chatQuick || '').trim();
+			void sendAiChatMessage(buildAiChatQuickActionPrompt(action));
+		});
+	});
 	setupAiChatResize();
 	setupAiChatDrag();
 

@@ -4,6 +4,22 @@ export default function QuizModule() {
 	return (
 		<OverlayDialog id="overlay-quiz" titleId="overlay-quiz-title" titleI18n="quiz.title" titleDefault="Quiz with instant feedback">
 			<p id="quiz-progress" className="meta"></p>
+			<div className="quiz-focus-row">
+				<label htmlFor="quiz-topic-filter" className="quiz-focus-label" data-i18n="quiz.focusLabel">
+					Focus
+				</label>
+				<select id="quiz-topic-filter" className="quiz-topic-filter" data-i18n-aria-label="quiz.focusLabel" aria-label="Focus">
+					<option value="all" data-i18n="quiz.focusAll">
+						All topics
+					</option>
+					<option value="weakest" data-i18n="quiz.focusWeakest">
+						Weakest topic
+					</option>
+				</select>
+			</div>
+			<p id="quiz-topic-focus" className="meta quiz-topic-focus" data-i18n="quiz.focusHintAll">
+				All topics are active.
+			</p>
 			<div className="quiz-question-row">
 				<p id="quiz-topic" className="chip"></p>
 				<button id="quiz-bookmark" type="button" className="quiz-bookmark" aria-label="Save question" data-i18n-aria-label="quiz.bookmarkLabel">

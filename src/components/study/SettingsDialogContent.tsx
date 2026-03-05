@@ -56,11 +56,16 @@ export default function SettingsDialogContent() {
 						<span data-i18n="settings.aiModel">Model / deployment</span>
 						<Input id="setting-ai-model" type="text" placeholder="gpt-5.2" defaultValue="gpt-5.2" />
 					</label>
-					<p className="settings-help" data-i18n="settings.aiKeyHowTo">
-						Azure Portal - your Azure OpenAI resource - Deployments + Endpoint - copy endpoint and key.
-					</p>
-				</section>
-			<div className="settings-actions">
+						<p className="settings-help" data-i18n="settings.aiKeyHowTo">
+							Azure Portal - your Azure OpenAI resource - Deployments + Endpoint - copy endpoint and key.
+						</p>
+						<div className="settings-inline-actions">
+							<button id="setting-ai-window-reset" type="button" className="secondary" data-i18n="settings.aiWindowReset">
+								Reset chat window size/position
+							</button>
+						</div>
+					</section>
+				<div className="settings-actions">
 				<button id="settings-save" type="button" className="primary" data-i18n="settings.save">
 					Save
 				</button>

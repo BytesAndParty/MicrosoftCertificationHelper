@@ -52,6 +52,16 @@ export default function StudyWorkspace({ roadmapThemes }: StudyWorkspaceProps) {
 						</button>
 					</div>
 				</div>
+				<div className="hero-readiness" id="hero-readiness">
+					<div className="hero-readiness-head">
+						<p data-i18n="readiness.label">Exam readiness</p>
+						<strong id="hero-readiness-value">0%</strong>
+					</div>
+					<progress id="hero-readiness-progress" max={100} value={0} data-i18n-aria-label="readiness.label" aria-label="Exam readiness"></progress>
+					<p id="hero-readiness-meta" className="hero-readiness-meta" data-i18n="readiness.metaIdle">
+						Answer quiz questions to build your readiness score.
+					</p>
+				</div>
 				<nav className="hero-modes" aria-label="Study modes" data-i18n-aria-label="tabs.ariaLabel">
 					<button type="button" className="mode-btn" data-mode="quiz" data-tooltip="Answer questions with instant feedback and track your accuracy over time." data-i18n-tooltip="tooltip.quiz">
 						<span className="mode-icon" aria-hidden="true">&#9997;</span>
