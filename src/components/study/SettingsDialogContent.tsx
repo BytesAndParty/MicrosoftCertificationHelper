@@ -41,7 +41,7 @@ export default function SettingsDialogContent() {
 					</div>
 				</label>
 				<p className="settings-help" data-i18n="settings.accentHint">
-					Only accent colors change. Surface and text colors stay fixed for readability.
+					Each accent updates the full palette while keeping text contrast accessible.
 				</p>
 			</div>
 			<section className="settings-section">
