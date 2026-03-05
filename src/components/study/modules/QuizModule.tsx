@@ -35,6 +35,9 @@ export default function QuizModule() {
 				<button id="quiz-skip" type="button" className="secondary" data-i18n="quiz.skip">
 					Skip
 				</button>
+				<button id="quiz-chat-send" type="button" className="secondary" data-i18n="chat.sendQuizItem">
+					Discuss in AI chat
+				</button>
 			</div>
 			<p id="quiz-hint-text" className="hint-box" hidden></p>
 			<p id="quiz-feedback" className="feedback" aria-live="polite"></p>

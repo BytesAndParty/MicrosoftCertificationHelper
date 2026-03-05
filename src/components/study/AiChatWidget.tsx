@@ -14,20 +14,6 @@ export default function AiChatWidget() {
 				<p className="meta ai-chat-note" data-i18n="chat.helper">
 					Ask follow-up questions about the current study content.
 				</p>
-				<div className="ai-chat-quick-actions" role="group" data-i18n-aria-label="chat.quick.label" aria-label="Quick actions">
-					<button type="button" className="ai-chat-quick-chip" data-chat-quick="simplify" data-i18n="chat.quick.simplify">
-						Simplify
-					</button>
-					<button type="button" className="ai-chat-quick-chip" data-chat-quick="example" data-i18n="chat.quick.example">
-						Give example
-					</button>
-					<button type="button" className="ai-chat-quick-chip" data-chat-quick="compare" data-i18n="chat.quick.compare">
-						Compare
-					</button>
-					<button type="button" className="ai-chat-quick-chip" data-chat-quick="quiz" data-i18n="chat.quick.quiz">
-						Quiz me
-					</button>
-				</div>
 				<div id="ai-chat-messages" className="ai-chat-messages"></div>
 				<form id="ai-chat-form" className="ai-chat-form">
 					<label className="sr-only" htmlFor="ai-chat-input" data-i18n="chat.inputLabel">

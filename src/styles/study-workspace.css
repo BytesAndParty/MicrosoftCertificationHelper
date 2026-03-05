@@ -674,6 +674,18 @@ h4 {
 	animation: overlay-slide-up 0.3s ease;
 }
 
+#overlay-quiz .overlay-container,
+#overlay-flashcards .overlay-container {
+	width: min(1060px, 96vw);
+	min-height: min(760px, 88vh);
+	max-height: 95vh;
+}
+
+#overlay-quiz .overlay-body,
+#overlay-flashcards .overlay-body {
+	gap: 1rem;
+}
+
 .overlay-header {
 	display: flex;
 	flex-wrap: wrap;
@@ -1121,10 +1133,6 @@ button {
 }
 
 .flashcard {
-	--flash-tilt-x: 0deg;
-	--flash-tilt-y: 0deg;
-	--flash-glare-x: 50%;
-	--flash-glare-y: 32%;
 	background:
 		linear-gradient(160deg, #fff9f1 0%, #fdf0dd 58%, #f7e2bf 100%);
 	border: 1px solid rgba(194, 96, 10, 0.2);
@@ -1132,32 +1140,14 @@ button {
 	padding: 0.9rem;
 	min-height: 140px;
 	position: relative;
-	transform-style: preserve-3d;
-	transform: perspective(1000px) rotateX(var(--flash-tilt-x)) rotateY(var(--flash-tilt-y));
-	transition: border-color 0.3s, box-shadow 0.3s, transform 0.24s ease;
-	will-change: transform;
+	transition: border-color 0.3s, box-shadow 0.3s;
 	overflow: hidden;
 }
 
 .flashcard:hover {
 	border-color: rgba(194, 96, 10, 0.35);
 	box-shadow:
-		0 14px 28px rgba(66, 36, 19, 0.15),
-		0 0 22px rgba(245, 166, 35, 0.15);
-}
-
-.flashcard::before {
-	content: '';
-	position: absolute;
-	inset: 0;
-	background:
-		radial-gradient(
-			190px circle at var(--flash-glare-x) var(--flash-glare-y),
-			rgba(255, 255, 255, 0.5) 0%,
-			rgba(255, 255, 255, 0.2) 32%,
-			transparent 72%
-		);
-	pointer-events: none;
+		0 14px 28px rgba(66, 36, 19, 0.15);
 }
 
 .flashcard::after {
@@ -1182,9 +1172,7 @@ button {
 
 .flashcard.is-revealed {
 	border-color: rgba(42, 127, 86, 0.4);
-	box-shadow:
-		0 16px 28px rgba(31, 110, 77, 0.14),
-		0 0 24px rgba(95, 177, 137, 0.16);
+	box-shadow: 0 16px 28px rgba(31, 110, 77, 0.14);
 }
 
 @keyframes swipe-left {
@@ -1483,40 +1471,6 @@ input[type='search']:focus {
 	color: #3d5648;
 }
 
-.ai-chat-quick-actions {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 0.35rem;
-}
-
-.ai-chat-quick-chip {
-	border: 1px solid rgba(37, 95, 68, 0.24);
-	background: rgba(255, 255, 255, 0.86);
-	color: #1f4a35;
-	border-radius: 999px;
-	padding: 0.22rem 0.54rem;
-	font: inherit;
-	font-size: 0.74rem;
-	font-weight: 600;
-	line-height: 1.2;
-	cursor: pointer;
-	transition: transform 0.16s ease, border-color 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease;
-}
-
-.ai-chat-quick-chip:hover {
-	transform: translateY(-1px);
-	border-color: rgba(37, 95, 68, 0.45);
-	background: rgba(255, 255, 255, 0.96);
-	box-shadow: 0 2px 8px rgba(17, 64, 45, 0.15);
-}
-
-.ai-chat-quick-chip:disabled {
-	opacity: 0.58;
-	cursor: progress;
-	transform: none;
-	box-shadow: none;
-}
-
 .ai-chat-messages {
 	min-height: 140px;
 	overflow: auto;
@@ -1529,10 +1483,6 @@ input[type='search']:focus {
 		linear-gradient(180deg, rgba(255, 255, 255, 0.84) 0%, rgba(236, 244, 239, 0.9) 100%),
 		radial-gradient(circle at 20% 15%, rgba(52, 168, 114, 0.08) 0%, transparent 55%);
 	border: 1px solid rgba(44, 91, 68, 0.14);
-}
-
-.ai-chat-panel:not([hidden]) .ai-chat-quick-actions {
-	animation: ai-chat-quick-in 0.22s ease both;
 }
 
 .ai-chat-panel:not([hidden]) .ai-chat-messages {
@@ -1828,17 +1778,6 @@ body.ai-chat-dragging * {
 	}
 }
 
-@keyframes ai-chat-quick-in {
-	from {
-		opacity: 0;
-		transform: translateY(6px);
-	}
-	to {
-		opacity: 1;
-		transform: translateY(0);
-	}
-}
-
 @keyframes ai-chat-content-in {
 	from {
 		opacity: 0;
@@ -1878,6 +1817,17 @@ body.ai-chat-dragging * {
 	}
 	50% {
 		transform: translateY(-2px);
+	}
+}
+
+@keyframes toast-in {
+	from {
+		opacity: 0;
+		transform: translate(-50%, 8px);
+	}
+	to {
+		opacity: 1;
+		transform: translate(-50%, 0);
 	}
 }
 
@@ -1978,6 +1928,30 @@ body.ai-chat-dragging * {
 
 .reset-section .danger:hover {
 	opacity: 1;
+}
+
+.study-toast {
+	position: fixed;
+	left: 50%;
+	bottom: 1rem;
+	transform: translateX(-50%);
+	z-index: 980;
+	max-width: min(640px, calc(100vw - 1.5rem));
+	padding: 0.6rem 0.85rem;
+	border-radius: 12px;
+	border: 1px solid rgba(166, 58, 43, 0.42);
+	background: rgba(247, 233, 230, 0.96);
+	color: #7a2f23;
+	box-shadow: 0 10px 28px rgba(35, 18, 16, 0.24);
+	font-size: 0.84rem;
+	line-height: 1.35;
+	animation: toast-in 0.18s ease;
+}
+
+.study-toast[data-tone='error'] {
+	border-color: rgba(166, 58, 43, 0.42);
+	background: rgba(247, 233, 230, 0.96);
+	color: #7a2f23;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -2312,16 +2286,6 @@ html[data-theme='dark'] .flashcard {
 	border-color: rgba(250, 182, 108, 0.33);
 }
 
-html[data-theme='dark'] .flashcard::before {
-	background:
-		radial-gradient(
-			190px circle at var(--flash-glare-x) var(--flash-glare-y),
-			rgba(255, 231, 196, 0.2) 0%,
-			rgba(255, 231, 196, 0.08) 32%,
-			transparent 72%
-		);
-}
-
 html[data-theme='dark'] .flashcard.is-revealed {
 	border-color: rgba(111, 196, 146, 0.55);
 }
@@ -2360,7 +2324,7 @@ html[data-theme='dark'] .flashcard {
 
 html[data-theme='dark'] .flashcard:hover {
 	border-color: rgba(250, 182, 108, 0.44);
-	box-shadow: 0 0 20px rgba(250, 182, 108, 0.15), 0 8px 25px rgba(250, 182, 108, 0.07);
+	box-shadow: 0 8px 25px rgba(250, 182, 108, 0.07);
 }
 
 html[data-theme='dark'] .settings-row {
@@ -2401,6 +2365,13 @@ html[data-theme='dark'] .settings-actions {
 	border-top-color: rgba(236, 175, 111, 0.15);
 }
 
+html[data-theme='dark'] .study-toast {
+	border-color: rgba(233, 120, 103, 0.55);
+	background: rgba(58, 30, 26, 0.96);
+	color: #ffd3c8;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.42);
+}
+
 html[data-theme='dark'] .ai-chat-toggle {
 	background: linear-gradient(140deg, #19372b 0%, #214734 100%);
 	border-color: rgba(113, 213, 170, 0.3);
@@ -2424,18 +2395,6 @@ html[data-theme='dark'] .ai-chat-head {
 
 html[data-theme='dark'] .ai-chat-note {
 	color: #b7d8c7;
-}
-
-html[data-theme='dark'] .ai-chat-quick-chip {
-	background: rgba(26, 47, 38, 0.88);
-	color: #d2f2e0;
-	border-color: rgba(113, 213, 170, 0.34);
-}
-
-html[data-theme='dark'] .ai-chat-quick-chip:hover {
-	border-color: rgba(113, 213, 170, 0.56);
-	background: rgba(33, 61, 49, 0.94);
-	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.28);
 }
 
 html[data-theme='dark'] .ai-chat-messages {
@@ -2620,9 +2579,6 @@ html[data-theme='dark'] input[type='search']:focus {
 	.ai-chat-head,
 	.ai-chat-head:active {
 		cursor: default;
-	}
-	.ai-chat-quick-actions {
-		gap: 0.26rem;
 	}
 	.settings-row.settings-row-wide {
 		grid-template-columns: 1fr;

@@ -186,6 +186,7 @@ export default function StudyWorkspace({ roadmapThemes }: StudyWorkspaceProps) {
 			<section className="reset-section reveal">
 				<button id="reset-progress" type="button" className="danger" data-i18n="reset.button">Reset progress</button>
 			</section>
+			<div id="study-toast" className="study-toast" role="alert" aria-live="assertive" hidden></div>
 		</main>
 	);
 }

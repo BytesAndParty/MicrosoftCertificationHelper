@@ -155,6 +155,7 @@ const ui = {
 	flashBack: byId('flashcard-back'),
 	flashShow: byId('flashcard-show'),
 	flashHint: byId('flashcard-hint'),
+	flashcardChatSend: byId('flashcard-chat-send'),
 	flashHintText: byId('flashcard-hint-text'),
 	flashGrades: byId('flashcard-grade-actions'),
 	flashAgain: byId('flashcard-again'),
@@ -164,6 +165,7 @@ const ui = {
 	journalList: byId('journal-list'),
 	quizHint: byId('quiz-hint'),
 	quizSkip: byId('quiz-skip'),
+	quizChatSend: byId('quiz-chat-send'),
 	quizHintText: byId('quiz-hint-text'),
 	quizBookmark: byId('quiz-bookmark'),
 	glossarySearch: byId('glossary-search'),
@@ -204,6 +206,7 @@ const ui = {
 	settingsSave: byId('settings-save'),
 	settingsReset: byId('settings-reset'),
 	welcomeStart: byId('welcome-start'),
+	studyToast: byId('study-toast'),
 	aiChatWidget: byId('ai-chat-widget'),
 	aiChatToggle: byId('ai-chat-toggle'),
 	aiChatPanel: byId('ai-chat-panel'),
@@ -214,8 +217,6 @@ const ui = {
 	aiChatSend: byId('ai-chat-send'),
 	aiChatError: byId('ai-chat-error')
 };
-
-const aiChatQuickButtons = [...document.querySelectorAll('[data-chat-quick]')];
 
 const i18n = {
 	en: {
@@ -384,13 +385,10 @@ const i18n = {
 			'chat.inputLabel': 'Your question',
 			'chat.placeholder': 'Ask what you did not understand...',
 			'chat.send': 'Send',
+			'chat.sendQuizItem': 'Discuss quiz item in AI chat',
+			'chat.sendFlashcardItem': 'Discuss flashcard in AI chat',
 			'chat.empty': 'No messages yet. Ask a question to the AI helper.',
 			'chat.pending': 'Assistant is writing...',
-			'chat.quick.label': 'Quick actions',
-			'chat.quick.simplify': 'Simplify',
-			'chat.quick.example': 'Give example',
-			'chat.quick.compare': 'Compare',
-			'chat.quick.quiz': 'Quiz me',
 			'chat.errorConfig': 'Add endpoint and API key in settings to use AI chat.',
 			'chat.errorExam': 'AI chat is disabled during exam mode.',
 			'chat.errorRequest': 'Request failed.',
@@ -566,13 +564,10 @@ const i18n = {
 			'chat.inputLabel': 'Deine Frage',
 			'chat.placeholder': 'Frag nach, was du nicht verstanden hast...',
 			'chat.send': 'Senden',
+			'chat.sendQuizItem': 'Quiz-Inhalt im AI-Chat besprechen',
+			'chat.sendFlashcardItem': 'Flashcard im AI-Chat besprechen',
 			'chat.empty': 'Noch keine Nachrichten. Stelle eine Frage an den AI-Assistenten.',
 			'chat.pending': 'Assistent schreibt...',
-			'chat.quick.label': 'Schnellaktionen',
-			'chat.quick.simplify': 'Vereinfachen',
-			'chat.quick.example': 'Beispiel geben',
-			'chat.quick.compare': 'Vergleichen',
-			'chat.quick.quiz': 'Quiz mich',
 			'chat.errorConfig': 'Trage Endpoint und API-Key in den Einstellungen ein, um den AI-Chat zu nutzen.',
 			'chat.errorExam': 'AI-Chat ist im Prüfungsmodus deaktiviert.',
 			'chat.errorRequest': 'Anfrage fehlgeschlagen.',
@@ -602,6 +597,7 @@ let currentLanguage = 'en';
 let activeOverlay = null;
 let previousFocusElement = null;
 let flashSwipeTimer;
+let toastTimer;
 let aiChatMessages = [];
 let aiChatPending = false;
 
@@ -1268,6 +1264,22 @@ function setAiChatError(message = '') {
 	ui.aiChatError.hidden = !message;
 }
 
+function showToast(message = '', { tone = 'error', duration = 3600 } = {}) {
+	if (!ui.studyToast) return;
+	const text = String(message || '').trim();
+	if (!text) return;
+
+	ui.studyToast.textContent = text;
+	ui.studyToast.dataset.tone = tone;
+	ui.studyToast.hidden = false;
+
+	if (toastTimer) clearTimeout(toastTimer);
+	toastTimer = setTimeout(() => {
+		if (!ui.studyToast) return;
+		ui.studyToast.hidden = true;
+	}, Math.max(1200, Number(duration) || 3600));
+}
+
 function escapeHtml(value = '') {
 	return String(value || '')
 		.replaceAll('&', '&amp;')
@@ -1426,9 +1438,8 @@ function createAiChatPendingElement() {
 function syncAiChatBusyState() {
 	if (ui.aiChatSend) ui.aiChatSend.disabled = aiChatPending;
 	if (ui.aiChatInput) ui.aiChatInput.disabled = aiChatPending;
-	aiChatQuickButtons.forEach((button) => {
-		button.disabled = aiChatPending || Boolean(exam);
-	});
+	if (ui.quizChatSend) ui.quizChatSend.disabled = aiChatPending || !activeQuestion;
+	if (ui.flashcardChatSend) ui.flashcardChatSend.disabled = aiChatPending || !activeCard;
 	if (ui.aiChatPanel) ui.aiChatPanel.classList.toggle('is-busy', aiChatPending);
 }
 
@@ -1740,34 +1751,6 @@ function getActiveStudyContext() {
 	return lines.join('\n');
 }
 
-function buildAiChatQuickActionPrompt(action) {
-	const mode = String(action || '').trim().toLowerCase();
-	const isDe = currentLanguage === 'de';
-	if (mode === 'simplify') {
-		return isDe
-			? 'Erkläre mir das aktuelle Thema bitte ganz einfach in 5 kurzen Punkten.'
-			: 'Explain the current topic in very simple words using 5 short bullet points.';
-	}
-	if (mode === 'example') {
-		return isDe
-			? 'Gib mir bitte ein konkretes Praxisbeispiel zum aktuellen Thema.'
-			: 'Give me one concrete real-world example for the current topic.';
-	}
-	if (mode === 'compare') {
-		return isDe
-			? 'Vergleiche die wichtigsten Begriffe im aktuellen Thema und zeige die Unterschiede klar.'
-			: 'Compare the key terms in the current topic and highlight the important differences.';
-	}
-	if (mode === 'quiz') {
-		return isDe
-			? 'Stelle mir 3 kurze Quizfragen zum aktuellen Thema und gib die Lösungen danach an.'
-			: 'Ask me 3 short quiz questions about the current topic and provide the solutions afterward.';
-	}
-	return isDe
-		? 'Hilf mir bitte beim aktuellen Thema.'
-		: 'Please help me with the current topic.';
-}
-
 function buildAiSystemPrompt() {
 	return [
 		'You are an AI-900 study assistant.',
@@ -1876,6 +1859,72 @@ async function sendAiChatMessage(rawMessage) {
 		aiChatPending = false;
 		renderAiChatMessages();
 	}
+}
+
+function buildQuizItemChatPrompt() {
+	if (!activeQuestion) return '';
+	const isDe = currentLanguage === 'de';
+	const lines = [];
+	lines.push(
+		isDe
+			? 'Hilf mir bei dieser Quizfrage. Erkläre die richtige Antwort und warum die anderen Optionen nicht passen.'
+			: 'Help me with this quiz item. Explain the correct answer and why the other options are wrong.'
+	);
+	lines.push('');
+	lines.push(`${isDe ? 'Thema' : 'Topic'}: ${activeQuestion.topic}`);
+	lines.push(`${isDe ? 'Frage' : 'Question'}: ${activeQuestion.prompt}`);
+	lines.push(`${isDe ? 'Optionen' : 'Options'}:`);
+	activeQuestion.options.forEach((option, index) => {
+		lines.push(`${index + 1}. ${option}`);
+	});
+	if (quizLocked && lastQuizSelectedIndex !== null) {
+		const selected = activeQuestion.options[lastQuizSelectedIndex] || '';
+		lines.push('');
+		lines.push(`${isDe ? 'Meine Antwort' : 'My answer'}: ${selected}`);
+		lines.push(`${isDe ? 'Richtige Antwort' : 'Correct answer'}: ${activeQuestion.correctText}`);
+		lines.push(`${isDe ? 'Erklärung' : 'Explanation'}: ${activeQuestion.explanation}`);
+	}
+	return lines.join('\n');
+}
+
+function buildFlashcardItemChatPrompt() {
+	if (!activeCard) return '';
+	const isDe = currentLanguage === 'de';
+	const front = currentLanguage === 'de' && activeCard.frontDe ? activeCard.frontDe : activeCard.front;
+	const back = currentLanguage === 'de' && activeCard.backDe ? activeCard.backDe : activeCard.back;
+	return [
+		isDe
+			? 'Hilf mir bei dieser Flashcard. Erkläre das Thema einfach und gib mir ein kurzes Lernbeispiel.'
+			: 'Help me with this flashcard. Explain the topic simply and give me one short study example.',
+		'',
+		`${isDe ? 'Thema' : 'Topic'}: ${activeCard.topic}`,
+		`${isDe ? 'Vorderseite' : 'Front'}: ${front}`,
+		`${isDe ? 'Rückseite' : 'Back'}: ${back}`
+	].join('\n');
+}
+
+async function sendQuizItemToAiChat() {
+	if (!activeQuestion) return;
+	if (!isAiChatConfigured()) {
+		const message = t('chat.errorConfig');
+		setAiChatError(message);
+		showToast(message, { tone: 'error' });
+		return;
+	}
+	toggleAiChatPanel(true);
+	await sendAiChatMessage(buildQuizItemChatPrompt());
+}
+
+async function sendFlashcardItemToAiChat() {
+	if (!activeCard) return;
+	if (!isAiChatConfigured()) {
+		const message = t('chat.errorConfig');
+		setAiChatError(message);
+		showToast(message, { tone: 'error' });
+		return;
+	}
+	toggleAiChatPanel(true);
+	await sendAiChatMessage(buildFlashcardItemChatPrompt());
 }
 
 /* ---- Stats & metrics ---- */
@@ -2343,6 +2392,7 @@ function showQuizQuestion(forcedQuestionId = null) {
 	ui.quizSkip.hidden = false;
 	ui.quizOptions.innerHTML = '';
 	ui.quizNext.disabled = true;
+	if (ui.quizChatSend) ui.quizChatSend.disabled = aiChatPending;
 	updateBookmarkIcon();
 
 	activeQuestion.options.forEach((option, optionIndex) => {
@@ -2360,6 +2410,7 @@ function showQuizQuestion(forcedQuestionId = null) {
 		button.onclick = () => submitQuizAnswer(optionIndex);
 		ui.quizOptions.append(button);
 	});
+	syncAiChatBusyState();
 }
 
 function updateBookmarkIcon() {
@@ -2743,28 +2794,6 @@ function animateFlashcardSwipe(grade) {
 	});
 }
 
-function updateFlashcardTilt(clientX, clientY) {
-	if (!ui.flashBox) return;
-	const rect = ui.flashBox.getBoundingClientRect();
-	if (!rect.width || !rect.height) return;
-	const xPercent = (clientX - rect.left) / rect.width;
-	const yPercent = (clientY - rect.top) / rect.height;
-	const rotateY = (xPercent - 0.5) * 8;
-	const rotateX = (0.5 - yPercent) * 7;
-	ui.flashBox.style.setProperty('--flash-tilt-x', `${rotateX.toFixed(2)}deg`);
-	ui.flashBox.style.setProperty('--flash-tilt-y', `${rotateY.toFixed(2)}deg`);
-	ui.flashBox.style.setProperty('--flash-glare-x', `${Math.round(xPercent * 100)}%`);
-	ui.flashBox.style.setProperty('--flash-glare-y', `${Math.round(yPercent * 100)}%`);
-}
-
-function resetFlashcardTilt() {
-	if (!ui.flashBox) return;
-	ui.flashBox.style.removeProperty('--flash-tilt-x');
-	ui.flashBox.style.removeProperty('--flash-tilt-y');
-	ui.flashBox.style.removeProperty('--flash-glare-x');
-	ui.flashBox.style.removeProperty('--flash-glare-y');
-}
-
 function chooseNextCard() {
 	activeCard = selectNextStudyCard(flashcards, state.flashcards, {
 		now: Date.now(),
@@ -2777,7 +2806,11 @@ function chooseNextCard() {
 }
 
 function renderCard() {
-	if (!activeCard) return;
+	if (!activeCard) {
+		if (ui.flashcardChatSend) ui.flashcardChatSend.disabled = true;
+		syncAiChatBusyState();
+		return;
+	}
 	const progress = state.flashcards[activeCard.id];
 	const front = currentLanguage === 'de' && activeCard.frontDe ? activeCard.frontDe : activeCard.front;
 	const back = currentLanguage === 'de' && activeCard.backDe ? activeCard.backDe : activeCard.back;
@@ -2796,6 +2829,7 @@ function renderCard() {
 	ui.flashMeta.textContent = flashDueCount
 		? t('flashcards.dueCards', { count: flashDueCount })
 		: t('flashcards.nextCard', { date: formatDate(progress.dueAt) });
+	syncAiChatBusyState();
 }
 
 async function rateCard(grade) {
@@ -3039,20 +3073,17 @@ function bindEvents() {
 		ui.quizHint.hidden = true;
 	};
 	ui.quizSkip.onclick = () => showQuizQuestion();
+	if (ui.quizChatSend) {
+		ui.quizChatSend.onclick = () => {
+			void sendQuizItemToAiChat();
+		};
+	}
 
 	// Exam events
 	ui.examStart.onclick = () => void startExam();
 	ui.examNext.onclick = () => nextExamQuestion();
 
 	// Flashcard events
-	if (ui.flashBox) {
-		ui.flashBox.addEventListener('pointermove', (event) => {
-			if (event.pointerType === 'touch') return;
-			updateFlashcardTilt(event.clientX, event.clientY);
-		});
-		ui.flashBox.addEventListener('pointerleave', () => resetFlashcardTilt());
-		ui.flashBox.addEventListener('pointercancel', () => resetFlashcardTilt());
-	}
 	ui.flashShow.onclick = () => {
 		cardShown = true;
 		renderCard();
@@ -3064,6 +3095,11 @@ function bindEvents() {
 	ui.flashAgain.onclick = () => rateCard('again');
 	ui.flashGood.onclick = () => rateCard('good');
 	ui.flashEasy.onclick = () => rateCard('easy');
+	if (ui.flashcardChatSend) {
+		ui.flashcardChatSend.onclick = () => {
+			void sendFlashcardItemToAiChat();
+		};
+	}
 
 	// Glossary flashcard events
 	ui.glossaryCardShow.onclick = () => {
@@ -3104,12 +3140,6 @@ function bindEvents() {
 			}
 		});
 	}
-	aiChatQuickButtons.forEach((button) => {
-		button.addEventListener('click', () => {
-			const action = String(button.dataset.chatQuick || '').trim();
-			void sendAiChatMessage(buildAiChatQuickActionPrompt(action));
-		});
-	});
 	setupAiChatResize();
 	setupAiChatDrag();
 

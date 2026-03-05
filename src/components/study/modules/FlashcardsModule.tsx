@@ -22,6 +22,9 @@ export default function FlashcardsModule() {
 				<button id="flashcard-hint" type="button" className="secondary" data-i18n="flashcards.showHint">
 					Show hint
 				</button>
+				<button id="flashcard-chat-send" type="button" className="secondary" data-i18n="chat.sendFlashcardItem">
+					Discuss in AI chat
+				</button>
 				<div id="flashcard-grade-actions" className="grade-actions" hidden>
 					<button id="flashcard-again" type="button" className="danger" data-i18n="flashcards.again">
 						Again
