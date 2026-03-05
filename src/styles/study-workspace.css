@@ -1332,6 +1332,32 @@ input[type='search']:focus {
 	color: #2d1f14;
 }
 
+.settings-accent-control {
+	position: relative;
+	width: 100%;
+}
+
+.settings-accent-control select {
+	padding-left: 2rem;
+}
+
+.settings-accent-preview {
+	--accent-preview-color: #b45309;
+	position: absolute;
+	left: 0.68rem;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 12px;
+	height: 12px;
+	border-radius: 999px;
+	border: 1px solid rgba(45, 31, 20, 0.2);
+	background: var(--accent-preview-color);
+	box-shadow:
+		inset 0 0 0 1px rgba(255, 255, 255, 0.35),
+		0 1px 3px rgba(45, 31, 20, 0.2);
+	pointer-events: none;
+}
+
 .settings-section {
 	display: grid;
 	gap: 0.6rem;
@@ -2351,6 +2377,13 @@ html[data-theme='dark'] .settings-row select {
 	background: #241b15;
 	color: #f7ead9;
 	border-color: rgba(236, 175, 111, 0.35);
+}
+
+html[data-theme='dark'] .settings-accent-preview {
+	border-color: rgba(236, 175, 111, 0.36);
+	box-shadow:
+		inset 0 0 0 2px rgba(26, 19, 14, 0.36),
+		0 1px 6px rgba(0, 0, 0, 0.35);
 }
 
 html[data-theme='dark'] .settings-help {

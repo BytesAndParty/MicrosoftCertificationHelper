@@ -30,12 +30,15 @@ export default function SettingsDialogContent() {
 				</label>
 				<label className="settings-row settings-row-wide">
 					<span data-i18n="settings.accentPalette">Accent color</span>
-					<select id="setting-accent-palette" defaultValue="amber">
-						<option value="amber" data-i18n="settings.accent.amber">Amber</option>
-						<option value="emerald" data-i18n="settings.accent.emerald">Emerald</option>
-						<option value="cobalt" data-i18n="settings.accent.cobalt">Cobalt</option>
-						<option value="raspberry" data-i18n="settings.accent.raspberry">Raspberry</option>
-					</select>
+					<div className="settings-accent-control">
+						<span id="setting-accent-preview" className="settings-accent-preview" aria-hidden="true"></span>
+						<select id="setting-accent-palette" defaultValue="amber">
+							<option value="amber" data-i18n="settings.accent.amber">Amber</option>
+							<option value="emerald" data-i18n="settings.accent.emerald">Emerald</option>
+							<option value="cobalt" data-i18n="settings.accent.cobalt">Cobalt</option>
+							<option value="raspberry" data-i18n="settings.accent.raspberry">Raspberry</option>
+						</select>
+					</div>
 				</label>
 				<p className="settings-help" data-i18n="settings.accentHint">
 					Only accent colors change. Surface and text colors stay fixed for readability.

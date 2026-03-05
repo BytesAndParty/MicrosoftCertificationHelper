@@ -16,6 +16,12 @@ const LANG_KEY = 'ai900_lang_pref';
 const AI_CHAT_LAYOUT_KEY = 'ai900_ai_chat_layout_v1';
 const THEME_MEDIA = window.matchMedia('(prefers-color-scheme: dark)');
 const ACCENT_PALETTES = new Set(['amber', 'emerald', 'cobalt', 'raspberry']);
+const ACCENT_PREVIEW_COLORS = {
+	amber: '#b45309',
+	emerald: '#0f766e',
+	cobalt: '#1d4ed8',
+	raspberry: '#be185d'
+};
 
 const byId = (id) => document.getElementById(id);
 const questionById = new Map();
@@ -197,6 +203,7 @@ const ui = {
 	settingEasyMult: byId('setting-easy-mult'),
 	settingLapse: byId('setting-lapse'),
 	settingAccentPalette: byId('setting-accent-palette'),
+	settingAccentPreview: byId('setting-accent-preview'),
 	settingAiEnabled: byId('setting-ai-enabled'),
 	settingAiProvider: byId('setting-ai-provider'),
 	settingAiEndpoint: byId('setting-ai-endpoint'),
@@ -765,6 +772,13 @@ function applyAccentPalette(palette) {
 	document.documentElement.dataset.accent = resolveAccentPalette(palette);
 }
 
+function renderAccentPreview(palette) {
+	if (!ui.settingAccentPreview) return;
+	const resolved = resolveAccentPalette(palette);
+	const color = ACCENT_PREVIEW_COLORS[resolved] || ACCENT_PREVIEW_COLORS[DEFAULT_SETTINGS.accentPalette];
+	ui.settingAccentPreview.style.setProperty('--accent-preview-color', color);
+}
+
 function toggleTheme() {
 	const current = document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
 	const next = current === 'dark' ? 'light' : 'dark';
@@ -814,6 +828,12 @@ function closeOverlay(overlayElement) {
 	if (overlayElement === ui.overlayExam && exam) {
 		if (!confirm(t('exam.leaveConfirm'))) return;
 		finishExam({ forceFail: true, aborted: true });
+	}
+	if (overlayElement === ui.overlaySettings) {
+		const savedPalette = resolveAccentPalette(state.settings.accentPalette);
+		applyAccentPalette(savedPalette);
+		if (ui.settingAccentPalette) ui.settingAccentPalette.value = savedPalette;
+		renderAccentPreview(savedPalette);
 	}
 
 	overlayElement.hidden = true;
@@ -1150,7 +1170,10 @@ function populateSettingsUi() {
 	ui.settingGoodMult.value = state.settings.goodMultiplier;
 	ui.settingEasyMult.value = state.settings.easyMultiplier;
 	ui.settingLapse.value = state.settings.lapseMinutes;
-	if (ui.settingAccentPalette) ui.settingAccentPalette.value = resolveAccentPalette(state.settings.accentPalette);
+	if (ui.settingAccentPalette) {
+		ui.settingAccentPalette.value = resolveAccentPalette(state.settings.accentPalette);
+		renderAccentPreview(ui.settingAccentPalette.value);
+	}
 	ui.settingAiEnabled.checked = Boolean(state.settings.aiChatEnabled);
 	ui.settingAiProvider.value = state.settings.aiProvider;
 	ui.settingAiEndpoint.value = state.settings.aiEndpoint || '';
@@ -3117,6 +3140,19 @@ function bindEvents() {
 	};
 	if (ui.settingsSave) ui.settingsSave.onclick = () => saveSettings();
 	if (ui.settingsReset) ui.settingsReset.onclick = () => resetSettings();
+	if (ui.settingAccentPalette) {
+		const handleAccentPaletteChange = () => {
+			const previewPalette = resolveAccentPalette(ui.settingAccentPalette.value);
+			renderAccentPreview(previewPalette);
+			applyAccentPalette(previewPalette);
+			if (state.settings.accentPalette !== previewPalette) {
+				state.settings.accentPalette = previewPalette;
+				void saveState();
+			}
+		};
+		ui.settingAccentPalette.onchange = handleAccentPaletteChange;
+		ui.settingAccentPalette.oninput = handleAccentPaletteChange;
+	}
 	if (ui.settingAiWindowReset) ui.settingAiWindowReset.onclick = () => resetAiChatWindowLayout();
 	if (ui.welcomeStart) ui.welcomeStart.onclick = () => {
 		state.hasSeenWelcome = true;
