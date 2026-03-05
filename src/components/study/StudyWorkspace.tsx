@@ -105,15 +105,45 @@ export default function StudyWorkspace({ roadmapThemes }: StudyWorkspaceProps) {
 				</div>
 			</section>
 
-			<section className="metrics reveal" aria-label="Progress metrics">
-				<article className="metric"><p data-i18n="metrics.roadmap">Roadmap</p><strong id="metric-roadmap">0%</strong></article>
-				<article className="metric"><p data-i18n="metrics.quizAccuracy">Quiz Accuracy</p><strong id="metric-accuracy">0%</strong></article>
-				<article className="metric"><p data-i18n="metrics.bestExam">Best Exam</p><strong id="metric-exam">0%</strong></article>
-				<article className="metric"><p data-i18n="metrics.dueCards">Due Cards</p><strong id="metric-due">0</strong></article>
-				<article className="metric"><p data-i18n="metrics.journal">Error Journal</p><strong id="metric-journal">0</strong></article>
-			</section>
+				<section className="metrics reveal" aria-label="Progress metrics">
+					<article className="metric"><p data-i18n="metrics.roadmap">Roadmap</p><strong id="metric-roadmap">0%</strong></article>
+					<article className="metric"><p data-i18n="metrics.quizAccuracy">Quiz Accuracy</p><strong id="metric-accuracy">0%</strong></article>
+					<article className="metric"><p data-i18n="metrics.bestExam">Best Exam</p><strong id="metric-exam">0%</strong></article>
+					<article className="metric"><p data-i18n="metrics.dueCards">Due Cards</p><strong id="metric-due">0</strong></article>
+					<article className="metric"><p data-i18n="metrics.journal">Error Journal</p><strong id="metric-journal">0</strong></article>
+				</section>
 
-			<QuizModule />
+				<section className="card reveal session-goal" aria-label="Session goal">
+					<div className="section-head">
+						<h2 data-i18n="session.title">Session Goal</h2>
+						<p id="session-status" className="meta" data-i18n="session.statusIdle">No active goal</p>
+					</div>
+					<div className="session-goal-actions">
+						<button type="button" className="secondary" data-session-goal="sprint" data-i18n="session.goalSprint">Sprint 10</button>
+						<button type="button" className="secondary" data-session-goal="focus" data-i18n="session.goalFocus">Focus 20</button>
+						<button type="button" className="secondary" data-session-goal="accuracy" data-i18n="session.goalAccuracy">Accuracy 90</button>
+						<button type="button" id="session-clear" className="danger" data-i18n="session.clear">Clear goal</button>
+					</div>
+					<div className="session-progress-row">
+						<progress id="session-progress" max={100} value={0} aria-label="Session progress"></progress>
+						<strong id="session-progress-value">0%</strong>
+					</div>
+					<p id="session-details" className="meta" data-i18n="session.detailIdle">Start a goal to track this learning session.</p>
+				</section>
+
+				<section className="card reveal history-panel" aria-label="Learning history">
+					<div className="section-head">
+						<h2 data-i18n="history.title">Learning History</h2>
+						<p id="history-streak" className="meta" data-i18n="history.streakNone">No streak yet</p>
+					</div>
+					<div id="history-heatmap" className="history-heatmap" aria-label="Last 28 days study activity"></div>
+					<div className="history-topic-block">
+						<h3 data-i18n="history.topicTitle">Topic trend</h3>
+						<div id="history-topic-trend" className="history-topic-trend"></div>
+					</div>
+				</section>
+
+				<QuizModule />
 
 			<ExamModule />
 

@@ -11,13 +11,25 @@ const baseQuestions = [
 		promptDe: 'Welcher Dienst wird für Übersetzung verwendet?',
 		hint: 'Language feature',
 		hintDe: 'Sprachfunktion',
-		explanation: 'Translator is part of Azure AI Language.',
-		explanationDe: 'Translator ist Teil von Azure AI Language.',
-		options: ['Vision', 'Speech', 'Translator', 'Form Recognizer'],
-		optionsDe: ['Vision', 'Speech', 'Translator', 'Form Recognizer'],
-		answerIndex: 2,
-		wrongOptions: ['Anomaly Detector'],
-		wrongOptionsDe: ['Anomaly Detector']
+			explanation: 'Translator is part of Azure AI Language.',
+			explanationDe: 'Translator ist Teil von Azure AI Language.',
+			options: ['Vision', 'Speech', 'Translator', 'Form Recognizer'],
+			optionsDe: ['Vision', 'Speech', 'Translator', 'Form Recognizer'],
+			optionExplanations: [
+				'Vision focuses on image analysis, not translation.',
+				'Speech focuses on audio tasks, not text translation.',
+				'Translator provides neural text translation between languages.',
+				'Form Recognizer extracts document fields, not translation.'
+			],
+			optionExplanationsDe: [
+				'Vision fokussiert auf Bildanalyse, nicht auf Ubersetzung.',
+				'Speech fokussiert auf Audioaufgaben, nicht auf Textubersetzung.',
+				'Translator bietet neuronale Textubersetzung zwischen Sprachen.',
+				'Form Recognizer extrahiert Dokumentfelder, nicht Ubersetzung.'
+			],
+			answerIndex: 2,
+			wrongOptions: ['Anomaly Detector'],
+			wrongOptionsDe: ['Anomaly Detector']
 	},
 	{
 		id: 'q2',
@@ -34,6 +46,7 @@ describe('quiz domain helpers', () => {
 		expect(localized.prompt).toBe('Welcher Dienst wird für Übersetzung verwendet?');
 		expect(localized.hint).toBe('Sprachfunktion');
 		expect(localized.explanation).toBe('Translator ist Teil von Azure AI Language.');
+		expect(localized.optionExplanations[2]).toContain('Translator');
 	});
 
 	it('builds runtime single-choice question with distractors and correct index', () => {
@@ -51,6 +64,7 @@ describe('quiz domain helpers', () => {
 		expect(runtimeQuestion.correctText).toBe('Translator');
 		expect(runtimeQuestion.options[runtimeQuestion.correctIndex]).toBe('Translator');
 		expect(runtimeQuestion.answerPoolCount).toBeGreaterThanOrEqual(4);
+		expect(runtimeQuestion.optionExplanationsByOption.Translator).toContain('neural text translation');
 	});
 
 	it('builds runtime true/false question with localized labels', () => {

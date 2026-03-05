@@ -86,116 +86,176 @@ export const quizQuestions = [
 		"topic": "AI Workloads",
 		"prompt": "Which statement best describes AI workloads?",
 		"hint": "Think about everything that has to come together for AI to solve a specific problem.",
-		"options": [
-			"Every AI use case uses the same model and data flow.",
-			"An AI workload combines data, model and inference for a specific goal.",
-			"An AI workload consists only of visualization.",
-			"An AI workload only describes infrastructure costs."
-		],
-		"answerIndex": 1,
-		"explanation": "A workload describes the end-to-end use of AI for a specific problem.",
-		"promptDe": "Welche Aussage beschreibt KI-Workloads am besten?",
-		"hintDe": "Uberlege, was alles zusammenspielen muss, damit KI ein konkretes Problem losen kann.",
-		"explanationDe": "Ein Workload beschreibt den End-to-End-Einsatz von KI fur ein konkretes Problem.",
-		"optionsDe": [
-			"Jeder KI-Use-Case nutzt dasselbe Modell und denselben Datenfluss.",
-			"Ein KI-Workload kombiniert Daten, Modell und Inferenz fur ein konkretes Ziel.",
-			"Ein KI-Workload besteht nur aus Visualisierung.",
-			"Ein KI-Workload beschreibt nur Infrastrukturkosten."
-		]
-	},
-	{
+			"options": [
+				"Every AI use case uses the same model and data flow.",
+				"An AI workload combines data, model and inference for a specific goal.",
+				"An AI workload consists only of visualization.",
+				"An AI workload only describes infrastructure costs."
+			],
+			"optionExplanations": [
+				"AI workloads vary by task, data, and operating constraints; they are not all identical.",
+				"Correct: a workload is the complete path from data to model output for a defined business goal.",
+				"Visualization can be part of a solution, but it is not the workload itself.",
+				"Infrastructure cost is one aspect, not the definition of an AI workload."
+			],
+			"answerIndex": 1,
+			"explanation": "A workload describes the end-to-end use of AI for a specific problem.",
+			"promptDe": "Welche Aussage beschreibt KI-Workloads am besten?",
+			"hintDe": "Uberlege, was alles zusammenspielen muss, damit KI ein konkretes Problem losen kann.",
+			"explanationDe": "Ein Workload beschreibt den End-to-End-Einsatz von KI fur ein konkretes Problem.",
+			"optionsDe": [
+				"Jeder KI-Use-Case nutzt dasselbe Modell und denselben Datenfluss.",
+				"Ein KI-Workload kombiniert Daten, Modell und Inferenz fur ein konkretes Ziel.",
+				"Ein KI-Workload besteht nur aus Visualisierung.",
+				"Ein KI-Workload beschreibt nur Infrastrukturkosten."
+			],
+			"optionExplanationsDe": [
+				"KI-Workloads unterscheiden sich je nach Aufgabe, Daten und Betriebsbedingungen.",
+				"Richtig: Ein Workload umfasst den gesamten Weg von Daten bis zur Modellantwort fur ein klares Ziel.",
+				"Visualisierung kann Teil der Losung sein, ist aber nicht der ganze Workload.",
+				"Infrastrukturkosten sind nur ein Aspekt und nicht die Definition eines KI-Workloads."
+			]
+		},
+		{
 		"id": "q2",
 		"topic": "AI Workloads",
 		"prompt": "You want to evaluate night logs collectively. Which inference pattern fits best?",
 		"hint": "Think about which pattern works well with large amounts of data that don't need to be processed in real time.",
-		"options": [
-			"Batch inference",
-			"Online inference",
-			"Streaming Translation",
-			"Prompt engineering"
-		],
-		"answerIndex": 0,
-		"explanation": "Batch inference is suitable for periodic processing of large amounts of data.",
-		"promptDe": "Du willst Nachtlogs gesammelt auswerten. Welches Inferenzmuster passt am besten?",
-		"hintDe": "Denk daran, welches Muster gut zu grossen Datenmengen passt, die nicht in Echtzeit verarbeitet werden mussen.",
-		"explanationDe": "Batch Inference passt fur periodische Verarbeitung grosser Datenmengen.",
-		"optionsDe": [
-			"Batch Inference",
-			"Online Inference",
-			"Streaming Translation",
-			"Prompt Engineering"
-		]
-	},
-	{
+			"options": [
+				"Batch inference",
+				"Online inference",
+				"Streaming Translation",
+				"Prompt engineering"
+			],
+			"optionExplanations": [
+				"Correct: batch inference fits periodic, large-scale, non-real-time processing.",
+				"Online inference is designed for immediate per-request predictions.",
+				"Streaming translation is a language task, not a general log-processing inference pattern.",
+				"Prompt engineering improves model prompts and is not an inference execution pattern."
+			],
+			"answerIndex": 0,
+			"explanation": "Batch inference is suitable for periodic processing of large amounts of data.",
+			"promptDe": "Du willst Nachtlogs gesammelt auswerten. Welches Inferenzmuster passt am besten?",
+			"hintDe": "Denk daran, welches Muster gut zu grossen Datenmengen passt, die nicht in Echtzeit verarbeitet werden mussen.",
+			"explanationDe": "Batch Inference passt fur periodische Verarbeitung grosser Datenmengen.",
+			"optionsDe": [
+				"Batch Inference",
+				"Online Inference",
+				"Streaming Translation",
+				"Prompt Engineering"
+			],
+			"optionExplanationsDe": [
+				"Richtig: Batch Inference passt zu periodischer Verarbeitung grosser Datenmengen ohne Echtzeitanforderung.",
+				"Online Inference ist fur direkte Einzelvorhersagen in Echtzeit gedacht.",
+				"Streaming Translation ist eine Sprachaufgabe und kein allgemeines Inferenzmuster fur Logauswertung.",
+				"Prompt Engineering verbessert Prompts, ist aber kein Ausfuhrungsmuster fur Inferenz."
+			]
+		},
+		{
 		"id": "q3",
 		"topic": "AI Workloads",
 		"prompt": "A productive model should remain stable. Which practice helps directly?",
 		"hint": "What happens if the data changes over time and no one is looking?",
-		"options": [
-			"Deploy the model without monitoring",
-			"Work only with training metrics",
-			"Continuously monitor drift and performance",
-			"Hide feedback"
-		],
-		"answerIndex": 2,
-		"explanation": "Monitoring helps to detect data and model drift early.",
-		"promptDe": "Ein Produktivmodell soll stabil bleiben. Welche Praxis hilft direkt?",
-		"hintDe": "Was passiert, wenn sich die Daten im Laufe der Zeit verandern und niemand hinschaut?",
-		"explanationDe": "Monitoring hilft, Daten- und Modell-Drift fruh zu erkennen.",
-		"optionsDe": [
-			"Modell ohne Monitoring deployen",
-			"Nur mit Trainingsmetriken arbeiten",
-			"Drift und Performance kontinuierlich uberwachen",
-			"Feedback ausblenden"
-		]
-	},
-	{
+			"options": [
+				"Deploy the model without monitoring",
+				"Work only with training metrics",
+				"Continuously monitor drift and performance",
+				"Hide feedback"
+			],
+			"optionExplanations": [
+				"Without monitoring, degradation can stay unnoticed in production.",
+				"Training metrics alone do not reveal real-world drift or serving issues.",
+				"Correct: continuous monitoring catches drift, quality drops, and failures early.",
+				"Hiding feedback removes a key signal needed for model improvement."
+			],
+			"answerIndex": 2,
+			"explanation": "Monitoring helps to detect data and model drift early.",
+			"promptDe": "Ein Produktivmodell soll stabil bleiben. Welche Praxis hilft direkt?",
+			"hintDe": "Was passiert, wenn sich die Daten im Laufe der Zeit verandern und niemand hinschaut?",
+			"explanationDe": "Monitoring hilft, Daten- und Modell-Drift fruh zu erkennen.",
+			"optionsDe": [
+				"Modell ohne Monitoring deployen",
+				"Nur mit Trainingsmetriken arbeiten",
+				"Drift und Performance kontinuierlich uberwachen",
+				"Feedback ausblenden"
+			],
+			"optionExplanationsDe": [
+				"Ohne Monitoring bleiben Verschlechterungen im Produktivbetrieb oft unbemerkt.",
+				"Trainingsmetriken allein zeigen keine Drift oder Serving-Probleme in der Praxis.",
+				"Richtig: Kontinuierliches Monitoring erkennt Drift, Qualitatsverlust und Fehler fruhzeitig.",
+				"Ohne Feedback fehlen wichtige Signale fur Verbesserungen am Modell."
+			]
+		},
+		{
 		"id": "q4",
 		"topic": "Machine Learning",
 		"prompt": "You want to predict house prices. Which task is suitable?",
 		"hint": "Prices are not categories, but sequential numbers. Which ML task works with numerical values?",
-		"options": [
-			"classification",
-			"Regression",
-			"Clustering",
-			"Anomaly detection"
-		],
-		"answerIndex": 1,
-		"explanation": "Prices are continuous numerical values, i.e. regression.",
-		"promptDe": "Du willst Hauspreise vorhersagen. Welche Aufgabe passt?",
-		"hintDe": "Preise sind keine Kategorien, sondern fortlaufende Zahlen. Welche ML-Aufgabe arbeitet mit Zahlenwerten?",
-		"explanationDe": "Preise sind kontinuierliche Zahlenwerte, also Regression.",
-		"optionsDe": [
-			"Klassifikation",
-			"Regression",
-			"Clustering",
-			"Anomalieerkennung"
-		]
-	},
-	{
+			"options": [
+				"classification",
+				"Regression",
+				"Clustering",
+				"Anomaly detection"
+			],
+			"optionExplanations": [
+				"Classification predicts discrete classes, not continuous numeric values like price.",
+				"Correct: regression predicts continuous numerical outputs such as house prices.",
+				"Clustering groups similar points without predicting a target value.",
+				"Anomaly detection flags outliers and is not a direct price prediction task."
+			],
+			"answerIndex": 1,
+			"explanation": "Prices are continuous numerical values, i.e. regression.",
+			"promptDe": "Du willst Hauspreise vorhersagen. Welche Aufgabe passt?",
+			"hintDe": "Preise sind keine Kategorien, sondern fortlaufende Zahlen. Welche ML-Aufgabe arbeitet mit Zahlenwerten?",
+			"explanationDe": "Preise sind kontinuierliche Zahlenwerte, also Regression.",
+			"optionsDe": [
+				"Klassifikation",
+				"Regression",
+				"Clustering",
+				"Anomalieerkennung"
+			],
+			"optionExplanationsDe": [
+				"Klassifikation sagt diskrete Klassen voraus, nicht kontinuierliche Zahlen wie Preise.",
+				"Richtig: Regression sagt kontinuierliche numerische Zielwerte wie Hauspreise voraus.",
+				"Clustering gruppiert ahnliche Datenpunkte ohne expliziten Zielwert.",
+				"Anomalieerkennung findet Ausreisser und ist keine direkte Preisvorhersage."
+			]
+		},
+		{
 		"id": "q5",
 		"topic": "Machine Learning",
 		"prompt": "What is a typical sign of overfitting?",
 		"hint": "Pay attention to the difference between training and test performance.",
-		"options": [
-			"Training and testing are both bad",
-			"Training is very good, testing is significantly worse",
-			"Model improves after each new data set",
-			"Training data is not used"
-		],
-		"answerIndex": 1,
-		"explanation": "Overfitting often shows high training performance and weak generalization.",
-		"promptDe": "Was ist ein typisches Zeichen fur Overfitting?",
-		"hintDe": "Achte auf den Unterschied zwischen Trainings- und Testperformance.",
-		"explanationDe": "Overfitting zeigt oft hohe Trainingsleistung und schwache Generalisierung.",
-		"optionsDe": [
-			"Training und Test sind beide schlecht",
-			"Training ist sehr gut, Test deutlich schlechter",
-			"Modell verbessert sich nach jedem neuen Datensatz",
-			"Trainingsdaten werden nicht benutzt"
-		]
-	},
+			"options": [
+				"Training and testing are both bad",
+				"Training is very good, testing is significantly worse",
+				"Model improves after each new data set",
+				"Training data is not used"
+			],
+			"optionExplanations": [
+				"If both are bad, that often indicates underfitting, not overfitting.",
+				"Correct: strong training performance with weak test performance is the classic overfitting pattern.",
+				"Improvement after more data can happen and does not define overfitting.",
+				"Overfitting still uses training data heavily; the problem is poor generalization."
+			],
+			"answerIndex": 1,
+			"explanation": "Overfitting often shows high training performance and weak generalization.",
+			"promptDe": "Was ist ein typisches Zeichen fur Overfitting?",
+			"hintDe": "Achte auf den Unterschied zwischen Trainings- und Testperformance.",
+			"explanationDe": "Overfitting zeigt oft hohe Trainingsleistung und schwache Generalisierung.",
+			"optionsDe": [
+				"Training und Test sind beide schlecht",
+				"Training ist sehr gut, Test deutlich schlechter",
+				"Modell verbessert sich nach jedem neuen Datensatz",
+				"Trainingsdaten werden nicht benutzt"
+			],
+			"optionExplanationsDe": [
+				"Sind Training und Test beide schlecht, spricht das eher fur Underfitting als fur Overfitting.",
+				"Richtig: Sehr gute Trainingswerte bei deutlich schwacheren Testwerten sind das typische Overfitting-Muster.",
+				"Verbesserung mit mehr Daten kann vorkommen und ist kein Overfitting-Kriterium.",
+				"Overfitting nutzt Trainingsdaten stark; das Problem ist die schwache Generalisierung."
+			]
+		},
 	{
 		"id": "q6",
 		"topic": "Machine Learning",

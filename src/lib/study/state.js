@@ -7,6 +7,18 @@ export const DEFAULT_STUDY_STATE = {
 	quiz: { answered: 0, correct: 0, byTopic: {} },
 	wrongJournal: {},
 	savedQuestions: {},
+	sessionGoal: {
+		preset: '',
+		startedAt: 0,
+		durationMinutes: 0,
+		targetAnswers: 0,
+		targetAccuracy: 0,
+		answeredStart: 0,
+		correctStart: 0,
+		completedAt: 0,
+		failedAt: 0
+	},
+	historyDaily: {},
 	examBest: 0,
 	examHistory: [],
 	flashcards: {},
@@ -55,12 +67,29 @@ export function hydrateStudyState(saved, flashcards = [], glossaryCards = [], no
 		if (source.wrongJournal && typeof source.wrongJournal === 'object') {
 			state.wrongJournal = source.wrongJournal;
 		}
-		if (source.savedQuestions && typeof source.savedQuestions === 'object') {
-			state.savedQuestions = source.savedQuestions;
-		}
-		state.examBest = Number(source.examBest) || 0;
-		state.examHistory = Array.isArray(source.examHistory) ? source.examHistory.slice(0, 15) : [];
-		state.flashcards = source.flashcards && typeof source.flashcards === 'object' ? source.flashcards : {};
+			if (source.savedQuestions && typeof source.savedQuestions === 'object') {
+				state.savedQuestions = source.savedQuestions;
+			}
+			if (source.sessionGoal && typeof source.sessionGoal === 'object') {
+				state.sessionGoal = {
+					...state.sessionGoal,
+					...source.sessionGoal
+				};
+				state.sessionGoal.startedAt = Number(state.sessionGoal.startedAt) || 0;
+				state.sessionGoal.durationMinutes = Number(state.sessionGoal.durationMinutes) || 0;
+				state.sessionGoal.targetAnswers = Number(state.sessionGoal.targetAnswers) || 0;
+				state.sessionGoal.targetAccuracy = Number(state.sessionGoal.targetAccuracy) || 0;
+				state.sessionGoal.answeredStart = Number(state.sessionGoal.answeredStart) || 0;
+				state.sessionGoal.correctStart = Number(state.sessionGoal.correctStart) || 0;
+				state.sessionGoal.completedAt = Number(state.sessionGoal.completedAt) || 0;
+				state.sessionGoal.failedAt = Number(state.sessionGoal.failedAt) || 0;
+			}
+			if (source.historyDaily && typeof source.historyDaily === 'object') {
+				state.historyDaily = source.historyDaily;
+			}
+			state.examBest = Number(source.examBest) || 0;
+			state.examHistory = Array.isArray(source.examHistory) ? source.examHistory.slice(0, 15) : [];
+			state.flashcards = source.flashcards && typeof source.flashcards === 'object' ? source.flashcards : {};
 		state.glossaryFlashcards = source.glossaryFlashcards && typeof source.glossaryFlashcards === 'object' ? source.glossaryFlashcards : {};
 		state.settings = sanitizeSettings(source.settings);
 		state.hasSeenWelcome = source.hasSeenWelcome === true;

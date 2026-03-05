@@ -14,7 +14,9 @@ describe('study state hydration', () => {
 		const saved = {
 			quiz: { answered: 10, correct: 7, byTopic: { NLP: { total: 4, correct: 3 } } },
 			settings: { newCardsPerDay: 999, goodMultiplier: 9, easyMultiplier: 0.5, lapseMinutes: 0 },
-			flashcards: { f1: { interval: 3, streak: 2, dueAt: 1000, last: 'good' } }
+			flashcards: { f1: { interval: 3, streak: 2, dueAt: 1000, last: 'good' } },
+			sessionGoal: { preset: 'sprint', targetAnswers: 10 },
+			historyDaily: { '2026-03-05': { answered: 4, correct: 3, reviews: 2 } }
 		};
 
 		const flashcards = [{ id: 'f1' }, { id: 'f2' }];
@@ -27,11 +29,13 @@ describe('study state hydration', () => {
 		expect(hydrated.settings.goodMultiplier).toBe(5);
 		expect(hydrated.settings.easyMultiplier).toBe(1.5);
 		expect(hydrated.settings.lapseMinutes).toBe(1);
-		expect(hydrated.flashcards.f1.interval).toBe(3);
-		expect(hydrated.flashcards.f2.last).toBe('new');
-		expect(hydrated.flashcards.f2.dueAt).toBe(5000);
-		expect(hydrated.glossaryFlashcards.g1.last).toBe('new');
-	});
+			expect(hydrated.flashcards.f1.interval).toBe(3);
+			expect(hydrated.flashcards.f2.last).toBe('new');
+			expect(hydrated.flashcards.f2.dueAt).toBe(5000);
+			expect(hydrated.glossaryFlashcards.g1.last).toBe('new');
+			expect(hydrated.sessionGoal.preset).toBe('sprint');
+			expect(hydrated.historyDaily['2026-03-05'].answered).toBe(4);
+		});
 
 	it('supports persisted wrapper format from store middleware', () => {
 		const wrapped = {

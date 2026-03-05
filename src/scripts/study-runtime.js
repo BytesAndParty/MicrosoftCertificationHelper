@@ -22,6 +22,39 @@ const optionPoolsByLanguage = {
 	de: buildOptionPools(quizQuestions, 'de')
 };
 
+function buildOptionRationaleMap(language = 'en') {
+	const map = {};
+	quizQuestions.forEach((question) => {
+		const localized = localizeQuestion(question, language);
+		const options = Array.isArray(localized.options) ? localized.options : [];
+		const optionExplanations = localized.optionExplanations;
+		if (Array.isArray(optionExplanations)) {
+			optionExplanations.forEach((explanation, index) => {
+				const optionText = options[index];
+				if (optionText && typeof explanation === 'string' && explanation.trim()) {
+					map[optionText] = explanation.trim();
+				}
+			});
+		} else if (optionExplanations && typeof optionExplanations === 'object') {
+			Object.entries(optionExplanations).forEach(([optionText, explanation]) => {
+				if (typeof explanation === 'string' && explanation.trim()) {
+					map[optionText] = explanation.trim();
+				}
+			});
+		}
+		const correctOption = options[localized.answerIndex];
+		if (correctOption && typeof localized.explanation === 'string' && localized.explanation.trim() && !map[correctOption]) {
+			map[correctOption] = localized.explanation.trim();
+		}
+	});
+	return map;
+}
+
+const optionRationaleByLanguage = {
+	en: buildOptionRationaleMap('en'),
+	de: buildOptionRationaleMap('de')
+};
+
 const glossaryCards = glossaryTerms.map((item, index) => ({
 	id: `g${index + 1}`,
 	topic: 'Glossary',
@@ -43,6 +76,14 @@ const ui = {
 	metricExam: byId('metric-exam'),
 	metricDue: byId('metric-due'),
 	metricJournal: byId('metric-journal'),
+	sessionStatus: byId('session-status'),
+	sessionProgress: byId('session-progress'),
+	sessionProgressValue: byId('session-progress-value'),
+	sessionDetails: byId('session-details'),
+	sessionClear: byId('session-clear'),
+	historyStreak: byId('history-streak'),
+	historyHeatmap: byId('history-heatmap'),
+	historyTopicTrend: byId('history-topic-trend'),
 	quizProgress: byId('quiz-progress'),
 	quizTopic: byId('quiz-topic'),
 	quizQuestion: byId('quiz-question'),
@@ -58,6 +99,7 @@ const ui = {
 	examNext: byId('exam-next'),
 	examResult: byId('exam-result'),
 	examReview: byId('exam-review'),
+	flashBox: byId('flashcard-box'),
 	flashTopic: byId('flashcard-topic'),
 	flashFront: byId('flashcard-front'),
 	flashBack: byId('flashcard-back'),
@@ -115,11 +157,30 @@ const i18n = {
 		'language.toggleLabel': 'Switch language to German',
 		'roadmap.title': 'Roadmap',
 		'metrics.roadmap': 'Roadmap',
-		'metrics.quizAccuracy': 'Quiz Accuracy',
-		'metrics.bestExam': 'Best Exam',
-		'metrics.dueCards': 'Due Cards',
-		'metrics.journal': 'Error Journal',
-		'tabs.ariaLabel': 'Study modes',
+			'metrics.quizAccuracy': 'Quiz Accuracy',
+			'metrics.bestExam': 'Best Exam',
+			'metrics.dueCards': 'Due Cards',
+			'metrics.journal': 'Error Journal',
+			'session.title': 'Session Goal',
+			'session.goalSprint': 'Sprint 10',
+			'session.goalFocus': 'Focus 20',
+			'session.goalAccuracy': 'Accuracy 90',
+			'session.clear': 'Clear goal',
+			'session.statusIdle': 'No active goal',
+			'session.statusActive': 'Active: {label}',
+			'session.statusCompleted': 'Completed: {label}',
+			'session.statusFailed': 'Expired: {label}',
+			'session.detailIdle': 'Start a goal to track this learning session.',
+			'session.detailActive': 'Answered {answered}/{targetAnswers} | Accuracy {accuracy}%/{targetAccuracy}% | {minutesLeft} min left',
+			'session.detailCompleted': 'Done in {elapsed} min with {accuracy}% accuracy ({answered} answers).',
+			'session.detailFailed': 'Time ended after {elapsed} min | {answered}/{targetAnswers} answers | {accuracy}% accuracy.',
+			'history.title': 'Learning History',
+			'history.streakNone': 'No streak yet',
+			'history.streak': 'Streak: {days} days',
+			'history.topicTitle': 'Topic trend',
+			'history.topicEmpty': 'Answer more quiz questions to unlock topic trends.',
+			'history.topicLine': '{topic}: {accuracy}% ({total} answered)',
+			'tabs.ariaLabel': 'Study modes',
 		'tabs.quiz': 'Quiz',
 		'tabs.exam': 'Exam',
 		'tabs.flashcards': 'Flashcards',
@@ -230,11 +291,30 @@ const i18n = {
 		'language.toggleLabel': 'Sprache auf Englisch wechseln',
 		'roadmap.title': 'Roadmap',
 		'metrics.roadmap': 'Roadmap',
-		'metrics.quizAccuracy': 'Quiz-Genauigkeit',
-		'metrics.bestExam': 'Bestes Prüfungsergebnis',
-		'metrics.dueCards': 'Fällige Karten',
-		'metrics.journal': 'Fehlerjournal',
-		'tabs.ariaLabel': 'Lernmodi',
+			'metrics.quizAccuracy': 'Quiz-Genauigkeit',
+			'metrics.bestExam': 'Bestes Prüfungsergebnis',
+			'metrics.dueCards': 'Fällige Karten',
+			'metrics.journal': 'Fehlerjournal',
+			'session.title': 'Session-Ziel',
+			'session.goalSprint': 'Sprint 10',
+			'session.goalFocus': 'Fokus 20',
+			'session.goalAccuracy': 'Accuracy 90',
+			'session.clear': 'Ziel löschen',
+			'session.statusIdle': 'Kein aktives Ziel',
+			'session.statusActive': 'Aktiv: {label}',
+			'session.statusCompleted': 'Erreicht: {label}',
+			'session.statusFailed': 'Abgelaufen: {label}',
+			'session.detailIdle': 'Starte ein Ziel, um diese Lerneinheit zu verfolgen.',
+			'session.detailActive': '{answered}/{targetAnswers} beantwortet | Accuracy {accuracy}%/{targetAccuracy}% | {minutesLeft} Min übrig',
+			'session.detailCompleted': 'In {elapsed} Min erreicht mit {accuracy}% Accuracy ({answered} Antworten).',
+			'session.detailFailed': 'Zeit vorbei nach {elapsed} Min | {answered}/{targetAnswers} Antworten | {accuracy}% Accuracy.',
+			'history.title': 'Lernverlauf',
+			'history.streakNone': 'Noch keine Serie',
+			'history.streak': 'Serie: {days} Tage',
+			'history.topicTitle': 'Themen-Trend',
+			'history.topicEmpty': 'Beantworte mehr Quizfragen, um Themen-Trends zu sehen.',
+			'history.topicLine': '{topic}: {accuracy}% ({total} beantwortet)',
+			'tabs.ariaLabel': 'Lernmodi',
 		'tabs.quiz': 'Quiz',
 		'tabs.exam': 'Prüfung',
 		'tabs.flashcards': 'Karteikarten',
@@ -357,6 +437,13 @@ let glossaryCardShown = false;
 let currentLanguage = 'en';
 let activeOverlay = null;
 let previousFocusElement = null;
+let flashSwipeTimer;
+
+const SESSION_PRESETS = {
+	sprint: { labelKey: 'session.goalSprint', targetAnswers: 10, targetAccuracy: 70, durationMinutes: 15 },
+	focus: { labelKey: 'session.goalFocus', targetAnswers: 20, targetAccuracy: 75, durationMinutes: 30 },
+	accuracy: { labelKey: 'session.goalAccuracy', targetAnswers: 15, targetAccuracy: 90, durationMinutes: 25 }
+};
 
 const HINT_STOPWORDS_EN = new Set([
 	'the', 'and', 'for', 'with', 'from', 'that', 'this', 'into', 'your', 'you', 'are', 'can', 'also', 'than',
@@ -610,11 +697,15 @@ function applyLanguage(language, { persist = true } = {}) {
 		} else {
 			const baseQuestion = questionById.get(activeQuestion.id);
 			const localizedBase = baseQuestion ? localizeQuestionData(baseQuestion) : null;
-			if (localizedBase) {
-				activeQuestion.prompt = localizedBase.prompt;
-				activeQuestion.hint = localizedBase.hint;
-				activeQuestion.explanation = localizedBase.explanation;
-			}
+				if (localizedBase) {
+					activeQuestion.prompt = localizedBase.prompt;
+					activeQuestion.hint = localizedBase.hint;
+					activeQuestion.explanation = localizedBase.explanation;
+					activeQuestion.optionExplanationsByOption = {
+						...(activeQuestion.optionExplanationsByOption || {}),
+						...buildDisplayedOptionExplanationMap(localizedBase, activeQuestion.options)
+					};
+				}
 			activeQuestion.typeLabel = getTypeLabel(getQuestionType(activeQuestion));
 			ui.quizTopic.textContent = `${activeQuestion.topic} · ${activeQuestion.typeLabel}`;
 			ui.quizQuestion.textContent = activeQuestion.prompt;
@@ -664,14 +755,47 @@ function localizeQuestionData(question, language = currentLanguage) {
 	return localizeQuestion(question, language);
 }
 
+function buildDisplayedOptionExplanationMap(localizedQuestion, runtimeOptions) {
+	const map = {};
+	if (!localizedQuestion || !Array.isArray(runtimeOptions)) return map;
+	const { optionExplanations } = localizedQuestion;
+	const baseOptions = Array.isArray(localizedQuestion.options) ? localizedQuestion.options : [];
+
+	if (Array.isArray(optionExplanations)) {
+		optionExplanations.forEach((explanation, index) => {
+			const optionText = baseOptions[index];
+			if (typeof explanation === 'string' && explanation.trim() && optionText && runtimeOptions.includes(optionText)) {
+				map[optionText] = explanation.trim();
+			}
+		});
+		return map;
+	}
+
+	if (optionExplanations && typeof optionExplanations === 'object') {
+		Object.entries(optionExplanations).forEach(([optionText, explanation]) => {
+			if (runtimeOptions.includes(optionText) && typeof explanation === 'string' && explanation.trim()) {
+				map[optionText] = explanation.trim();
+			}
+		});
+	}
+
+	return map;
+}
+
 function createRuntimeQuestion(baseQuestion) {
-	return buildRuntimeQuestion(baseQuestion, {
+	const runtimeQuestion = buildRuntimeQuestion(baseQuestion, {
 		language: currentLanguage,
 		optionPoolsByLanguage,
 		getTypeLabel,
 		trueLabel: currentLanguage === 'de' ? 'Wahr' : 'True',
 		falseLabel: currentLanguage === 'de' ? 'Falsch' : 'False'
 	});
+	const localizedBase = localizeQuestionData(baseQuestion);
+	runtimeQuestion.optionExplanationsByOption = {
+		...(runtimeQuestion.optionExplanationsByOption || {}),
+		...buildDisplayedOptionExplanationMap(localizedBase, runtimeQuestion.options)
+	};
+	return runtimeQuestion;
 }
 
 function extractHintKeywords(text, language = currentLanguage) {
@@ -762,6 +886,12 @@ async function saveState(immediate = false) {
 
 function hydrate(saved) {
 	state = hydrateStudyState(saved, flashcards, glossaryCards);
+	if (!state.sessionGoal || typeof state.sessionGoal !== 'object') {
+		clearSessionGoal();
+	}
+	if (!state.historyDaily || typeof state.historyDaily !== 'object') {
+		state.historyDaily = {};
+	}
 }
 
 /* ---- Settings ---- */
@@ -801,6 +931,204 @@ function resetSettings() {
 
 /* ---- Stats & metrics ---- */
 
+function toDateKey(timestamp = Date.now()) {
+	const date = new Date(timestamp);
+	const year = date.getFullYear();
+	const month = String(date.getMonth() + 1).padStart(2, '0');
+	const day = String(date.getDate()).padStart(2, '0');
+	return `${year}-${month}-${day}`;
+}
+
+function ensureHistoryDay(dayKey) {
+	if (!state.historyDaily[dayKey]) {
+		state.historyDaily[dayKey] = { answered: 0, correct: 0, reviews: 0 };
+	}
+	const day = state.historyDaily[dayKey];
+	day.answered = Number(day.answered) || 0;
+	day.correct = Number(day.correct) || 0;
+	day.reviews = Number(day.reviews) || 0;
+	return day;
+}
+
+function trackDailyHistory({ answered = 0, correct = 0, reviews = 0, at = Date.now() } = {}) {
+	const day = ensureHistoryDay(toDateKey(at));
+	day.answered += answered;
+	day.correct += correct;
+	day.reviews += reviews;
+}
+
+function clearSessionGoal() {
+	state.sessionGoal = {
+		preset: '',
+		startedAt: 0,
+		durationMinutes: 0,
+		targetAnswers: 0,
+		targetAccuracy: 0,
+		answeredStart: state.quiz.answered,
+		correctStart: state.quiz.correct,
+		completedAt: 0,
+		failedAt: 0
+	};
+}
+
+function startSessionGoal(presetKey) {
+	const preset = SESSION_PRESETS[presetKey];
+	if (!preset) return;
+	state.sessionGoal = {
+		preset: presetKey,
+		startedAt: Date.now(),
+		durationMinutes: preset.durationMinutes,
+		targetAnswers: preset.targetAnswers,
+		targetAccuracy: preset.targetAccuracy,
+		answeredStart: state.quiz.answered,
+		correctStart: state.quiz.correct,
+		completedAt: 0,
+		failedAt: 0
+	};
+	renderStats();
+	void saveState();
+}
+
+function getSessionSnapshot(now = Date.now()) {
+	const goal = state.sessionGoal;
+	if (!goal || !goal.startedAt || !goal.targetAnswers) return null;
+	const answered = Math.max(0, state.quiz.answered - goal.answeredStart);
+	const correct = Math.max(0, state.quiz.correct - goal.correctStart);
+	const accuracy = answered ? Math.round((correct / answered) * 100) : 0;
+	const elapsed = Math.max(0, Math.round((now - goal.startedAt) / 60000));
+	const minutesLeft = Math.max(0, goal.durationMinutes - elapsed);
+	const progress = Math.max(0, Math.min(100, Math.round((answered / goal.targetAnswers) * 100)));
+	const isCompleted = answered >= goal.targetAnswers && accuracy >= goal.targetAccuracy;
+	const isFailed = !isCompleted && elapsed >= goal.durationMinutes;
+	return {
+		goal,
+		answered,
+		accuracy,
+		elapsed,
+		minutesLeft,
+		progress,
+		isCompleted,
+		isFailed
+	};
+}
+
+function renderSessionGoal() {
+	if (!ui.sessionStatus || !ui.sessionDetails || !ui.sessionProgress || !ui.sessionProgressValue) return;
+	const snapshot = getSessionSnapshot();
+	if (!snapshot) {
+		ui.sessionStatus.textContent = t('session.statusIdle');
+		ui.sessionDetails.textContent = t('session.detailIdle');
+		ui.sessionProgress.value = 0;
+		ui.sessionProgressValue.textContent = '0%';
+		return;
+	}
+
+	const preset = SESSION_PRESETS[snapshot.goal.preset];
+	const label = preset ? t(preset.labelKey) : snapshot.goal.preset;
+	let changed = false;
+	if (snapshot.isCompleted && !snapshot.goal.completedAt) {
+		snapshot.goal.completedAt = Date.now();
+		snapshot.goal.failedAt = 0;
+		changed = true;
+	}
+	if (snapshot.isFailed && !snapshot.goal.failedAt && !snapshot.goal.completedAt) {
+		snapshot.goal.failedAt = Date.now();
+		changed = true;
+	}
+
+	let statusKey = 'session.statusActive';
+	let detailKey = 'session.detailActive';
+	if (snapshot.goal.completedAt) {
+		statusKey = 'session.statusCompleted';
+		detailKey = 'session.detailCompleted';
+	} else if (snapshot.goal.failedAt) {
+		statusKey = 'session.statusFailed';
+		detailKey = 'session.detailFailed';
+	}
+
+	ui.sessionStatus.textContent = t(statusKey, { label });
+	ui.sessionDetails.textContent = t(detailKey, {
+		answered: snapshot.answered,
+		targetAnswers: snapshot.goal.targetAnswers,
+		accuracy: snapshot.accuracy,
+		targetAccuracy: snapshot.goal.targetAccuracy,
+		minutesLeft: snapshot.minutesLeft,
+		elapsed: snapshot.elapsed
+	});
+	ui.sessionProgress.value = snapshot.progress;
+	ui.sessionProgressValue.textContent = `${snapshot.progress}%`;
+
+	if (changed) void saveState();
+}
+
+function renderHistoryPanel() {
+	if (!ui.historyStreak || !ui.historyHeatmap || !ui.historyTopicTrend) return;
+
+	let streakDays = 0;
+	const streakCursor = new Date();
+	streakCursor.setHours(0, 0, 0, 0);
+	while (true) {
+		const key = toDateKey(streakCursor.getTime());
+		const day = state.historyDaily[key];
+		const activity = (day?.answered || 0) + (day?.reviews || 0);
+		if (activity <= 0) break;
+		streakDays += 1;
+		streakCursor.setDate(streakCursor.getDate() - 1);
+	}
+
+	ui.historyStreak.textContent = streakDays
+		? t('history.streak', { days: streakDays })
+		: t('history.streakNone');
+
+	ui.historyHeatmap.innerHTML = '';
+	const heatmapStart = new Date();
+	heatmapStart.setHours(0, 0, 0, 0);
+	heatmapStart.setDate(heatmapStart.getDate() - 27);
+	for (let index = 0; index < 28; index += 1) {
+		const current = new Date(heatmapStart);
+		current.setDate(heatmapStart.getDate() + index);
+		const key = toDateKey(current.getTime());
+		const day = state.historyDaily[key] || { answered: 0, reviews: 0 };
+		const activity = (day.answered || 0) + (day.reviews || 0);
+		const level = activity >= 10 ? 4 : activity >= 7 ? 3 : activity >= 4 ? 2 : activity >= 1 ? 1 : 0;
+		const cell = document.createElement('span');
+		cell.className = `heat-cell level-${level}`;
+		cell.setAttribute('title', `${key}: ${activity}`);
+		ui.historyHeatmap.append(cell);
+	}
+
+	ui.historyTopicTrend.innerHTML = '';
+	const topicRows = Object.entries(state.quiz.byTopic || {})
+		.map(([topic, values]) => {
+			const total = Number(values.total) || 0;
+			const correct = Number(values.correct) || 0;
+			const accuracy = total ? Math.round((correct / total) * 100) : 0;
+			return { topic, total, accuracy };
+		})
+		.filter((row) => row.total > 0)
+		.sort((left, right) => left.accuracy - right.accuracy || right.total - left.total)
+		.slice(0, 6);
+
+	if (!topicRows.length) {
+		const empty = document.createElement('p');
+		empty.className = 'meta';
+		empty.textContent = t('history.topicEmpty');
+		ui.historyTopicTrend.append(empty);
+		return;
+	}
+
+	topicRows.forEach((row) => {
+		const item = document.createElement('p');
+		item.className = `topic-trend-row ${row.accuracy >= 85 ? 'strong' : row.accuracy < 70 ? 'weak' : 'mid'}`;
+		item.textContent = t('history.topicLine', {
+			topic: row.topic,
+			accuracy: row.accuracy,
+			total: row.total
+		});
+		ui.historyTopicTrend.append(item);
+	});
+}
+
 function getRoadmapProgress() {
 	const total = roadmapThemes.reduce((sum, theme) => sum + theme.todos.length, 0);
 	const done = roadmapBoxes.reduce((sum, box) => sum + (box.checked ? 1 : 0), 0);
@@ -832,6 +1160,8 @@ function renderStats() {
 	ui.metricExam.textContent = `${state.examBest}%`;
 	ui.metricDue.textContent = String(getDueCardCount());
 	ui.metricJournal.textContent = String(Object.keys(state.wrongJournal).length);
+	renderSessionGoal();
+	renderHistoryPanel();
 }
 
 /* ---- Quiz ---- */
@@ -847,16 +1177,19 @@ function formatOptionLabel(optionIndex, optionText) {
 function buildQuizOptionReason(optionIndex) {
 	if (!activeQuestion) return '';
 	const optionText = activeQuestion.options[optionIndex] || '';
+	const explicitReason = activeQuestion.optionExplanationsByOption?.[optionText];
+	const globalReason = optionRationaleByLanguage[currentLanguage]?.[optionText];
+	const optionReason = explicitReason || globalReason || activeQuestion.explanation;
 	if (optionIndex === activeQuestion.correctIndex) {
 		return t('quiz.optionReasonCorrect', {
 			answer: optionText,
-			explanation: activeQuestion.explanation
+			explanation: optionReason
 		});
 	}
 	return t('quiz.optionReasonWrong', {
 		answer: optionText,
 		correct: activeQuestion.correctText,
-		explanation: activeQuestion.explanation
+		explanation: optionReason
 	});
 }
 
@@ -968,6 +1301,7 @@ function submitQuizAnswer(selectedIndex) {
 		state.wrongJournal[activeQuestion.id] = wrong;
 	}
 	state.quiz.byTopic[activeQuestion.topic] = topicStats;
+	trackDailyHistory({ answered: 1, correct: isCorrect ? 1 : 0 });
 
 	[...ui.quizOptions.querySelectorAll('button')].forEach((button) => {
 		const index = Number(button.dataset.index);
@@ -1216,6 +1550,7 @@ function finishExam() {
 
 	const correctCount = reviewRows.filter((row) => row.isCorrect).length;
 	const score = Math.round((correctCount / exam.questions.length) * 100);
+	trackDailyHistory({ answered: exam.questions.length, correct: correctCount });
 	state.examBest = Math.max(state.examBest, score);
 	state.examHistory.unshift({
 		at: Date.now(),
@@ -1248,6 +1583,57 @@ function finishExam() {
 
 /* ---- Flashcards (SM-2) ---- */
 
+function clearFlashcardSwipeClasses() {
+	if (!ui.flashBox) return;
+	ui.flashBox.classList.remove('swipe-again', 'swipe-good', 'swipe-easy');
+}
+
+function animateFlashcardSwipe(grade) {
+	if (!ui.flashBox) return Promise.resolve();
+	clearFlashcardSwipeClasses();
+	const className = grade === 'again' ? 'swipe-again' : grade === 'easy' ? 'swipe-easy' : 'swipe-good';
+	// Restart animation if the same grade is triggered quickly.
+	void ui.flashBox.offsetWidth;
+	ui.flashBox.classList.add(className);
+	return new Promise((resolve) => {
+		let resolved = false;
+		const done = () => {
+			if (resolved) return;
+			resolved = true;
+			if (flashSwipeTimer) {
+				clearTimeout(flashSwipeTimer);
+				flashSwipeTimer = undefined;
+			}
+			clearFlashcardSwipeClasses();
+			resolve();
+		};
+		ui.flashBox.addEventListener('animationend', done, { once: true });
+		flashSwipeTimer = setTimeout(done, 320);
+	});
+}
+
+function updateFlashcardTilt(clientX, clientY) {
+	if (!ui.flashBox) return;
+	const rect = ui.flashBox.getBoundingClientRect();
+	if (!rect.width || !rect.height) return;
+	const xPercent = (clientX - rect.left) / rect.width;
+	const yPercent = (clientY - rect.top) / rect.height;
+	const rotateY = (xPercent - 0.5) * 8;
+	const rotateX = (0.5 - yPercent) * 7;
+	ui.flashBox.style.setProperty('--flash-tilt-x', `${rotateX.toFixed(2)}deg`);
+	ui.flashBox.style.setProperty('--flash-tilt-y', `${rotateY.toFixed(2)}deg`);
+	ui.flashBox.style.setProperty('--flash-glare-x', `${Math.round(xPercent * 100)}%`);
+	ui.flashBox.style.setProperty('--flash-glare-y', `${Math.round(yPercent * 100)}%`);
+}
+
+function resetFlashcardTilt() {
+	if (!ui.flashBox) return;
+	ui.flashBox.style.removeProperty('--flash-tilt-x');
+	ui.flashBox.style.removeProperty('--flash-tilt-y');
+	ui.flashBox.style.removeProperty('--flash-glare-x');
+	ui.flashBox.style.removeProperty('--flash-glare-y');
+}
+
 function chooseNextCard() {
 	activeCard = selectNextStudyCard(flashcards, state.flashcards, {
 		now: Date.now(),
@@ -1255,6 +1641,7 @@ function chooseNextCard() {
 	});
 	cardShown = false;
 	flashHintShown = false;
+	clearFlashcardSwipeClasses();
 	renderCard();
 }
 
@@ -1266,6 +1653,7 @@ function renderCard() {
 	ui.flashTopic.textContent = activeCard.topic;
 	ui.flashFront.textContent = front;
 	ui.flashBack.textContent = back;
+	ui.flashBox?.classList.toggle('is-revealed', cardShown);
 	ui.flashBack.hidden = !cardShown;
 	ui.flashShow.hidden = cardShown;
 	ui.flashGrades.hidden = !cardShown;
@@ -1279,12 +1667,14 @@ function renderCard() {
 		: t('flashcards.nextCard', { date: formatDate(progress.dueAt) });
 }
 
-function rateCard(grade) {
+async function rateCard(grade) {
 	if (!activeCard) return;
 	const progress = state.flashcards[activeCard.id];
 	state.flashcards[activeCard.id] = applySpacedRepetitionGrade(progress, grade, state.settings);
+	trackDailyHistory({ reviews: 1 });
 	void saveState();
 	renderStats();
+	await animateFlashcardSwipe(grade);
 	chooseNextCard();
 }
 
@@ -1338,6 +1728,7 @@ function rateGlossaryCard(grade) {
 	if (!activeGlossaryCard) return;
 	const progress = state.glossaryFlashcards[activeGlossaryCard.id];
 	state.glossaryFlashcards[activeGlossaryCard.id] = applySpacedRepetitionGrade(progress, grade, state.settings);
+	trackDailyHistory({ reviews: 1 });
 	void saveState();
 	renderStats();
 	chooseNextGlossaryCard(ui.glossarySearch?.value || '');
@@ -1481,6 +1872,19 @@ function bindEvents() {
 		});
 	});
 
+	document.querySelectorAll('[data-session-goal]').forEach((btn) => {
+		btn.addEventListener('click', () => {
+			startSessionGoal(btn.dataset.sessionGoal);
+		});
+	});
+	if (ui.sessionClear) {
+		ui.sessionClear.onclick = () => {
+			clearSessionGoal();
+			renderStats();
+			void saveState();
+		};
+	}
+
 	// Quiz events
 	if (ui.quizBookmark) ui.quizBookmark.onclick = () => toggleBookmark();
 	ui.quizNext.onclick = () => showQuizQuestion();
@@ -1498,6 +1902,14 @@ function bindEvents() {
 	ui.examNext.onclick = () => nextExamQuestion();
 
 	// Flashcard events
+	if (ui.flashBox) {
+		ui.flashBox.addEventListener('pointermove', (event) => {
+			if (event.pointerType === 'touch') return;
+			updateFlashcardTilt(event.clientX, event.clientY);
+		});
+		ui.flashBox.addEventListener('pointerleave', () => resetFlashcardTilt());
+		ui.flashBox.addEventListener('pointercancel', () => resetFlashcardTilt());
+	}
 	ui.flashShow.onclick = () => {
 		cardShown = true;
 		renderCard();

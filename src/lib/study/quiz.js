@@ -21,16 +21,56 @@ export function getQuestionType(question) {
 
 export function localizeQuestionData(question, language = 'en') {
 	const useGerman = language === 'de';
+	const localizedOptions = useGerman && Array.isArray(question.optionsDe) ? question.optionsDe : question.options;
+	const localizedOptionExplanations = useGerman && question.optionExplanationsDe
+		? question.optionExplanationsDe
+		: question.optionExplanations;
 
 	return {
 		...question,
 		prompt: useGerman && typeof question.promptDe === 'string' ? question.promptDe : question.prompt,
 		hint: useGerman && typeof question.hintDe === 'string' ? question.hintDe : question.hint,
 		explanation: useGerman && typeof question.explanationDe === 'string' ? question.explanationDe : question.explanation,
-		options: useGerman && Array.isArray(question.optionsDe) ? question.optionsDe : question.options,
+		options: localizedOptions,
+		optionExplanations: localizedOptionExplanations,
 		wrongOptions: useGerman && Array.isArray(question.wrongOptionsDe) ? question.wrongOptionsDe : question.wrongOptions,
 		correctAnswer: useGerman && typeof question.correctAnswerDe === 'string' ? question.correctAnswerDe : question.correctAnswer
 	};
+}
+
+function buildOptionExplanationLookup(localizedQuestion, options) {
+	const lookup = {};
+	const { optionExplanations } = localizedQuestion;
+
+	if (Array.isArray(optionExplanations)) {
+		optionExplanations.forEach((explanation, index) => {
+			const optionText = options[index];
+			if (optionText && typeof explanation === 'string') {
+				lookup[optionText] = explanation;
+			}
+		});
+		return lookup;
+	}
+
+	if (optionExplanations && typeof optionExplanations === 'object') {
+		Object.entries(optionExplanations).forEach(([key, value]) => {
+			if (typeof value !== 'string') return;
+			lookup[key] = value;
+			const normalizedKey = key.toLowerCase();
+			if (options.length === 2) {
+				if (normalizedKey === 'true' || normalizedKey === 'wahr') {
+					const trueOption = options.find((option) => /^(true|wahr)$/i.test(option));
+					if (trueOption) lookup[trueOption] = value;
+				}
+				if (normalizedKey === 'false' || normalizedKey === 'falsch') {
+					const falseOption = options.find((option) => /^(false|falsch)$/i.test(option));
+					if (falseOption) lookup[falseOption] = value;
+				}
+			}
+		});
+	}
+
+	return lookup;
 }
 
 export function buildOptionPools(questions, language = 'en') {
@@ -69,6 +109,7 @@ function createSingleChoiceRuntimeQuestion(baseQuestion, options) {
 	const type = getQuestionType(localizedQuestion);
 	const ownOptions = Array.isArray(localizedQuestion.options) ? localizedQuestion.options : [];
 	const correctText = ownOptions[localizedQuestion.answerIndex];
+	const optionExplanationLookup = buildOptionExplanationLookup(localizedQuestion, ownOptions);
 	const optionPools = optionPoolsByLanguage[language] || optionPoolsByLanguage.en || { topicOptionPool: {}, globalOptionPool: [] };
 	const { topicOptionPool, globalOptionPool } = optionPools;
 
@@ -81,6 +122,7 @@ function createSingleChoiceRuntimeQuestion(baseQuestion, options) {
 			options: ownOptions,
 			correctIndex: fallbackIndex,
 			correctText: ownOptions[fallbackIndex] || '',
+			optionExplanationsByOption: optionExplanationLookup,
 			answerPoolCount: ownOptions.length
 		};
 	}
@@ -100,6 +142,12 @@ function createSingleChoiceRuntimeQuestion(baseQuestion, options) {
 	const selectedWrong = shuffleFn(wrongPool).slice(0, wrongToShow);
 	const runtimeOptions = shuffleFn([correctText, ...selectedWrong]);
 	const correctIndex = runtimeOptions.indexOf(correctText);
+	const optionExplanationsByOption = {};
+	runtimeOptions.forEach((optionText) => {
+		if (optionExplanationLookup[optionText]) {
+			optionExplanationsByOption[optionText] = optionExplanationLookup[optionText];
+		}
+	});
 
 	return {
 		...localizedQuestion,
@@ -108,6 +156,7 @@ function createSingleChoiceRuntimeQuestion(baseQuestion, options) {
 		options: runtimeOptions,
 		correctIndex,
 		correctText,
+		optionExplanationsByOption,
 		answerPoolCount: wrongPool.length + 1
 	};
 }
@@ -120,6 +169,13 @@ function createTrueFalseRuntimeQuestion(baseQuestion, options) {
 	const prefersFalse = normalizedAnswer === 'false' || normalizedAnswer === 'falsch';
 	const correctText = prefersFalse ? falseLabel : trueLabel;
 	const runtimeOptions = shuffleFn([trueLabel, falseLabel]);
+	const optionExplanationLookup = buildOptionExplanationLookup(localizedQuestion, [trueLabel, falseLabel]);
+	const optionExplanationsByOption = {};
+	runtimeOptions.forEach((optionText) => {
+		if (optionExplanationLookup[optionText]) {
+			optionExplanationsByOption[optionText] = optionExplanationLookup[optionText];
+		}
+	});
 
 	return {
 		...localizedQuestion,
@@ -128,6 +184,7 @@ function createTrueFalseRuntimeQuestion(baseQuestion, options) {
 		options: runtimeOptions,
 		correctIndex: runtimeOptions.indexOf(correctText),
 		correctText,
+		optionExplanationsByOption,
 		answerPoolCount: 2
 	};
 }
