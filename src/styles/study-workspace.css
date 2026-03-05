@@ -854,6 +854,7 @@ h4 {
 .option-list {
 	display: grid;
 	gap: 0.55rem;
+	isolation: isolate;
 }
 
 .option {
@@ -893,6 +894,7 @@ h4 {
 	background: #fffaf5;
 	transform: translateX(4px);
 	box-shadow: -4px 0 0 0 #e8912a;
+	z-index: calc(var(--tooltip-z-index) - 1);
 }
 
 /* ---- Option tooltips ---- */
