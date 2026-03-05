@@ -8,6 +8,7 @@ import { createDefaultStudyState, FALLBACK_KEY, hydrateStudyState } from '../lib
 
 const DB = { name: 'ai900-study-helper', version: 1, store: 'kv', key: 'state' };
 const EXAM_SECONDS = 20 * 60;
+const EXAM_MINUTES = Math.round(EXAM_SECONDS / 60);
 const EXAM_QUESTION_COUNT = 10;
 const THEME_KEY = 'ai900_theme_pref';
 const LANG_KEY = 'ai900_lang_pref';
@@ -183,9 +184,8 @@ const ui = {
 	settingAiEnabled: byId('setting-ai-enabled'),
 	settingAiProvider: byId('setting-ai-provider'),
 	settingAiEndpoint: byId('setting-ai-endpoint'),
-	settingAiDeployment: byId('setting-ai-deployment'),
-	settingAiApiVersion: byId('setting-ai-api-version'),
 	settingAiApiKey: byId('setting-ai-api-key'),
+	settingAiModel: byId('setting-ai-model'),
 	settingsSave: byId('settings-save'),
 	settingsReset: byId('settings-reset'),
 	welcomeStart: byId('welcome-start'),
@@ -252,6 +252,9 @@ const i18n = {
 		'exam.meta': '10 questions, 20 minutes, mixed question types, and a detailed review.',
 		'exam.start': 'Start exam',
 		'exam.nextQuestion': 'Next question',
+		'exam.startConfirm': 'You are about to start the exam ({total} questions, about {minutes} minutes). Leaving early will score this attempt as 0%. Continue?',
+		'exam.leaveConfirm': 'Leave exam now? This attempt will be scored as 0%.',
+		'exam.abortedPenalty': 'Exam ended early. This attempt was scored as 0%.',
 		'flashcards.meta': 'Rate each card: Again, Good, Easy.',
 		'flashcards.title': 'Spaced Repetition',
 		'flashcards.showAnswer': 'Show answer',
@@ -318,16 +321,15 @@ const i18n = {
 		'settings.maxReviews': 'Max reviews / day',
 		'settings.goodMultiplier': 'Interval multiplier "Good"',
 		'settings.easyMultiplier': 'Interval multiplier "Easy"',
-		'settings.lapseMinutes': 'Lapse interval (minutes)',
-		'settings.aiSectionTitle': 'AI chat (BYOK)',
-		'settings.aiSectionHint': 'Use your own Azure OpenAI key. The key stays in your local browser storage.',
-		'settings.aiEnabled': 'Enable AI chat',
-		'settings.aiProvider': 'Provider',
-		'settings.aiEndpoint': 'Endpoint URL',
-		'settings.aiDeployment': 'Deployment',
-		'settings.aiApiVersion': 'API version',
-		'settings.aiApiKey': 'API key',
-		'settings.aiKeyHowTo': 'Azure Portal -> your Azure OpenAI resource -> Deployments + Endpoint -> copy endpoint + key.',
+			'settings.lapseMinutes': 'Lapse interval (minutes)',
+			'settings.aiSectionTitle': 'AI chat (BYOK)',
+			'settings.aiSectionHint': 'Use your own Azure OpenAI key. The key stays in your local browser storage.',
+			'settings.aiEnabled': 'Enable AI chat',
+			'settings.aiProvider': 'Provider',
+			'settings.aiEndpoint': 'Endpoint URL',
+			'settings.aiApiKey': 'API key',
+			'settings.aiModel': 'Model / deployment',
+			'settings.aiKeyHowTo': 'Azure Portal -> your Azure OpenAI resource -> Deployments + Endpoint -> copy endpoint + key.',
 		'settings.save': 'Save',
 		'settings.reset': 'Reset defaults',
 		'welcome.title': 'Welcome to AI-900 Study Companion',
@@ -344,13 +346,14 @@ const i18n = {
 		'chat.title': 'AI Study Assistant',
 		'chat.close': 'Close',
 		'chat.helper': 'Ask follow-up questions about the current study content.',
-		'chat.inputLabel': 'Your question',
-		'chat.placeholder': 'Ask what you did not understand...',
-		'chat.send': 'Send',
-		'chat.empty': 'No messages yet. Ask a question to the AI helper.',
-		'chat.pending': 'Assistant is writing...',
-		'chat.errorConfig': 'AI chat is hidden until you enable it and add endpoint, deployment, and API key in settings.',
-		'chat.errorRequest': 'Request failed. Check endpoint, deployment, API version, and API key.',
+			'chat.inputLabel': 'Your question',
+			'chat.placeholder': 'Ask what you did not understand...',
+			'chat.send': 'Send',
+			'chat.empty': 'No messages yet. Ask a question to the AI helper.',
+			'chat.pending': 'Assistant is writing...',
+			'chat.errorConfig': 'Add endpoint and API key in settings to use AI chat.',
+			'chat.errorExam': 'AI chat is disabled during exam mode.',
+			'chat.errorRequest': 'Request failed.',
 		'tooltip.quiz': 'Answer questions with instant feedback and track your accuracy over time.',
 		'tooltip.exam': 'Simulate a timed exam with 10 questions in 20 minutes and get a detailed review.',
 		'tooltip.flashcards': 'Study AI-900 concepts with spaced repetition. Rate cards as Again, Good, or Easy.',
@@ -408,6 +411,9 @@ const i18n = {
 		'exam.meta': '10 Fragen, 20 Minuten, gemischte Fragetypen und detaillierte Auswertung.',
 		'exam.start': 'Prüfung starten',
 		'exam.nextQuestion': 'Nächste Frage',
+		'exam.startConfirm': 'Du startest jetzt die Prüfung ({total} Fragen, ca. {minutes} Minuten). Wenn du vorzeitig verlässt, wird dieser Versuch mit 0% gewertet. Fortfahren?',
+		'exam.leaveConfirm': 'Prüfung jetzt verlassen? Dieser Versuch wird mit 0% gewertet.',
+		'exam.abortedPenalty': 'Prüfung vorzeitig beendet. Dieser Versuch wurde mit 0% gewertet.',
 		'flashcards.meta': 'Bewerte jede Karte: Nochmal, Gut, Sicher.',
 		'flashcards.title': 'Spaced Repetition',
 		'flashcards.showAnswer': 'Antwort zeigen',
@@ -474,16 +480,15 @@ const i18n = {
 		'settings.maxReviews': 'Max. Wiederholungen / Tag',
 		'settings.goodMultiplier': 'Intervall-Multiplikator „Gut"',
 		'settings.easyMultiplier': 'Intervall-Multiplikator „Sicher"',
-		'settings.lapseMinutes': 'Lapse-Intervall (Minuten)',
-		'settings.aiSectionTitle': 'AI-Chat (BYOK)',
-		'settings.aiSectionHint': 'Nutze deinen eigenen Azure OpenAI Key. Der Key bleibt im lokalen Browser-Speicher.',
-		'settings.aiEnabled': 'AI-Chat aktivieren',
-		'settings.aiProvider': 'Provider',
-		'settings.aiEndpoint': 'Endpoint-URL',
-		'settings.aiDeployment': 'Deployment',
-		'settings.aiApiVersion': 'API-Version',
-		'settings.aiApiKey': 'API-Key',
-		'settings.aiKeyHowTo': 'Azure Portal -> deine Azure OpenAI Ressource -> Deployments + Endpoint -> Endpoint + Key kopieren.',
+			'settings.lapseMinutes': 'Lapse-Intervall (Minuten)',
+			'settings.aiSectionTitle': 'AI-Chat (BYOK)',
+			'settings.aiSectionHint': 'Nutze deinen eigenen Azure OpenAI Key. Der Key bleibt im lokalen Browser-Speicher.',
+			'settings.aiEnabled': 'AI-Chat aktivieren',
+			'settings.aiProvider': 'Provider',
+			'settings.aiEndpoint': 'Endpoint-URL',
+			'settings.aiApiKey': 'API-Key',
+			'settings.aiModel': 'Modell / Deployment',
+			'settings.aiKeyHowTo': 'Azure Portal -> deine Azure OpenAI Ressource -> Deployments + Endpoint -> Endpoint + Key kopieren.',
 		'settings.save': 'Speichern',
 		'settings.reset': 'Standardwerte',
 		'welcome.title': 'Willkommen beim AI-900 Lernbegleiter',
@@ -500,13 +505,14 @@ const i18n = {
 		'chat.title': 'AI Lernassistent',
 		'chat.close': 'Schließen',
 		'chat.helper': 'Stelle Rückfragen zum aktuellen Lerninhalt.',
-		'chat.inputLabel': 'Deine Frage',
-		'chat.placeholder': 'Frag nach, was du nicht verstanden hast...',
-		'chat.send': 'Senden',
-		'chat.empty': 'Noch keine Nachrichten. Stelle eine Frage an den AI-Assistenten.',
-		'chat.pending': 'Assistent schreibt...',
-		'chat.errorConfig': 'AI-Chat bleibt ausgeblendet, bis du ihn aktivierst und Endpoint, Deployment und API-Key einträgst.',
-		'chat.errorRequest': 'Anfrage fehlgeschlagen. Prüfe Endpoint, Deployment, API-Version und API-Key.',
+			'chat.inputLabel': 'Deine Frage',
+			'chat.placeholder': 'Frag nach, was du nicht verstanden hast...',
+			'chat.send': 'Senden',
+			'chat.empty': 'Noch keine Nachrichten. Stelle eine Frage an den AI-Assistenten.',
+			'chat.pending': 'Assistent schreibt...',
+			'chat.errorConfig': 'Trage Endpoint und API-Key in den Einstellungen ein, um den AI-Chat zu nutzen.',
+			'chat.errorExam': 'AI-Chat ist im Prüfungsmodus deaktiviert.',
+			'chat.errorRequest': 'Anfrage fehlgeschlagen.',
 		'tooltip.quiz': 'Beantworte Fragen mit Sofort-Feedback und verfolge deine Genauigkeit über die Zeit.',
 		'tooltip.exam': 'Simuliere eine Zeitprüfung mit 10 Fragen in 20 Minuten und erhalte eine detaillierte Auswertung.',
 		'tooltip.flashcards': 'Lerne AI-900 Konzepte mit Spaced Repetition. Bewerte Karten als Nochmal, Gut oder Sicher.',
@@ -537,6 +543,8 @@ let aiChatMessages = [];
 let aiChatPending = false;
 
 const AI_CHAT_HISTORY_LIMIT = 12;
+const AZURE_RESPONSES_API_VERSION = '2025-04-01-preview';
+const AZURE_RESPONSES_MODEL = DEFAULT_SETTINGS.aiModel;
 
 const SESSION_PRESETS = {
 	sprint: { labelKey: 'session.goalSprint', targetAnswers: 10, targetAccuracy: 70, durationMinutes: 15 },
@@ -676,6 +684,10 @@ function openOverlay(overlayElement) {
 
 function closeOverlay(overlayElement) {
 	if (!overlayElement || overlayElement.hidden) return;
+	if (overlayElement === ui.overlayExam && exam) {
+		if (!confirm(t('exam.leaveConfirm'))) return;
+		finishExam({ forceFail: true, aborted: true });
+	}
 
 	overlayElement.hidden = true;
 	document.body.style.overflow = '';
@@ -1011,9 +1023,8 @@ function populateSettingsUi() {
 	ui.settingAiEnabled.checked = Boolean(state.settings.aiChatEnabled);
 	ui.settingAiProvider.value = state.settings.aiProvider;
 	ui.settingAiEndpoint.value = state.settings.aiEndpoint || '';
-	ui.settingAiDeployment.value = state.settings.aiDeployment || '';
-	ui.settingAiApiVersion.value = state.settings.aiApiVersion || '';
 	ui.settingAiApiKey.value = state.settings.aiApiKey || '';
+	ui.settingAiModel.value = state.settings.aiModel || AZURE_RESPONSES_MODEL;
 }
 
 function readSettingsFromUi() {
@@ -1027,9 +1038,8 @@ function readSettingsFromUi() {
 		aiChatEnabled: ui.settingAiEnabled.checked,
 		aiProvider: ui.settingAiProvider.value,
 		aiEndpoint: ui.settingAiEndpoint.value,
-		aiDeployment: ui.settingAiDeployment.value,
-		aiApiVersion: ui.settingAiApiVersion.value,
-		aiApiKey: ui.settingAiApiKey.value
+		aiApiKey: ui.settingAiApiKey.value,
+		aiModel: ui.settingAiModel.value
 	};
 }
 
@@ -1037,6 +1047,7 @@ function saveSettings() {
 	state.settings = readSettingsFromUi();
 	populateSettingsUi();
 	syncAiChatVisibility();
+	if (isAiChatConfigured()) setAiChatError('');
 	void saveState();
 	closeOverlay(activeOverlay);
 }
@@ -1051,7 +1062,55 @@ function resetSettings() {
 /* ---- AI chat (BYOK) ---- */
 
 function normalizeEndpoint(endpoint) {
-	return String(endpoint || '').trim().replace(/\/+$/, '');
+	const raw = String(endpoint || '').trim();
+	if (!raw) return '';
+	return raw.replace(/#.*$/, '').replace(/\/+$/, '');
+}
+
+function resolveAiModel(model) {
+	const value = String(model || '').trim();
+	return value || AZURE_RESPONSES_MODEL;
+}
+
+function buildAzureResponsesUrl(endpoint) {
+	const normalized = normalizeEndpoint(endpoint);
+	if (!normalized) return '';
+	let parsed;
+	try {
+		parsed = new URL(normalized);
+	} catch {
+		return '';
+	}
+
+	const trimmedPath = parsed.pathname.replace(/\/+$/, '');
+	if (/\/openai\/responses$/i.test(trimmedPath)) {
+		parsed.pathname = trimmedPath;
+	} else if (/\/openai$/i.test(trimmedPath)) {
+		parsed.pathname = `${trimmedPath}/responses`;
+	} else {
+		parsed.pathname = `${trimmedPath}/openai/responses`;
+	}
+
+	if (!parsed.searchParams.get('api-version')) {
+		parsed.searchParams.set('api-version', AZURE_RESPONSES_API_VERSION);
+	}
+
+	return parsed.toString();
+}
+
+function getAzureErrorDetail(rawText = '') {
+	const text = String(rawText || '').trim();
+	if (!text) return '';
+
+	try {
+		const parsed = JSON.parse(text);
+		const code = typeof parsed?.error?.code === 'string' ? parsed.error.code.trim() : '';
+		const message = typeof parsed?.error?.message === 'string' ? parsed.error.message.trim() : '';
+		if (code && message) return `${code}: ${message}`;
+		if (message) return message;
+	} catch {}
+
+	return text.slice(0, 320);
 }
 
 function isAiChatConfigured() {
@@ -1060,8 +1119,8 @@ function isAiChatConfigured() {
 		settings.aiChatEnabled === true &&
 		settings.aiProvider === 'azure-openai' &&
 		Boolean(normalizeEndpoint(settings.aiEndpoint)) &&
-		Boolean(String(settings.aiDeployment || '').trim()) &&
-		Boolean(String(settings.aiApiKey || '').trim())
+		Boolean(String(settings.aiApiKey || '').trim()) &&
+		Boolean(resolveAiModel(settings.aiModel))
 	);
 }
 
@@ -1102,15 +1161,12 @@ function renderAiChatMessages() {
 
 function syncAiChatVisibility() {
 	if (!ui.aiChatWidget) return;
-	const available = isAiChatConfigured();
-	ui.aiChatWidget.hidden = !available;
+	const disabledByExam = Boolean(exam);
+	ui.aiChatWidget.hidden = disabledByExam;
 
-	if (!available) {
+	if (disabledByExam) {
 		ui.aiChatPanel.hidden = true;
-		aiChatMessages = [];
-		aiChatPending = false;
 		setAiChatError('');
-		if (ui.aiChatInput) ui.aiChatInput.value = '';
 		return;
 	}
 
@@ -1119,16 +1175,20 @@ function syncAiChatVisibility() {
 
 function toggleAiChatPanel(forceOpen) {
 	if (!ui.aiChatPanel || !ui.aiChatWidget) return;
-	if (!isAiChatConfigured()) {
-		syncAiChatVisibility();
-		setAiChatError(t('chat.errorConfig'));
-		return;
-	}
 
 	const shouldOpen = typeof forceOpen === 'boolean' ? forceOpen : ui.aiChatPanel.hidden;
 	ui.aiChatPanel.hidden = !shouldOpen;
 	if (shouldOpen) {
+		if (exam) {
+			setAiChatError(t('chat.errorExam'));
+			return;
+		}
 		renderAiChatMessages();
+		if (!isAiChatConfigured()) {
+			setAiChatError(t('chat.errorConfig'));
+		} else {
+			setAiChatError('');
+		}
 		ui.aiChatInput?.focus();
 	}
 }
@@ -1188,14 +1248,15 @@ function buildAiSystemPrompt() {
 }
 
 async function requestAiChatAnswer() {
-	const endpoint = normalizeEndpoint(state.settings.aiEndpoint);
-	const deployment = encodeURIComponent(state.settings.aiDeployment);
-	const apiVersion = encodeURIComponent(state.settings.aiApiVersion || DEFAULT_SETTINGS.aiApiVersion);
-	const url = `${endpoint}/openai/deployments/${deployment}/chat/completions?api-version=${apiVersion}`;
+	const url = buildAzureResponsesUrl(state.settings.aiEndpoint);
+	if (!url) {
+		throw new Error('Invalid endpoint URL. Use your resource URL or the full /openai/responses endpoint.');
+	}
+
+	const model = resolveAiModel(state.settings.aiModel);
 	const context = getActiveStudyContext();
-	const messages = [
-		{ role: 'system', content: buildAiSystemPrompt() },
-		{ role: 'system', content: `Current study context:\n${context}` },
+	const input = [
+		{ role: 'system', content: `${buildAiSystemPrompt()}\n\nCurrent study context:\n${context}` },
 		...aiChatMessages.slice(-AI_CHAT_HISTORY_LIMIT).map((message) => ({
 			role: message.role === 'assistant' ? 'assistant' : 'user',
 			content: String(message.content || '')
@@ -1209,21 +1270,29 @@ async function requestAiChatAnswer() {
 			'api-key': state.settings.aiApiKey
 		},
 		body: JSON.stringify({
-			messages,
-			temperature: 0.2,
-			max_completion_tokens: 700
+			model,
+			input,
+			max_output_tokens: 700
 		})
 	});
 
 	if (!response.ok) {
-		throw new Error(`Chat request failed with status ${response.status}`);
+		const detail = getAzureErrorDetail(await response.text());
+		const reason = detail ? `: ${detail}` : '';
+		throw new Error(`HTTP ${response.status}${reason}`);
 	}
 
 	const payload = await response.json();
-	const output = payload?.choices?.[0]?.message?.content;
-	const text = Array.isArray(output)
-		? output.map((part) => part?.text || '').join('').trim()
-		: String(output || '').trim();
+	const directText = typeof payload?.output_text === 'string' ? payload.output_text.trim() : '';
+	let text = directText;
+	if (!text && Array.isArray(payload?.output)) {
+		text = payload.output
+			.flatMap((item) => (Array.isArray(item?.content) ? item.content : []))
+			.filter((part) => part && typeof part.text === 'string')
+			.map((part) => part.text)
+			.join('')
+			.trim();
+	}
 
 	if (!text) {
 		throw new Error('Chat response did not include content.');
@@ -1234,6 +1303,10 @@ async function requestAiChatAnswer() {
 
 async function sendAiChatMessage(rawMessage) {
 	if (aiChatPending) return;
+	if (exam) {
+		setAiChatError(t('chat.errorExam'));
+		return;
+	}
 
 	const content = String(rawMessage || '').trim();
 	if (!content) return;
@@ -1258,8 +1331,9 @@ async function sendAiChatMessage(rawMessage) {
 		if (aiChatMessages.length > AI_CHAT_HISTORY_LIMIT) {
 			aiChatMessages = aiChatMessages.slice(-AI_CHAT_HISTORY_LIMIT);
 		}
-	} catch {
-		setAiChatError(t('chat.errorRequest'));
+	} catch (error) {
+		const details = error instanceof Error ? error.message : '';
+		setAiChatError(details ? `${t('chat.errorRequest')} ${details}` : t('chat.errorRequest'));
 	} finally {
 		aiChatPending = false;
 		renderAiChatMessages();
@@ -1753,7 +1827,7 @@ function renderExamQuestion() {
 	ui.examNext.textContent = exam.index === exam.questions.length - 1 ? t('exam.finish') : t('exam.nextQuestion');
 }
 
-function renderExamSummary({ score, correctCount, total, topicStats }) {
+function renderExamSummary({ score, correctCount, total, topicStats, aborted = false }) {
 	ui.examResult.innerHTML = '';
 	const scoreLine = document.createElement('p');
 	scoreLine.textContent = t('exam.result', {
@@ -1762,6 +1836,13 @@ function renderExamSummary({ score, correctCount, total, topicStats }) {
 		total
 	});
 	ui.examResult.append(scoreLine);
+
+	if (aborted) {
+		const abortedLine = document.createElement('p');
+		abortedLine.className = 'meta';
+		abortedLine.textContent = t('exam.abortedPenalty');
+		ui.examResult.append(abortedLine);
+	}
 
 	const topicTitle = document.createElement('p');
 	topicTitle.className = 'meta';
@@ -1840,6 +1921,10 @@ async function startExam() {
 	await ensureQuestionPoolLoaded();
 	if (!quizQuestions.length) return;
 	const count = Math.min(EXAM_QUESTION_COUNT, quizQuestions.length);
+	const startConfirmed = confirm(
+		t('exam.startConfirm', { total: count, minutes: EXAM_MINUTES })
+	);
+	if (!startConfirmed) return;
 	exam = {
 		questions: pickExamQuestions(count).map((question) => createRuntimeQuestion(question)),
 		answers: Array.from({ length: count }, () => null),
@@ -1862,6 +1947,7 @@ async function startExam() {
 		ui.examTimer.setAttribute('aria-label', t('a11y.timeRemaining', { time: clockText }));
 		if (exam && Date.now() >= exam.endsAt) finishExam();
 	}, 1000);
+	syncAiChatVisibility();
 }
 
 function nextExamQuestion() {
@@ -1886,7 +1972,7 @@ function updateJournalFromExamWrongAnswers(reviewRows) {
 		});
 }
 
-function finishExam() {
+function finishExam({ forceFail = false, aborted = false } = {}) {
 	if (!exam) return;
 	if (examInterval) clearInterval(examInterval);
 	examInterval = undefined;
@@ -1906,6 +1992,15 @@ function finishExam() {
 			correctText: question.correctText
 		};
 	});
+
+	if (forceFail) {
+		reviewRows.forEach((row) => {
+			row.isCorrect = false;
+		});
+		Object.values(topicStats).forEach((stats) => {
+			stats.correct = 0;
+		});
+	}
 
 	const correctCount = reviewRows.filter((row) => row.isCorrect).length;
 	const score = Math.round((correctCount / exam.questions.length) * 100);
@@ -1929,11 +2024,13 @@ function finishExam() {
 		score,
 		correctCount,
 		total: exam.questions.length,
-		topicStats
+		topicStats,
+		aborted
 	});
 	renderExamReview(reviewRows);
 
 	exam = null;
+	syncAiChatVisibility();
 	renderStats();
 	renderJournal();
 	ui.examResult.setAttribute('tabindex', '-1');

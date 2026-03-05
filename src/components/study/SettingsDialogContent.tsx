@@ -44,26 +44,22 @@ export default function SettingsDialogContent() {
 						<option value="azure-openai">Azure OpenAI</option>
 					</select>
 				</label>
-				<label className="settings-row settings-row-wide">
-					<span data-i18n="settings.aiEndpoint">Endpoint URL</span>
-					<Input id="setting-ai-endpoint" type="text" placeholder="https://your-resource.cognitiveservices.azure.com" />
-				</label>
-				<label className="settings-row settings-row-wide">
-					<span data-i18n="settings.aiDeployment">Deployment</span>
-					<Input id="setting-ai-deployment" type="text" defaultValue="gpt-5.2" />
-				</label>
-				<label className="settings-row settings-row-wide">
-					<span data-i18n="settings.aiApiVersion">API version</span>
-					<Input id="setting-ai-api-version" type="text" defaultValue="2024-12-01-preview" />
-				</label>
-				<label className="settings-row settings-row-wide">
-					<span data-i18n="settings.aiApiKey">API key</span>
-					<Input id="setting-ai-api-key" type="password" autoComplete="off" />
-				</label>
-				<p className="settings-help" data-i18n="settings.aiKeyHowTo">
-					Azure Portal - your Azure OpenAI resource - Deployments + Endpoint - copy endpoint and key.
-				</p>
-			</section>
+					<label className="settings-row settings-row-wide">
+						<span data-i18n="settings.aiEndpoint">Endpoint URL</span>
+						<Input id="setting-ai-endpoint" type="text" placeholder="https://your-resource.cognitiveservices.azure.com" />
+					</label>
+					<label className="settings-row settings-row-wide">
+						<span data-i18n="settings.aiApiKey">API key</span>
+						<Input id="setting-ai-api-key" type="password" autoComplete="off" />
+					</label>
+					<label className="settings-row settings-row-wide">
+						<span data-i18n="settings.aiModel">Model / deployment</span>
+						<Input id="setting-ai-model" type="text" placeholder="gpt-5.2" defaultValue="gpt-5.2" />
+					</label>
+					<p className="settings-help" data-i18n="settings.aiKeyHowTo">
+						Azure Portal - your Azure OpenAI resource - Deployments + Endpoint - copy endpoint and key.
+					</p>
+				</section>
 			<div className="settings-actions">
 				<button id="settings-save" type="button" className="primary" data-i18n="settings.save">
 					Save

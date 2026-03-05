@@ -8,9 +8,8 @@ export const DEFAULT_SETTINGS = {
 	aiChatEnabled: false,
 	aiProvider: 'azure-openai',
 	aiEndpoint: '',
-	aiDeployment: 'gpt-5.2',
-	aiApiVersion: '2024-12-01-preview',
-	aiApiKey: ''
+	aiApiKey: '',
+	aiModel: 'gpt-5.2'
 };
 
 export function clampInt(value, min, max) {
@@ -40,8 +39,7 @@ export function sanitizeSettings(raw = {}) {
 		aiChatEnabled: Boolean(raw.aiChatEnabled),
 		aiProvider: provider === 'azure-openai' ? 'azure-openai' : DEFAULT_SETTINGS.aiProvider,
 		aiEndpoint: sanitizeText(raw.aiEndpoint, DEFAULT_SETTINGS.aiEndpoint, 250),
-		aiDeployment: sanitizeText(raw.aiDeployment, DEFAULT_SETTINGS.aiDeployment, 120),
-		aiApiVersion: sanitizeText(raw.aiApiVersion, DEFAULT_SETTINGS.aiApiVersion, 80),
-		aiApiKey: sanitizeText(raw.aiApiKey, DEFAULT_SETTINGS.aiApiKey, 300)
+		aiApiKey: sanitizeText(raw.aiApiKey, DEFAULT_SETTINGS.aiApiKey, 300),
+		aiModel: sanitizeText(raw.aiModel, DEFAULT_SETTINGS.aiModel, 120) || DEFAULT_SETTINGS.aiModel
 	};
 }
