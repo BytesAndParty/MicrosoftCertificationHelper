@@ -812,6 +812,23 @@ h4 {
 	color: #8f4334;
 }
 
+.learn-ref {
+	margin: -0.2rem 0 0;
+	font-size: 0.86rem;
+	color: #6d4a32;
+}
+
+.learn-ref a {
+	color: #a34f09;
+	text-decoration: underline;
+	text-underline-offset: 2px;
+	font-weight: 600;
+}
+
+.learn-ref a:hover {
+	color: #c2600a;
+}
+
 button {
 	font-family: inherit;
 }
@@ -1499,6 +1516,14 @@ html[data-theme='dark'] .feedback.is-correct {
 
 html[data-theme='dark'] .feedback.is-wrong {
 	color: #f4a899;
+}
+
+html[data-theme='dark'] .learn-ref {
+	color: #dec8b4;
+}
+
+html[data-theme='dark'] .learn-ref a {
+	color: #f3b873;
 }
 
 html[data-theme='dark'] .hint-box {

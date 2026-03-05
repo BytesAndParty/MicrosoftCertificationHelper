@@ -22,6 +22,10 @@ export default function QuizModule() {
 			</div>
 			<p id="quiz-hint-text" className="hint-box" hidden></p>
 			<p id="quiz-feedback" className="feedback" aria-live="polite"></p>
+			<p id="quiz-learn-ref" className="learn-ref" hidden>
+				<span id="quiz-learn-ref-prefix"></span>
+				<a id="quiz-learn-ref-link" target="_blank" rel="noopener noreferrer"></a>
+			</p>
 			<button id="quiz-next" type="button" className="primary" data-i18n="quiz.nextQuestion">
 				Next question
 			</button>

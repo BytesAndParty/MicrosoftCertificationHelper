@@ -25,6 +25,7 @@ export function localizeQuestionData(question, language = 'en') {
 	const localizedOptionExplanations = useGerman && question.optionExplanationsDe
 		? question.optionExplanationsDe
 		: question.optionExplanations;
+	const localizedLearnRef = useGerman && question.learnRefDe ? question.learnRefDe : question.learnRef;
 
 	return {
 		...question,
@@ -33,6 +34,7 @@ export function localizeQuestionData(question, language = 'en') {
 		explanation: useGerman && typeof question.explanationDe === 'string' ? question.explanationDe : question.explanation,
 		options: localizedOptions,
 		optionExplanations: localizedOptionExplanations,
+		learnRef: localizedLearnRef,
 		wrongOptions: useGerman && Array.isArray(question.wrongOptionsDe) ? question.wrongOptionsDe : question.wrongOptions,
 		correctAnswer: useGerman && typeof question.correctAnswerDe === 'string' ? question.correctAnswerDe : question.correctAnswer
 	};

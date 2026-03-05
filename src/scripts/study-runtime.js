@@ -1,4 +1,6 @@
-import { flashcards, glossaryTerms, quizQuestions, roadmapThemes } from '../data/content';
+import { flashcards } from '../data/flashcards';
+import { glossaryTerms } from '../data/glossary-terms';
+import { roadmapThemes } from '../data/roadmap-themes';
 import { buildOptionPools, createRuntimeQuestion as buildRuntimeQuestion, getQuestionType, localizeQuestionData as localizeQuestion, shuffle } from '../lib/study/quiz';
 import { applySpacedRepetitionGrade, selectNextStudyCard } from '../lib/study/spaced-repetition';
 import { clampFloat, clampInt, DEFAULT_SETTINGS } from '../lib/study/settings';
@@ -12,15 +14,22 @@ const LANG_KEY = 'ai900_lang_pref';
 const THEME_MEDIA = window.matchMedia('(prefers-color-scheme: dark)');
 
 const byId = (id) => document.getElementById(id);
-const questionById = new Map(quizQuestions.map((question) => [question.id, question]));
+const questionById = new Map();
 const themeById = new Map(roadmapThemes.map((theme) => [theme.id, theme]));
 const roadmapBoxes = [...document.querySelectorAll('[data-roadmap-key]')];
 const roadmapCards = [...document.querySelectorAll('.theme-card[data-roadmap-id]')];
 
-const optionPoolsByLanguage = {
-	en: buildOptionPools(quizQuestions, 'en'),
-	de: buildOptionPools(quizQuestions, 'de')
-};
+let quizQuestions = [];
+let quizDataPromise;
+
+function createEmptyOptionPools() {
+	return {
+		en: { topicOptionPool: {}, globalOptionPool: [] },
+		de: { topicOptionPool: {}, globalOptionPool: [] }
+	};
+}
+
+let optionPoolsByLanguage = createEmptyOptionPools();
 
 function buildOptionRationaleMap(language = 'en') {
 	const map = {};
@@ -50,10 +59,7 @@ function buildOptionRationaleMap(language = 'en') {
 	return map;
 }
 
-const optionRationaleByLanguage = {
-	en: buildOptionRationaleMap('en'),
-	de: buildOptionRationaleMap('de')
-};
+let optionRationaleByLanguage = { en: {}, de: {} };
 
 const glossaryCards = glossaryTerms.map((item, index) => ({
 	id: `g${index + 1}`,
@@ -68,6 +74,33 @@ const glossaryLookup = new Map();
 glossaryTerms.forEach((item) => {
 	glossaryLookup.set(item.term.toLowerCase(), item);
 });
+
+async function ensureQuestionPoolLoaded() {
+	if (quizQuestions.length) return;
+	if (!quizDataPromise) {
+		quizDataPromise = import('../data/quiz-questions.js').then((module) => {
+			quizQuestions = Array.isArray(module.quizQuestions) ? module.quizQuestions : [];
+			questionById.clear();
+			quizQuestions.forEach((question) => {
+				questionById.set(question.id, question);
+			});
+			optionPoolsByLanguage = {
+				en: buildOptionPools(quizQuestions, 'en'),
+				de: buildOptionPools(quizQuestions, 'de')
+			};
+			optionRationaleByLanguage = {
+				en: buildOptionRationaleMap('en'),
+				de: buildOptionRationaleMap('de')
+			};
+			refillQuizDeck();
+		}).catch(() => {
+			quizQuestions = [];
+			optionPoolsByLanguage = createEmptyOptionPools();
+			optionRationaleByLanguage = { en: {}, de: {} };
+		});
+	}
+	await quizDataPromise;
+}
 
 const ui = {
 	roadmapSummary: byId('roadmap-summary'),
@@ -89,6 +122,9 @@ const ui = {
 	quizQuestion: byId('quiz-question'),
 	quizOptions: byId('quiz-options'),
 	quizFeedback: byId('quiz-feedback'),
+	quizLearnRef: byId('quiz-learn-ref'),
+	quizLearnRefPrefix: byId('quiz-learn-ref-prefix'),
+	quizLearnRefLink: byId('quiz-learn-ref-link'),
 	quizNext: byId('quiz-next'),
 	examStart: byId('exam-start'),
 	examTimer: byId('exam-timer'),
@@ -196,6 +232,7 @@ const i18n = {
 		'quiz.showHint': 'Show hint',
 		'quiz.skip': 'Skip',
 		'quiz.nextQuestion': 'Next question',
+		'quiz.learnRefPrefix': 'Learn more:',
 		'exam.title': 'Exam mode',
 		'exam.meta': '10 questions, 20 minutes, mixed question types, and a detailed review.',
 		'exam.start': 'Start exam',
@@ -330,6 +367,7 @@ const i18n = {
 		'quiz.showHint': 'Hinweis anzeigen',
 		'quiz.skip': 'Überspringen',
 		'quiz.nextQuestion': 'Nächste Frage',
+		'quiz.learnRefPrefix': 'Weiterlesen:',
 		'exam.title': 'Prüfungsmodus',
 		'exam.meta': '10 Fragen, 20 Minuten, gemischte Fragetypen und detaillierte Auswertung.',
 		'exam.start': 'Prüfung starten',
@@ -701,6 +739,7 @@ function applyLanguage(language, { persist = true } = {}) {
 					activeQuestion.prompt = localizedBase.prompt;
 					activeQuestion.hint = localizedBase.hint;
 					activeQuestion.explanation = localizedBase.explanation;
+					activeQuestion.learnRef = localizedBase.learnRef;
 					activeQuestion.optionExplanationsByOption = {
 						...(activeQuestion.optionExplanationsByOption || {}),
 						...buildDisplayedOptionExplanationMap(localizedBase, activeQuestion.options)
@@ -722,6 +761,9 @@ function applyLanguage(language, { persist = true } = {}) {
 			if (ui.quizFeedback.textContent) {
 				const isCorrect = ui.quizFeedback.classList.contains('is-correct');
 				ui.quizFeedback.textContent = `${isCorrect ? t('quiz.feedback.correct') : t('quiz.feedback.wrong')} ${activeQuestion.explanation}`;
+				renderQuizLearnRef(true);
+			} else {
+				renderQuizLearnRef(false);
 			}
 			if (lastQuizSelectedIndex !== null) {
 				[...ui.quizOptions.querySelectorAll('button')].forEach((button) => {
@@ -1174,6 +1216,22 @@ function formatOptionLabel(optionIndex, optionText) {
 	return `${optionIndex + 1}. ${optionText}`;
 }
 
+function renderQuizLearnRef(show = false) {
+	if (!ui.quizLearnRef || !ui.quizLearnRefPrefix || !ui.quizLearnRefLink) return;
+	if (!show || !activeQuestion?.learnRef?.url) {
+		ui.quizLearnRef.hidden = true;
+		ui.quizLearnRefLink.removeAttribute('href');
+		ui.quizLearnRefLink.textContent = '';
+		ui.quizLearnRefPrefix.textContent = '';
+		return;
+	}
+	const refTitle = activeQuestion.learnRef.title || activeQuestion.learnRef.url;
+	ui.quizLearnRefPrefix.textContent = `${t('quiz.learnRefPrefix')} `;
+	ui.quizLearnRefLink.href = activeQuestion.learnRef.url;
+	ui.quizLearnRefLink.textContent = refTitle;
+	ui.quizLearnRef.hidden = false;
+}
+
 function buildQuizOptionReason(optionIndex) {
 	if (!activeQuestion) return '';
 	const optionText = activeQuestion.options[optionIndex] || '';
@@ -1210,12 +1268,14 @@ function renderQuizOptionOutcome(button, optionIndex, selectedIndex) {
 }
 
 function showQuizQuestion(forcedQuestionId = null) {
+	if (!quizQuestions.length) return;
 	const baseQuestion = forcedQuestionId && questionById.has(forcedQuestionId)
 		? questionById.get(forcedQuestionId)
 		: (() => {
 				if (!quizDeck.length) refillQuizDeck();
 				return quizDeck.pop();
 			})();
+	if (!baseQuestion) return;
 
 	activeQuestion = createRuntimeQuestion(baseQuestion);
 	quizLocked = false;
@@ -1233,6 +1293,7 @@ function showQuizQuestion(forcedQuestionId = null) {
 	});
 	ui.quizFeedback.textContent = '';
 	ui.quizFeedback.className = 'feedback';
+	renderQuizLearnRef(false);
 	ui.quizHintText.textContent = '';
 	ui.quizHintText.hidden = true;
 	ui.quizHint.hidden = false;
@@ -1325,6 +1386,7 @@ function submitQuizAnswer(selectedIndex) {
 	ui.quizSkip.hidden = true;
 	ui.quizFeedback.classList.add(isCorrect ? 'is-correct' : 'is-wrong');
 	ui.quizFeedback.textContent = `${isCorrect ? t('quiz.feedback.correct') : t('quiz.feedback.wrong')} ${activeQuestion.explanation}`;
+	renderQuizLearnRef(true);
 	ui.quizNext.disabled = false;
 	ui.quizNext.focus();
 	void saveState();
@@ -1479,7 +1541,9 @@ function renderExamReview(reviewRows) {
 	});
 }
 
-function startExam() {
+async function startExam() {
+	await ensureQuestionPoolLoaded();
+	if (!quizQuestions.length) return;
 	const count = Math.min(EXAM_QUESTION_COUNT, quizQuestions.length);
 	exam = {
 		questions: pickExamQuestions(count).map((question) => createRuntimeQuestion(question)),
@@ -1787,8 +1851,10 @@ async function resetAll() {
 	renderRoadmapChecks();
 	renderStats();
 	renderJournal();
-	refillQuizDeck();
-	showQuizQuestion();
+	if (quizQuestions.length) {
+		refillQuizDeck();
+		showQuizQuestion();
+	}
 	chooseNextCard();
 	chooseNextGlossaryCard();
 	ui.examStart.hidden = false;
@@ -1816,13 +1882,15 @@ function bindRoadmapGlow() {
 	});
 }
 
-function openModeOverlay(mode) {
+async function openModeOverlay(mode) {
 	if (mode === 'quiz') {
+		await ensureQuestionPoolLoaded();
 		if (!activeQuestion) showQuizQuestion();
 		openOverlay(ui.overlayQuiz);
 		return;
 	}
 	if (mode === 'exam') {
+		await ensureQuestionPoolLoaded();
 		openOverlay(ui.overlayExam);
 		return;
 	}
@@ -1837,6 +1905,7 @@ function openModeOverlay(mode) {
 		return;
 	}
 	if (mode === 'journal') {
+		await ensureQuestionPoolLoaded();
 		renderJournal();
 		openOverlay(ui.overlayJournal);
 	}
@@ -1868,7 +1937,7 @@ function bindEvents() {
 	// Hero mode buttons
 	document.querySelectorAll('[data-mode]').forEach((btn) => {
 		btn.addEventListener('click', () => {
-			openModeOverlay(btn.dataset.mode);
+			void openModeOverlay(btn.dataset.mode);
 		});
 	});
 
@@ -1898,7 +1967,7 @@ function bindEvents() {
 	ui.quizSkip.onclick = () => showQuizQuestion();
 
 	// Exam events
-	ui.examStart.onclick = () => startExam();
+	ui.examStart.onclick = () => void startExam();
 	ui.examNext.onclick = () => nextExamQuestion();
 
 	// Flashcard events
@@ -2056,11 +2125,11 @@ function bindEvents() {
 			// Global shortcuts in overlay
 			if (e.key === 'd' || e.key === 'D') { e.preventDefault(); toggleTheme(); return; }
 			if (e.key === 'l' || e.key === 'L') { e.preventDefault(); toggleLanguage(); return; }
-			if (e.key === 'q' || e.key === 'Q') { e.preventDefault(); openModeOverlay('quiz'); return; }
-			if (e.key === 'e' || e.key === 'E') { e.preventDefault(); openModeOverlay('exam'); return; }
-			if (e.key === 'f' || e.key === 'F') { e.preventDefault(); openModeOverlay('flashcards'); return; }
-			if (e.key === 'g' || e.key === 'G') { e.preventDefault(); openModeOverlay('glossary'); return; }
-			if (e.key === 'j' || e.key === 'J') { e.preventDefault(); openModeOverlay('journal'); return; }
+			if (e.key === 'q' || e.key === 'Q') { e.preventDefault(); void openModeOverlay('quiz'); return; }
+			if (e.key === 'e' || e.key === 'E') { e.preventDefault(); void openModeOverlay('exam'); return; }
+			if (e.key === 'f' || e.key === 'F') { e.preventDefault(); void openModeOverlay('flashcards'); return; }
+			if (e.key === 'g' || e.key === 'G') { e.preventDefault(); void openModeOverlay('glossary'); return; }
+			if (e.key === 'j' || e.key === 'J') { e.preventDefault(); void openModeOverlay('journal'); return; }
 			if (e.key === 'o' || e.key === 'O') { e.preventDefault(); populateSettingsUi(); openOverlay(ui.overlaySettings); return; }
 			return;
 		}
@@ -2068,27 +2137,27 @@ function bindEvents() {
 		// Global shortcuts when no overlay is open
 		if (e.key === 'q' || e.key === 'Q') {
 			e.preventDefault();
-			openModeOverlay('quiz');
+			void openModeOverlay('quiz');
 			return;
 		}
 		if (e.key === 'e' || e.key === 'E') {
 			e.preventDefault();
-			openModeOverlay('exam');
+			void openModeOverlay('exam');
 			return;
 		}
 		if (e.key === 'f' || e.key === 'F') {
 			e.preventDefault();
-			openModeOverlay('flashcards');
+			void openModeOverlay('flashcards');
 			return;
 		}
 		if (e.key === 'g' || e.key === 'G') {
 			e.preventDefault();
-			openModeOverlay('glossary');
+			void openModeOverlay('glossary');
 			return;
 		}
 		if (e.key === 'j' || e.key === 'J') {
 			e.preventDefault();
-			openModeOverlay('journal');
+			void openModeOverlay('journal');
 			return;
 		}
 		if (e.key === 'o' || e.key === 'O') {
@@ -2125,9 +2194,6 @@ async function init() {
 	hydrate(saved);
 	renderRoadmapChecks();
 	renderStats();
-	renderJournal();
-	refillQuizDeck();
-	showQuizQuestion();
 	chooseNextCard();
 	chooseNextGlossaryCard();
 	await saveState(true);
