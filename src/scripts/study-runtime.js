@@ -5,6 +5,7 @@ import { buildOptionPools, createRuntimeQuestion as buildRuntimeQuestion, getQue
 import { applySpacedRepetitionGrade, selectNextStudyCard } from '../lib/study/spaced-repetition';
 import { clampFloat, clampInt, DEFAULT_SETTINGS } from '../lib/study/settings';
 import { createDefaultStudyState, FALLBACK_KEY, hydrateStudyState } from '../lib/study/state';
+import { marked } from 'marked';
 
 const DB = { name: 'ai900-study-helper', version: 1, store: 'kv', key: 'state' };
 const EXAM_SECONDS = 20 * 60;
@@ -12,6 +13,7 @@ const EXAM_MINUTES = Math.round(EXAM_SECONDS / 60);
 const EXAM_QUESTION_COUNT = 10;
 const THEME_KEY = 'ai900_theme_pref';
 const LANG_KEY = 'ai900_lang_pref';
+const AI_CHAT_LAYOUT_KEY = 'ai900_ai_chat_layout_v1';
 const THEME_MEDIA = window.matchMedia('(prefers-color-scheme: dark)');
 
 const byId = (id) => document.getElementById(id);
@@ -545,6 +547,22 @@ let aiChatPending = false;
 const AI_CHAT_HISTORY_LIMIT = 12;
 const AZURE_RESPONSES_API_VERSION = '2025-04-01-preview';
 const AZURE_RESPONSES_MODEL = DEFAULT_SETTINGS.aiModel;
+const AI_CHAT_MIN_WIDTH = 320;
+const AI_CHAT_MIN_HEIGHT = 280;
+const AI_CHAT_VIEWPORT_MARGIN = 10;
+const AI_CHAT_ALLOWED_TAGS = new Set([
+	'p', 'br', 'strong', 'em', 'b', 'i', 'u', 'del', 'ul', 'ol', 'li', 'code', 'pre', 'blockquote',
+	'a', 'hr', 'h1', 'h2', 'h3', 'h4', 'table', 'thead', 'tbody', 'tr', 'th', 'td'
+]);
+const AI_CHAT_DROP_TAGS = new Set(['script', 'style', 'iframe', 'object', 'embed', 'meta', 'link']);
+const AI_CHAT_ALLOWED_ATTRS = {
+	a: new Set(['href', 'title'])
+};
+
+marked.setOptions({
+	gfm: true,
+	breaks: true
+});
 
 const SESSION_PRESETS = {
 	sprint: { labelKey: 'session.goalSprint', targetAnswers: 10, targetAccuracy: 70, durationMinutes: 15 },
@@ -619,6 +637,41 @@ function resolveTheme(preference) {
 function saveTheme(theme) {
 	try {
 		localStorage.setItem(THEME_KEY, theme);
+	} catch {}
+}
+
+function readStoredAiChatLayout() {
+	try {
+		const raw = localStorage.getItem(AI_CHAT_LAYOUT_KEY);
+		if (!raw) return null;
+		const parsed = JSON.parse(raw);
+		const left = Number(parsed?.left);
+		const top = Number(parsed?.top);
+		const width = Number(parsed?.width);
+		const height = Number(parsed?.height);
+		if (![left, top, width, height].every(Number.isFinite)) return null;
+		if (width <= 0 || height <= 0) return null;
+		return { left, top, width, height };
+	} catch {
+		return null;
+	}
+}
+
+function saveAiChatLayout(layout) {
+	if (!layout) return;
+	const left = Number(layout.left);
+	const top = Number(layout.top);
+	const width = Number(layout.width);
+	const height = Number(layout.height);
+	if (![left, top, width, height].every(Number.isFinite)) return;
+
+	try {
+		localStorage.setItem(AI_CHAT_LAYOUT_KEY, JSON.stringify({
+			left: Math.round(left),
+			top: Math.round(top),
+			width: Math.round(width),
+			height: Math.round(height)
+		}));
 	} catch {}
 }
 
@@ -1130,6 +1183,356 @@ function setAiChatError(message = '') {
 	ui.aiChatError.hidden = !message;
 }
 
+function escapeHtml(value = '') {
+	return String(value || '')
+		.replaceAll('&', '&amp;')
+		.replaceAll('<', '&lt;')
+		.replaceAll('>', '&gt;')
+		.replaceAll('"', '&quot;')
+		.replaceAll("'", '&#39;');
+}
+
+function isSafeAiChatLink(href = '') {
+	const value = String(href || '').trim().toLowerCase();
+	if (!value) return false;
+	return value.startsWith('https://') || value.startsWith('http://') || value.startsWith('mailto:') || value.startsWith('#') || value.startsWith('/');
+}
+
+function sanitizeAiChatHtml(rawHtml = '') {
+	const template = document.createElement('template');
+	template.innerHTML = String(rawHtml || '');
+
+	const elements = [...template.content.querySelectorAll('*')];
+	elements.forEach((element) => {
+		const tagName = element.tagName.toLowerCase();
+		if (AI_CHAT_DROP_TAGS.has(tagName)) {
+			element.remove();
+			return;
+		}
+		if (!AI_CHAT_ALLOWED_TAGS.has(tagName)) {
+			const fragment = document.createDocumentFragment();
+			while (element.firstChild) fragment.append(element.firstChild);
+			element.replaceWith(fragment);
+			return;
+		}
+
+		const allowedAttrs = AI_CHAT_ALLOWED_ATTRS[tagName] || new Set();
+		[...element.attributes].forEach((attr) => {
+			const name = attr.name.toLowerCase();
+			if (!allowedAttrs.has(name)) {
+				element.removeAttribute(attr.name);
+				return;
+			}
+			if (tagName === 'a' && name === 'href' && !isSafeAiChatLink(attr.value)) {
+				element.removeAttribute(attr.name);
+			}
+		});
+
+		if (tagName === 'a' && element.hasAttribute('href')) {
+			element.setAttribute('target', '_blank');
+			element.setAttribute('rel', 'noopener noreferrer');
+		}
+	});
+
+	return template.innerHTML;
+}
+
+function renderAiChatMarkdown(content = '') {
+	const source = String(content || '').trim();
+	if (!source) return '';
+
+	try {
+		const markdownHtml = marked.parse(source);
+		const safeHtml = sanitizeAiChatHtml(typeof markdownHtml === 'string' ? markdownHtml : '');
+		if (safeHtml) return safeHtml;
+	} catch {}
+
+	return `<p>${escapeHtml(source)}</p>`;
+}
+
+function formatAiChatTime(timestamp = Date.now()) {
+	const date = new Date(Number(timestamp) || Date.now());
+	const locale = currentLanguage === 'de' ? 'de-DE' : 'en-US';
+	return new Intl.DateTimeFormat(locale, {
+		hour: '2-digit',
+		minute: '2-digit'
+	}).format(date);
+}
+
+function getAiChatDeliveryLabel(delivery = 'sent') {
+	if (currentLanguage === 'de') {
+		if (delivery === 'read') return 'Gelesen';
+		if (delivery === 'delivered') return 'Zugestellt';
+		return 'Gesendet';
+	}
+	if (delivery === 'read') return 'Read';
+	if (delivery === 'delivered') return 'Delivered';
+	return 'Sent';
+}
+
+function createAiChatMessageElement(message) {
+	const role = message.role === 'assistant' ? 'assistant' : 'user';
+	const item = document.createElement('article');
+	item.className = `ai-chat-message ${role}`;
+
+	const stack = document.createElement('div');
+	stack.className = 'ai-chat-stack';
+
+	const bubble = document.createElement('div');
+	bubble.className = 'ai-chat-bubble';
+
+	const content = String(message.content || '').trim();
+	if (role === 'assistant') {
+		bubble.innerHTML = renderAiChatMarkdown(content);
+	} else {
+		bubble.textContent = content;
+	}
+
+	const meta = document.createElement('footer');
+	meta.className = 'ai-chat-meta';
+
+	const time = document.createElement('span');
+	time.className = 'ai-chat-time';
+	time.textContent = formatAiChatTime(message.createdAt);
+	meta.append(time);
+
+	if (role === 'user') {
+		const deliveryRaw = String(message.delivery || 'sent').toLowerCase();
+		const delivery = deliveryRaw === 'read' ? 'read' : (deliveryRaw === 'delivered' ? 'delivered' : 'sent');
+		const status = document.createElement('span');
+		status.className = `ai-chat-status ${delivery}`;
+		status.textContent = delivery === 'sent' ? '✓' : '✓✓';
+		status.setAttribute('aria-label', getAiChatDeliveryLabel(delivery));
+		status.setAttribute('title', getAiChatDeliveryLabel(delivery));
+		meta.append(status);
+	}
+
+	stack.append(bubble, meta);
+	item.append(stack);
+	return item;
+}
+
+function createAiChatPendingElement() {
+	const pending = document.createElement('article');
+	pending.className = 'ai-chat-message assistant pending';
+
+	const bubble = document.createElement('div');
+	bubble.className = 'ai-chat-bubble';
+
+	const typing = document.createElement('span');
+	typing.className = 'ai-chat-typing';
+	typing.setAttribute('aria-hidden', 'true');
+	for (let i = 0; i < 3; i += 1) {
+		const dot = document.createElement('span');
+		dot.className = 'ai-chat-typing-dot';
+		dot.style.animationDelay = `${i * 0.16}s`;
+		typing.append(dot);
+	}
+
+	const label = document.createElement('span');
+	label.className = 'ai-chat-pending-label';
+	label.textContent = t('chat.pending');
+
+	bubble.append(typing, label);
+	pending.append(bubble);
+	return pending;
+}
+
+function syncAiChatBusyState() {
+	if (ui.aiChatSend) ui.aiChatSend.disabled = aiChatPending;
+	if (ui.aiChatInput) ui.aiChatInput.disabled = aiChatPending;
+	if (ui.aiChatPanel) ui.aiChatPanel.classList.toggle('is-busy', aiChatPending);
+}
+
+function clampAiChatRectToViewport(rect) {
+	const margin = AI_CHAT_VIEWPORT_MARGIN;
+	const viewportWidth = Math.max(window.innerWidth || 0, 0);
+	const viewportHeight = Math.max(window.innerHeight || 0, 0);
+	const maxWidth = Math.max(260, viewportWidth - margin * 2);
+	const maxHeight = Math.max(240, viewportHeight - margin * 2);
+	const minWidth = Math.min(AI_CHAT_MIN_WIDTH, maxWidth);
+	const minHeight = Math.min(AI_CHAT_MIN_HEIGHT, maxHeight);
+
+	const width = Math.min(Math.max(rect.width, minWidth), maxWidth);
+	const height = Math.min(Math.max(rect.height, minHeight), maxHeight);
+	const maxLeft = viewportWidth - width - margin;
+	const maxTop = viewportHeight - height - margin;
+	const left = Math.min(Math.max(rect.left, margin), maxLeft);
+	const top = Math.min(Math.max(rect.top, margin), maxTop);
+
+	return { left, top, width, height };
+}
+
+function applyAiChatPanelRect(rect) {
+	if (!ui.aiChatPanel) return;
+	ui.aiChatPanel.style.left = `${Math.round(rect.left)}px`;
+	ui.aiChatPanel.style.top = `${Math.round(rect.top)}px`;
+	ui.aiChatPanel.style.width = `${Math.round(rect.width)}px`;
+	ui.aiChatPanel.style.height = `${Math.round(rect.height)}px`;
+	ui.aiChatPanel.style.right = 'auto';
+	ui.aiChatPanel.style.bottom = 'auto';
+}
+
+function getAiChatPanelRect() {
+	if (!ui.aiChatPanel) return null;
+	const rect = ui.aiChatPanel.getBoundingClientRect();
+	return {
+		left: rect.left,
+		top: rect.top,
+		width: rect.width,
+		height: rect.height
+	};
+}
+
+function saveAiChatPanelLayout(rect) {
+	saveAiChatLayout(rect || getAiChatPanelRect());
+}
+
+function restoreAiChatPanelLayout() {
+	if (!ui.aiChatPanel) return false;
+	if (window.matchMedia('(max-width: 720px)').matches) return false;
+	const stored = readStoredAiChatLayout();
+	if (!stored) return false;
+
+	const clamped = clampAiChatRectToViewport(stored);
+	applyAiChatPanelRect(clamped);
+	ui.aiChatPanel.dataset.userSized = 'true';
+	return true;
+}
+
+function clearAiChatPanelCustomRect() {
+	if (!ui.aiChatPanel) return;
+	delete ui.aiChatPanel.dataset.userSized;
+	ui.aiChatPanel.style.left = '';
+	ui.aiChatPanel.style.top = '';
+	ui.aiChatPanel.style.width = '';
+	ui.aiChatPanel.style.height = '';
+	ui.aiChatPanel.style.right = '';
+	ui.aiChatPanel.style.bottom = '';
+}
+
+function clampAiChatPanelToViewport() {
+	if (!ui.aiChatPanel) return;
+	if (window.matchMedia('(max-width: 720px)').matches) {
+		clearAiChatPanelCustomRect();
+		return;
+	}
+	if (!ui.aiChatPanel.dataset.userSized) {
+		restoreAiChatPanelLayout();
+		return;
+	}
+	const rect = getAiChatPanelRect();
+	if (!rect) return;
+	const clamped = clampAiChatRectToViewport({
+		left: rect.left,
+		top: rect.top,
+		width: rect.width,
+		height: rect.height
+	});
+	applyAiChatPanelRect(clamped);
+	saveAiChatPanelLayout(clamped);
+}
+
+function setupAiChatResize() {
+	if (!ui.aiChatPanel) return;
+	const handles = [...ui.aiChatPanel.querySelectorAll('[data-resize-handle]')];
+	if (!handles.length) return;
+
+	const onPointerDown = (event) => {
+		if (event.button !== 0) return;
+		if (window.matchMedia('(max-width: 720px)').matches) return;
+
+		const direction = event.currentTarget?.dataset?.resizeHandle || '';
+		if (!direction) return;
+
+		event.preventDefault();
+		const startRect = ui.aiChatPanel.getBoundingClientRect();
+		const startX = event.clientX;
+		const startY = event.clientY;
+
+		const onPointerMove = (moveEvent) => {
+			const deltaX = moveEvent.clientX - startX;
+			const deltaY = moveEvent.clientY - startY;
+
+			const nextRect = {
+				left: startRect.left,
+				top: startRect.top,
+				width: startRect.width,
+				height: startRect.height
+			};
+
+			if (direction.includes('e')) nextRect.width = startRect.width + deltaX;
+			if (direction.includes('s')) nextRect.height = startRect.height + deltaY;
+			if (direction.includes('w')) {
+				nextRect.width = startRect.width - deltaX;
+				nextRect.left = startRect.left + deltaX;
+			}
+			if (direction.includes('n')) {
+				nextRect.height = startRect.height - deltaY;
+				nextRect.top = startRect.top + deltaY;
+			}
+
+			applyAiChatPanelRect(clampAiChatRectToViewport(nextRect));
+			ui.aiChatPanel.dataset.userSized = 'true';
+		};
+
+			const onPointerEnd = () => {
+				window.removeEventListener('pointermove', onPointerMove);
+				document.body.classList.remove('ai-chat-resizing');
+				saveAiChatPanelLayout();
+			};
+
+		document.body.classList.add('ai-chat-resizing');
+		window.addEventListener('pointermove', onPointerMove);
+		window.addEventListener('pointerup', onPointerEnd, { once: true });
+		window.addEventListener('pointercancel', onPointerEnd, { once: true });
+	};
+
+	handles.forEach((handle) => handle.addEventListener('pointerdown', onPointerDown));
+	window.addEventListener('resize', clampAiChatPanelToViewport);
+}
+
+function setupAiChatDrag() {
+	if (!ui.aiChatPanel) return;
+	const handle = ui.aiChatPanel.querySelector('[data-drag-handle]');
+	if (!handle) return;
+
+	const onPointerDown = (event) => {
+		if (event.button !== 0) return;
+		if (window.matchMedia('(max-width: 720px)').matches) return;
+		if (event.target instanceof Element && event.target.closest('button, a, input, textarea, select, [data-resize-handle]')) return;
+
+		event.preventDefault();
+		const startRect = ui.aiChatPanel.getBoundingClientRect();
+		const startX = event.clientX;
+		const startY = event.clientY;
+
+		const onPointerMove = (moveEvent) => {
+			const nextRect = {
+				left: startRect.left + (moveEvent.clientX - startX),
+				top: startRect.top + (moveEvent.clientY - startY),
+				width: startRect.width,
+				height: startRect.height
+			};
+			applyAiChatPanelRect(clampAiChatRectToViewport(nextRect));
+			ui.aiChatPanel.dataset.userSized = 'true';
+		};
+
+			const onPointerEnd = () => {
+				window.removeEventListener('pointermove', onPointerMove);
+				document.body.classList.remove('ai-chat-dragging');
+				saveAiChatPanelLayout();
+			};
+
+		document.body.classList.add('ai-chat-dragging');
+		window.addEventListener('pointermove', onPointerMove);
+		window.addEventListener('pointerup', onPointerEnd, { once: true });
+		window.addEventListener('pointercancel', onPointerEnd, { once: true });
+	};
+
+	handle.addEventListener('pointerdown', onPointerDown);
+}
+
 function renderAiChatMessages() {
 	if (!ui.aiChatMessages) return;
 	ui.aiChatMessages.innerHTML = '';
@@ -1139,23 +1542,19 @@ function renderAiChatMessages() {
 		empty.className = 'ai-chat-empty';
 		empty.textContent = t('chat.empty');
 		ui.aiChatMessages.append(empty);
+		syncAiChatBusyState();
 		return;
 	}
 
 	aiChatMessages.forEach((message) => {
-		const item = document.createElement('p');
-		item.className = `ai-chat-message ${message.role === 'assistant' ? 'assistant' : 'user'}`;
-		item.textContent = message.content;
-		ui.aiChatMessages.append(item);
+		ui.aiChatMessages.append(createAiChatMessageElement(message));
 	});
 
 	if (aiChatPending) {
-		const pending = document.createElement('p');
-		pending.className = 'ai-chat-message assistant pending';
-		pending.textContent = t('chat.pending');
-		ui.aiChatMessages.append(pending);
+		ui.aiChatMessages.append(createAiChatPendingElement());
 	}
 
+	syncAiChatBusyState();
 	ui.aiChatMessages.scrollTop = ui.aiChatMessages.scrollHeight;
 }
 
@@ -1166,10 +1565,13 @@ function syncAiChatVisibility() {
 
 	if (disabledByExam) {
 		ui.aiChatPanel.hidden = true;
+		ui.aiChatWidget.dataset.open = 'false';
 		setAiChatError('');
+		syncAiChatBusyState();
 		return;
 	}
 
+	ui.aiChatWidget.dataset.open = ui.aiChatPanel && !ui.aiChatPanel.hidden ? 'true' : 'false';
 	renderAiChatMessages();
 }
 
@@ -1178,11 +1580,16 @@ function toggleAiChatPanel(forceOpen) {
 
 	const shouldOpen = typeof forceOpen === 'boolean' ? forceOpen : ui.aiChatPanel.hidden;
 	ui.aiChatPanel.hidden = !shouldOpen;
+	ui.aiChatWidget.dataset.open = shouldOpen ? 'true' : 'false';
 	if (shouldOpen) {
 		if (exam) {
 			setAiChatError(t('chat.errorExam'));
 			return;
 		}
+		if (!ui.aiChatPanel.dataset.userSized) {
+			restoreAiChatPanelLayout();
+		}
+		clampAiChatPanelToViewport();
 		renderAiChatMessages();
 		if (!isAiChatConfigured()) {
 			setAiChatError(t('chat.errorConfig'));
@@ -1190,6 +1597,8 @@ function toggleAiChatPanel(forceOpen) {
 			setAiChatError('');
 		}
 		ui.aiChatInput?.focus();
+	} else {
+		syncAiChatBusyState();
 	}
 }
 
@@ -1316,7 +1725,13 @@ async function sendAiChatMessage(rawMessage) {
 		return;
 	}
 
-	aiChatMessages.push({ role: 'user', content });
+	const userMessage = {
+		role: 'user',
+		content,
+		createdAt: Date.now(),
+		delivery: 'delivered'
+	};
+	aiChatMessages.push(userMessage);
 	if (aiChatMessages.length > AI_CHAT_HISTORY_LIMIT) {
 		aiChatMessages = aiChatMessages.slice(-AI_CHAT_HISTORY_LIMIT);
 	}
@@ -1327,7 +1742,8 @@ async function sendAiChatMessage(rawMessage) {
 
 	try {
 		const answer = await requestAiChatAnswer();
-		aiChatMessages.push({ role: 'assistant', content: answer });
+		userMessage.delivery = 'read';
+		aiChatMessages.push({ role: 'assistant', content: answer, createdAt: Date.now() });
 		if (aiChatMessages.length > AI_CHAT_HISTORY_LIMIT) {
 			aiChatMessages = aiChatMessages.slice(-AI_CHAT_HISTORY_LIMIT);
 		}
@@ -2422,6 +2838,8 @@ function bindEvents() {
 			}
 		});
 	}
+	setupAiChatResize();
+	setupAiChatDrag();
 
 	if (ui.resetProgress) ui.resetProgress.onclick = () => void resetAll();
 
@@ -2600,6 +3018,7 @@ async function init() {
 	applyTheme(resolveTheme(readStoredTheme()));
 	bindSystemTheme();
 	bindEvents();
+	restoreAiChatPanelLayout();
 	const saved = await loadState();
 	hydrate(saved);
 	renderRoadmapChecks();
