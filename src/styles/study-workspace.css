@@ -13,6 +13,51 @@
 	--roadmap-glow-light-soft: rgba(255, 195, 127, 0.35);
 	--roadmap-glow-dark: rgba(255, 220, 172, 0.95);
 	--roadmap-glow-dark-soft: rgba(255, 220, 172, 0.4);
+	--accent-primary: #b45309;
+	--accent-primary-hover: #c2410c;
+	--accent-on-primary: #fff7ed;
+	--accent-strong: #9a3412;
+	--accent-soft-bg: #ffedd5;
+	--accent-soft-fill: #fff7ed;
+	--accent-border: rgba(180, 83, 9, 0.35);
+	--accent-ring: rgba(180, 83, 9, 0.24);
+	--accent-shadow: rgba(180, 83, 9, 0.35);
+}
+
+html[data-accent='emerald'] {
+	--accent-primary: #0f766e;
+	--accent-primary-hover: #115e59;
+	--accent-on-primary: #f0fdfa;
+	--accent-strong: #115e59;
+	--accent-soft-bg: #ccfbf1;
+	--accent-soft-fill: #f0fdfa;
+	--accent-border: rgba(15, 118, 110, 0.35);
+	--accent-ring: rgba(15, 118, 110, 0.24);
+	--accent-shadow: rgba(15, 118, 110, 0.32);
+}
+
+html[data-accent='cobalt'] {
+	--accent-primary: #1d4ed8;
+	--accent-primary-hover: #1e40af;
+	--accent-on-primary: #eff6ff;
+	--accent-strong: #1e40af;
+	--accent-soft-bg: #dbeafe;
+	--accent-soft-fill: #eff6ff;
+	--accent-border: rgba(29, 78, 216, 0.35);
+	--accent-ring: rgba(29, 78, 216, 0.24);
+	--accent-shadow: rgba(29, 78, 216, 0.3);
+}
+
+html[data-accent='raspberry'] {
+	--accent-primary: #be185d;
+	--accent-primary-hover: #9f1239;
+	--accent-on-primary: #fff1f2;
+	--accent-strong: #9f1239;
+	--accent-soft-bg: #fce7f3;
+	--accent-soft-fill: #fff1f2;
+	--accent-border: rgba(190, 24, 93, 0.35);
+	--accent-ring: rgba(190, 24, 93, 0.24);
+	--accent-shadow: rgba(190, 24, 93, 0.3);
 }
 
 .skip-link {
@@ -2583,4 +2628,89 @@ html[data-theme='dark'] input[type='search']:focus {
 		grid-template-columns: 1fr;
 		gap: 0.4rem;
 	}
+}
+
+/* ---- Accent palette overrides ---- */
+.skip-link {
+	background: var(--accent-primary);
+	color: var(--accent-on-primary);
+}
+
+button:focus-visible,
+.option:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+	outline: 2px solid var(--accent-primary);
+	box-shadow: 0 0 0 4px var(--accent-ring);
+}
+
+.primary {
+	background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-primary-hover) 100%);
+	color: var(--accent-on-primary);
+}
+
+.primary:hover {
+	background: linear-gradient(135deg, var(--accent-primary-hover) 0%, var(--accent-primary) 100%);
+	box-shadow: 0 4px 15px var(--accent-shadow);
+}
+
+.primary:active {
+	box-shadow: 0 2px 8px var(--accent-shadow);
+}
+
+.secondary {
+	border-color: var(--accent-border);
+}
+
+.secondary:hover {
+	border-color: var(--accent-border);
+}
+
+.chip {
+	background: var(--accent-soft-bg);
+	color: var(--accent-strong);
+}
+
+#quiz-question {
+	border-left-color: var(--accent-primary);
+}
+
+.quiz-bookmark.is-saved {
+	color: var(--accent-primary);
+}
+
+.option:hover {
+	border-color: var(--accent-border);
+	box-shadow: -4px 0 0 0 var(--accent-primary-hover);
+}
+
+.hint-box {
+	border-left-color: var(--accent-primary-hover);
+}
+
+.learn-ref a {
+	color: var(--accent-strong);
+}
+
+.learn-ref a:hover {
+	color: var(--accent-primary);
+}
+
+.settings-row input[type='number']:focus,
+.settings-row input[type='text']:focus,
+.settings-row input[type='password']:focus,
+.settings-row select:focus,
+input[type='search']:focus {
+	outline: 2px solid var(--accent-border);
+	box-shadow: 0 0 0 4px var(--accent-ring);
+}
+
+.hero-readiness {
+	border-color: var(--accent-border);
+}
+
+#hero-readiness-progress::-webkit-progress-value,
+#hero-readiness-progress::-moz-progress-bar {
+	background: linear-gradient(90deg, var(--accent-primary-hover) 0%, var(--accent-primary) 100%);
 }

@@ -15,6 +15,7 @@ const THEME_KEY = 'ai900_theme_pref';
 const LANG_KEY = 'ai900_lang_pref';
 const AI_CHAT_LAYOUT_KEY = 'ai900_ai_chat_layout_v1';
 const THEME_MEDIA = window.matchMedia('(prefers-color-scheme: dark)');
+const ACCENT_PALETTES = new Set(['amber', 'emerald', 'cobalt', 'raspberry']);
 
 const byId = (id) => document.getElementById(id);
 const questionById = new Map();
@@ -193,6 +194,7 @@ const ui = {
 	settingGoodMult: byId('setting-good-mult'),
 	settingEasyMult: byId('setting-easy-mult'),
 	settingLapse: byId('setting-lapse'),
+	settingAccentPalette: byId('setting-accent-palette'),
 	settingAiEnabled: byId('setting-ai-enabled'),
 	settingAiProvider: byId('setting-ai-provider'),
 	settingAiEndpoint: byId('setting-ai-endpoint'),
@@ -347,6 +349,12 @@ const i18n = {
 		'settings.maxReviews': 'Max reviews / day',
 		'settings.goodMultiplier': 'Interval multiplier "Good"',
 		'settings.easyMultiplier': 'Interval multiplier "Easy"',
+		'settings.accentPalette': 'Accent color',
+		'settings.accentHint': 'Only accent colors change. Surface and text colors stay fixed for readability.',
+		'settings.accent.amber': 'Amber',
+		'settings.accent.emerald': 'Emerald',
+		'settings.accent.cobalt': 'Cobalt',
+		'settings.accent.raspberry': 'Raspberry',
 			'settings.lapseMinutes': 'Lapse interval (minutes)',
 			'settings.aiSectionTitle': 'AI chat (BYOK)',
 			'settings.aiSectionHint': 'Use your own Azure OpenAI key. The key stays in your local browser storage.',
@@ -523,6 +531,12 @@ const i18n = {
 		'settings.maxReviews': 'Max. Wiederholungen / Tag',
 		'settings.goodMultiplier': 'Intervall-Multiplikator „Gut"',
 		'settings.easyMultiplier': 'Intervall-Multiplikator „Sicher"',
+		'settings.accentPalette': 'Akzentfarbe',
+		'settings.accentHint': 'Nur Akzentfarben werden geändert. Flächen und Texte bleiben für gute Lesbarkeit stabil.',
+		'settings.accent.amber': 'Amber',
+		'settings.accent.emerald': 'Smaragd',
+		'settings.accent.cobalt': 'Kobalt',
+		'settings.accent.raspberry': 'Himbeere',
 			'settings.lapseMinutes': 'Lapse-Intervall (Minuten)',
 			'settings.aiSectionTitle': 'AI-Chat (BYOK)',
 			'settings.aiSectionHint': 'Nutze deinen eigenen Azure OpenAI Key. Der Key bleibt im lokalen Browser-Speicher.',
@@ -683,6 +697,11 @@ function resolveTheme(preference) {
 	return THEME_MEDIA.matches ? 'dark' : 'light';
 }
 
+function resolveAccentPalette(value) {
+	const palette = String(value || '').trim().toLowerCase();
+	return ACCENT_PALETTES.has(palette) ? palette : DEFAULT_SETTINGS.accentPalette;
+}
+
 function saveTheme(theme) {
 	try {
 		localStorage.setItem(THEME_KEY, theme);
@@ -744,6 +763,10 @@ function applyTheme(theme) {
 	ui.themeToggle.setAttribute('aria-label', label);
 	ui.themeToggle.setAttribute('title', label);
 	ui.themeToggle.setAttribute('aria-pressed', isDark ? 'true' : 'false');
+}
+
+function applyAccentPalette(palette) {
+	document.documentElement.dataset.accent = resolveAccentPalette(palette);
 }
 
 function toggleTheme() {
@@ -1118,6 +1141,7 @@ function hydrate(saved) {
 	if (!state.historyDaily || typeof state.historyDaily !== 'object') {
 		state.historyDaily = {};
 	}
+	applyAccentPalette(state.settings.accentPalette);
 	renderQuizTopicFilterOptions();
 }
 
@@ -1130,6 +1154,7 @@ function populateSettingsUi() {
 	ui.settingGoodMult.value = state.settings.goodMultiplier;
 	ui.settingEasyMult.value = state.settings.easyMultiplier;
 	ui.settingLapse.value = state.settings.lapseMinutes;
+	if (ui.settingAccentPalette) ui.settingAccentPalette.value = resolveAccentPalette(state.settings.accentPalette);
 	ui.settingAiEnabled.checked = Boolean(state.settings.aiChatEnabled);
 	ui.settingAiProvider.value = state.settings.aiProvider;
 	ui.settingAiEndpoint.value = state.settings.aiEndpoint || '';
@@ -1145,6 +1170,7 @@ function readSettingsFromUi() {
 		goodMultiplier: clampFloat(ui.settingGoodMult.value, 1.0, 5.0),
 		easyMultiplier: clampFloat(ui.settingEasyMult.value, 1.5, 7.0),
 		lapseMinutes: clampInt(ui.settingLapse.value, 1, 60),
+		accentPalette: resolveAccentPalette(ui.settingAccentPalette?.value),
 		aiChatEnabled: ui.settingAiEnabled.checked,
 		aiProvider: ui.settingAiProvider.value,
 		aiEndpoint: ui.settingAiEndpoint.value,
@@ -1155,6 +1181,7 @@ function readSettingsFromUi() {
 
 function saveSettings() {
 	state.settings = readSettingsFromUi();
+	applyAccentPalette(state.settings.accentPalette);
 	populateSettingsUi();
 	syncAiChatVisibility();
 	if (isAiChatConfigured()) setAiChatError('');
@@ -1164,6 +1191,7 @@ function saveSettings() {
 
 function resetSettings() {
 	state.settings = { ...DEFAULT_SETTINGS };
+	applyAccentPalette(state.settings.accentPalette);
 	populateSettingsUi();
 	syncAiChatVisibility();
 	void saveState();
@@ -3260,6 +3288,7 @@ function bindEvents() {
 async function init() {
 	applyLanguage(readStoredLanguage(), { persist: false });
 	applyTheme(resolveTheme(readStoredTheme()));
+	applyAccentPalette(DEFAULT_SETTINGS.accentPalette);
 	bindSystemTheme();
 	bindEvents();
 	restoreAiChatPanelLayout();

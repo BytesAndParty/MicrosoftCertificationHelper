@@ -5,12 +5,15 @@ export const DEFAULT_SETTINGS = {
 	goodMultiplier: 2.0,
 	easyMultiplier: 3.0,
 	lapseMinutes: 10,
+	accentPalette: 'amber',
 	aiChatEnabled: false,
 	aiProvider: 'azure-openai',
 	aiEndpoint: '',
 	aiApiKey: '',
 	aiModel: 'gpt-5.2'
 };
+
+const ALLOWED_ACCENT_PALETTES = new Set(['amber', 'emerald', 'cobalt', 'raspberry']);
 
 export function clampInt(value, min, max) {
 	return Math.max(min, Math.min(max, Math.round(Number(value) || min)));
@@ -28,6 +31,7 @@ function sanitizeText(value, fallback = '', maxLength = 400) {
 
 export function sanitizeSettings(raw = {}) {
 	const provider = sanitizeText(raw.aiProvider, DEFAULT_SETTINGS.aiProvider, 40).toLowerCase();
+	const accentPalette = sanitizeText(raw.accentPalette, DEFAULT_SETTINGS.accentPalette, 40).toLowerCase();
 
 	return {
 		newCardsPerDay: clampInt(raw.newCardsPerDay ?? DEFAULT_SETTINGS.newCardsPerDay, 1, 50),
@@ -36,6 +40,7 @@ export function sanitizeSettings(raw = {}) {
 		goodMultiplier: clampFloat(raw.goodMultiplier ?? DEFAULT_SETTINGS.goodMultiplier, 1.0, 5.0),
 		easyMultiplier: clampFloat(raw.easyMultiplier ?? DEFAULT_SETTINGS.easyMultiplier, 1.5, 7.0),
 		lapseMinutes: clampInt(raw.lapseMinutes ?? DEFAULT_SETTINGS.lapseMinutes, 1, 60),
+		accentPalette: ALLOWED_ACCENT_PALETTES.has(accentPalette) ? accentPalette : DEFAULT_SETTINGS.accentPalette,
 		aiChatEnabled: Boolean(raw.aiChatEnabled),
 		aiProvider: provider === 'azure-openai' ? 'azure-openai' : DEFAULT_SETTINGS.aiProvider,
 		aiEndpoint: sanitizeText(raw.aiEndpoint, DEFAULT_SETTINGS.aiEndpoint, 250),

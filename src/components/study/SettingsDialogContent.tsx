@@ -28,6 +28,18 @@ export default function SettingsDialogContent() {
 					<span data-i18n="settings.lapseMinutes">Lapse interval (minutes)</span>
 					<Input id="setting-lapse" type="number" min={1} max={60} defaultValue={10} />
 				</label>
+				<label className="settings-row settings-row-wide">
+					<span data-i18n="settings.accentPalette">Accent color</span>
+					<select id="setting-accent-palette" defaultValue="amber">
+						<option value="amber" data-i18n="settings.accent.amber">Amber</option>
+						<option value="emerald" data-i18n="settings.accent.emerald">Emerald</option>
+						<option value="cobalt" data-i18n="settings.accent.cobalt">Cobalt</option>
+						<option value="raspberry" data-i18n="settings.accent.raspberry">Raspberry</option>
+					</select>
+				</label>
+				<p className="settings-help" data-i18n="settings.accentHint">
+					Only accent colors change. Surface and text colors stay fixed for readability.
+				</p>
 			</div>
 			<section className="settings-section">
 				<h3 data-i18n="settings.aiSectionTitle">AI chat (BYOK)</h3>
