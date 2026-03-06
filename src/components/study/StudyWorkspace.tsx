@@ -89,6 +89,15 @@ export default function StudyWorkspace({ roadmapThemes }: StudyWorkspaceProps) {
 						<span className="mode-desc" data-i18n="hero.modeJournalDesc">Review mistakes</span>
 					</button>
 				</nav>
+				<div className="hero-quiz-launch">
+					<label htmlFor="quiz-launch-category" data-i18n="quiz.launchCategory">
+						Quiz category
+					</label>
+					<select id="quiz-launch-category" className="quiz-launch-category" aria-label="Quiz category" data-i18n-aria-label="quiz.launchCategory">
+						<option value="all" data-i18n="quiz.focusAll">All topics</option>
+						<option value="weakest" data-i18n="quiz.focusWeakest">Weakest topic</option>
+					</select>
+				</div>
 			</header>
 
 			<section className="card reveal" id="roadmap">

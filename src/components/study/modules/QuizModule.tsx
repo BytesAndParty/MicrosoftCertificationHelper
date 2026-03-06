@@ -4,39 +4,27 @@ export default function QuizModule() {
 	return (
 		<OverlayDialog id="overlay-quiz" titleId="overlay-quiz-title" titleI18n="quiz.title" titleDefault="Quiz with instant feedback">
 			<p id="quiz-progress" className="meta"></p>
-			<div className="quiz-focus-row">
-				<label htmlFor="quiz-topic-filter" className="quiz-focus-label" data-i18n="quiz.focusLabel">
-					Focus
-				</label>
-				<select id="quiz-topic-filter" className="quiz-topic-filter" data-i18n-aria-label="quiz.focusLabel" aria-label="Focus">
-					<option value="all" data-i18n="quiz.focusAll">
-						All topics
-					</option>
-					<option value="weakest" data-i18n="quiz.focusWeakest">
-						Weakest topic
-					</option>
-				</select>
-			</div>
-			<p id="quiz-topic-focus" className="meta quiz-topic-focus" data-i18n="quiz.focusHintAll">
-				All topics are active.
-			</p>
 			<div className="quiz-question-row">
 				<p id="quiz-topic" className="chip"></p>
-				<button id="quiz-bookmark" type="button" className="quiz-bookmark" aria-label="Save question" data-i18n-aria-label="quiz.bookmarkLabel">
-					&#9825;
-				</button>
+				<div className="quiz-inline-actions">
+					<button id="quiz-chat-send" type="button" className="quiz-icon-btn quiz-chat-icon" aria-label="Discuss in AI chat" data-i18n-aria-label="chat.sendQuizItem">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+							<path d="M21 12a8.5 8.5 0 0 1-8.5 8.5H7l-4 3 1.2-4.8A8.5 8.5 0 1 1 21 12z" />
+						</svg>
+					</button>
+					<button id="quiz-bookmark" type="button" className="quiz-icon-btn quiz-bookmark" aria-label="Save question" data-i18n-aria-label="quiz.bookmarkLabel">
+						&#9825;
+					</button>
+				</div>
 			</div>
 			<h4 id="quiz-question"></h4>
 			<div id="quiz-options" className="option-list"></div>
-			<div className="quiz-actions">
+			<div id="quiz-actions" className="quiz-actions">
 				<button id="quiz-hint" type="button" className="secondary" data-i18n="quiz.showHint">
 					Show hint
 				</button>
 				<button id="quiz-skip" type="button" className="secondary" data-i18n="quiz.skip">
 					Skip
-				</button>
-				<button id="quiz-chat-send" type="button" className="secondary" data-i18n="chat.sendQuizItem">
-					Discuss in AI chat
 				</button>
 			</div>
 			<p id="quiz-hint-text" className="hint-box" hidden></p>
@@ -45,6 +33,11 @@ export default function QuizModule() {
 				<span id="quiz-learn-ref-prefix"></span>
 				<a id="quiz-learn-ref-link" target="_blank" rel="noopener noreferrer"></a>
 			</p>
+			<section id="quiz-summary" className="quiz-summary" hidden>
+				<h4 data-i18n="quiz.summaryTitle">Quiz overview</h4>
+				<p id="quiz-summary-meta" className="meta"></p>
+				<div id="quiz-summary-topics" className="quiz-summary-topics"></div>
+			</section>
 			<button id="quiz-next" type="button" className="primary" data-i18n="quiz.nextQuestion">
 				Next question
 			</button>

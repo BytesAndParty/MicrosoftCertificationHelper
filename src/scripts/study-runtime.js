@@ -15,6 +15,7 @@ const THEME_KEY = 'ai900_theme_pref';
 const LANG_KEY = 'ai900_lang_pref';
 const AI_CHAT_LAYOUT_KEY = 'ai900_ai_chat_layout_v1';
 const THEME_MEDIA = window.matchMedia('(prefers-color-scheme: dark)');
+const REDUCED_MOTION_MEDIA = window.matchMedia('(prefers-reduced-motion: reduce)');
 const ACCENT_PALETTES = new Set(['amber', 'emerald', 'cobalt', 'raspberry']);
 const ACCENT_PREVIEW_COLORS = {
 	amber: '#b45309',
@@ -136,15 +137,18 @@ const ui = {
 	historyHeatmap: byId('history-heatmap'),
 	historyTopicTrend: byId('history-topic-trend'),
 	quizProgress: byId('quiz-progress'),
-	quizTopicFilter: byId('quiz-topic-filter'),
-	quizTopicFocus: byId('quiz-topic-focus'),
+	quizLaunchCategory: byId('quiz-launch-category'),
 	quizTopic: byId('quiz-topic'),
 	quizQuestion: byId('quiz-question'),
 	quizOptions: byId('quiz-options'),
+	quizActions: byId('quiz-actions'),
 	quizFeedback: byId('quiz-feedback'),
 	quizLearnRef: byId('quiz-learn-ref'),
 	quizLearnRefPrefix: byId('quiz-learn-ref-prefix'),
 	quizLearnRefLink: byId('quiz-learn-ref-link'),
+	quizSummary: byId('quiz-summary'),
+	quizSummaryMeta: byId('quiz-summary-meta'),
+	quizSummaryTopics: byId('quiz-summary-topics'),
 	quizNext: byId('quiz-next'),
 	examStart: byId('exam-start'),
 	examTimer: byId('exam-timer'),
@@ -275,6 +279,8 @@ const i18n = {
 			'quiz.showHint': 'Show hint',
 			'quiz.skip': 'Skip',
 			'quiz.nextQuestion': 'Next question',
+			'quiz.restart': 'Start new quiz',
+			'quiz.launchCategory': 'Quiz category',
 			'quiz.focusLabel': 'Focus',
 			'quiz.focusAll': 'All topics',
 			'quiz.focusWeakest': 'Weakest topic',
@@ -283,6 +289,9 @@ const i18n = {
 			'quiz.focusHintTopic': 'Focused topic: {topic}',
 			'quiz.focusHintWeakest': 'Weakest topic right now: {topic} ({accuracy}%, {total} answered)',
 			'quiz.focusHintWeakestUnknown': 'Weakest topic will appear after your first answers.',
+			'quiz.summaryTitle': 'Quiz overview',
+			'quiz.summaryMeta': 'Completed {answered} questions | Correct {correct} | Accuracy {accuracy}%',
+			'quiz.summaryTopicLine': '{topic}: {correct}/{total} correct ({accuracy}%)',
 			'quiz.learnRefPrefix': 'Learn more:',
 		'exam.title': 'Exam mode',
 		'exam.meta': '10 questions, 20 minutes, mixed question types, and a detailed review.',
@@ -343,11 +352,11 @@ const i18n = {
 		'a11y.timeRemaining': 'Time remaining: {time}',
 		'shortcuts.title': 'Keyboard shortcuts',
 		'quiz.bookmarkLabel': 'Save question',
-		'shortcuts.quiz': '1-4 Answer | H Hint | S Skip | N Next | B Bookmark',
+		'shortcuts.quiz': '1-4 Answer | Arrow keys options | Enter select | H Hint | S Skip | N Next | B Bookmark',
 		'shortcuts.flash': 'Space Reveal | H Hint (Flashcards) | N Next Card | 1 Again | 2 Good | 3 Easy | F Search (Glossary)',
 		'shortcuts.global': 'Q Quiz | E Exam | F Flashcards | G Glossary | J Journal | O Settings | D Theme | L Language | ? Shortcuts | ESC Close',
-		'shortcuts.quizOverlay': 'Shortcuts: 1-4 answer | H hint | S skip | N/Enter next | B bookmark',
-		'shortcuts.examOverlay': 'Shortcuts: S start | 1-4 answer | N/Enter next | ESC close',
+		'shortcuts.quizOverlay': 'Shortcuts: 1-4 answer | Arrow keys options | Enter select | H hint | S skip | N/Enter next | B bookmark',
+		'shortcuts.examOverlay': 'Shortcuts: S start | 1-4 answer | Arrow keys options | Enter select | N/Enter next | ESC close',
 		'shortcuts.flashOverlay': 'Shortcuts: Space/Enter reveal | H hint | N next card | 1 again | 2 good | 3 easy',
 		'shortcuts.glossaryOverlay': 'Shortcuts: Space/Enter reveal | N next term | F search | 1 again | 2 good | 3 easy | ESC close',
 		'shortcuts.journalOverlay': 'Shortcuts: ESC close | Q/E/F/G/J switch mode | D theme | L language',
@@ -454,6 +463,8 @@ const i18n = {
 			'quiz.showHint': 'Hinweis anzeigen',
 			'quiz.skip': 'Überspringen',
 			'quiz.nextQuestion': 'Nächste Frage',
+			'quiz.restart': 'Neues Quiz starten',
+			'quiz.launchCategory': 'Quiz-Kategorie',
 			'quiz.focusLabel': 'Fokus',
 			'quiz.focusAll': 'Alle Themen',
 			'quiz.focusWeakest': 'Schwächstes Thema',
@@ -462,6 +473,9 @@ const i18n = {
 			'quiz.focusHintTopic': 'Fokusthema: {topic}',
 			'quiz.focusHintWeakest': 'Aktuell schwächstes Thema: {topic} ({accuracy}%, {total} beantwortet)',
 			'quiz.focusHintWeakestUnknown': 'Das schwächste Thema erscheint nach deinen ersten Antworten.',
+			'quiz.summaryTitle': 'Quiz-Übersicht',
+			'quiz.summaryMeta': '{answered} Fragen abgeschlossen | {correct} richtig | Accuracy {accuracy}%',
+			'quiz.summaryTopicLine': '{topic}: {correct}/{total} richtig ({accuracy}%)',
 			'quiz.learnRefPrefix': 'Weiterlesen:',
 		'exam.title': 'Prüfungsmodus',
 		'exam.meta': '10 Fragen, 20 Minuten, gemischte Fragetypen und detaillierte Auswertung.',
@@ -522,11 +536,11 @@ const i18n = {
 		'a11y.timeRemaining': 'Verbleibende Zeit: {time}',
 		'shortcuts.title': 'Tastenkürzel',
 		'quiz.bookmarkLabel': 'Frage speichern',
-		'shortcuts.quiz': '1-4 Antwort | H Hinweis | S Überspringen | N Nächste | B Merken',
+		'shortcuts.quiz': '1-4 Antwort | Pfeiltasten Optionen | Enter wählen | H Hinweis | S Überspringen | N Nächste | B Merken',
 		'shortcuts.flash': 'Leertaste Aufdecken | H Hinweis (Flashcards) | N Nächste Karte | 1 Nochmal | 2 Gut | 3 Sicher | F Suche (Glossar)',
 		'shortcuts.global': 'Q Quiz | E Prüfung | F Flashcards | G Glossar | J Journal | O Einstellungen | D Theme | L Sprache | ? Kürzel | ESC Schließen',
-		'shortcuts.quizOverlay': 'Tastenkürzel: 1-4 Antwort | H Hinweis | S Überspringen | N/Enter Nächste | B Merken',
-		'shortcuts.examOverlay': 'Tastenkürzel: S Start | 1-4 Antwort | N/Enter Nächste | ESC Schließen',
+		'shortcuts.quizOverlay': 'Tastenkürzel: 1-4 Antwort | Pfeiltasten Optionen | Enter wählen | H Hinweis | S Überspringen | N/Enter Nächste | B Merken',
+		'shortcuts.examOverlay': 'Tastenkürzel: S Start | 1-4 Antwort | Pfeiltasten Optionen | Enter wählen | N/Enter Nächste | ESC Schließen',
 		'shortcuts.flashOverlay': 'Tastenkürzel: Leertaste/Enter Aufdecken | H Hinweis | N Nächste Karte | 1 Nochmal | 2 Gut | 3 Sicher',
 		'shortcuts.glossaryOverlay': 'Tastenkürzel: Leertaste/Enter Aufdecken | N Nächster Begriff | F Suche | 1 Nochmal | 2 Gut | 3 Sicher | ESC Schließen',
 		'shortcuts.journalOverlay': 'Tastenkürzel: ESC Schließen | Q/E/F/G/J Modus wechseln | D Theme | L Sprache',
@@ -590,6 +604,7 @@ let state = createDefaultStudyState();
 let dbPromise;
 let saveTimer;
 let quizDeck = [];
+let quizSession = null;
 let activeQuestion = null;
 let quizLocked = false;
 let lastQuizSelectedIndex = null;
@@ -607,6 +622,8 @@ let flashSwipeTimer;
 let toastTimer;
 let aiChatMessages = [];
 let aiChatPending = false;
+let lastStatsSnapshot = null;
+let lastSessionProgress = null;
 
 const AI_CHAT_HISTORY_LIMIT = 12;
 const AZURE_RESPONSES_API_VERSION = '2025-04-01-preview';
@@ -624,6 +641,7 @@ const AI_CHAT_DROP_TAGS = new Set(['script', 'style', 'iframe', 'object', 'embed
 const AI_CHAT_ALLOWED_ATTRS = {
 	a: new Set(['href', 'title'])
 };
+const uiAnimationMeta = new WeakMap();
 
 marked.setOptions({
 	gfm: true,
@@ -684,6 +702,32 @@ function formatDate(timestamp) {
 function getTypeLabel(type) {
 	if (type === 'true-false') return t('type.trueFalse');
 	return t('type.multipleChoice');
+}
+
+function replayUiAnimation(node, className, durationMs = 420) {
+	if (!node || !className || REDUCED_MOTION_MEDIA.matches) return;
+
+	const previous = uiAnimationMeta.get(node);
+	if (previous) {
+		clearTimeout(previous.timer);
+		if (previous.className && previous.className !== className) {
+			node.classList.remove(previous.className);
+		}
+	}
+
+	node.classList.remove(className);
+	void node.offsetWidth;
+	node.classList.add(className);
+
+	const timer = setTimeout(() => {
+		node.classList.remove(className);
+		const active = uiAnimationMeta.get(node);
+		if (active && active.timer === timer) {
+			uiAnimationMeta.delete(node);
+		}
+	}, durationMs);
+
+	uiAnimationMeta.set(node, { className, timer });
 }
 
 function readStoredTheme() {
@@ -973,9 +1017,11 @@ function applyLanguage(language, { persist = true } = {}) {
 				activeQuestion.type === 'single-choice'
 					? t('quiz.pool', { count: activeQuestion.answerPoolCount })
 					: '';
+			const answeredCount = quizSession ? quizSession.answered : state.quiz.answered;
+			const correctCount = quizSession ? quizSession.correct : state.quiz.correct;
 			ui.quizProgress.textContent = t('quiz.progress', {
-				answered: state.quiz.answered,
-				correct: state.quiz.correct,
+				answered: answeredCount,
+				correct: correctCount,
 				poolHint
 			});
 			if (!ui.quizHintText.hidden) ui.quizHintText.textContent = activeQuestion.hint || activeQuestion.explanation;
@@ -993,6 +1039,9 @@ function applyLanguage(language, { persist = true } = {}) {
 				});
 			}
 		}
+	}
+	if (quizSession?.completed) {
+		renderQuizCompletionSummary();
 	}
 
 	if (exam && Array.isArray(exam.questions)) {
@@ -1900,13 +1949,6 @@ function buildQuizItemChatPrompt() {
 	activeQuestion.options.forEach((option, index) => {
 		lines.push(`${index + 1}. ${option}`);
 	});
-	if (quizLocked && lastQuizSelectedIndex !== null) {
-		const selected = activeQuestion.options[lastQuizSelectedIndex] || '';
-		lines.push('');
-		lines.push(`${isDe ? 'Meine Antwort' : 'My answer'}: ${selected}`);
-		lines.push(`${isDe ? 'Richtige Antwort' : 'Correct answer'}: ${activeQuestion.correctText}`);
-		lines.push(`${isDe ? 'Erklärung' : 'Explanation'}: ${activeQuestion.explanation}`);
-	}
 	return lines.join('\n');
 }
 
@@ -2035,12 +2077,18 @@ function getSessionSnapshot(now = Date.now()) {
 
 function renderSessionGoal() {
 	if (!ui.sessionStatus || !ui.sessionDetails || !ui.sessionProgress || !ui.sessionProgressValue) return;
+	const previousProgress = lastSessionProgress;
 	const snapshot = getSessionSnapshot();
 	if (!snapshot) {
 		ui.sessionStatus.textContent = t('session.statusIdle');
 		ui.sessionDetails.textContent = t('session.detailIdle');
 		ui.sessionProgress.value = 0;
 		ui.sessionProgressValue.textContent = '0%';
+		if ((previousProgress ?? 0) !== 0) {
+			replayUiAnimation(ui.sessionProgress, 'ui-motion-progress', 380);
+			replayUiAnimation(ui.sessionProgressValue, 'ui-motion-kpi', 340);
+		}
+		lastSessionProgress = 0;
 		return;
 	}
 
@@ -2078,6 +2126,11 @@ function renderSessionGoal() {
 	});
 	ui.sessionProgress.value = snapshot.progress;
 	ui.sessionProgressValue.textContent = `${snapshot.progress}%`;
+	if (previousProgress !== null && previousProgress !== snapshot.progress) {
+		replayUiAnimation(ui.sessionProgress, 'ui-motion-progress', 380);
+		replayUiAnimation(ui.sessionProgressValue, 'ui-motion-kpi', 340);
+	}
+	lastSessionProgress = snapshot.progress;
 
 	if (changed) void saveState();
 }
@@ -2216,7 +2269,7 @@ function getExamReadinessSnapshot() {
 }
 
 function renderExamReadiness() {
-	if (!ui.heroReadiness || !ui.heroReadinessProgress || !ui.heroReadinessValue || !ui.heroReadinessMeta) return;
+	if (!ui.heroReadiness || !ui.heroReadinessProgress || !ui.heroReadinessValue || !ui.heroReadinessMeta) return null;
 
 	const snapshot = getExamReadinessSnapshot();
 	ui.heroReadinessProgress.value = snapshot.score;
@@ -2232,6 +2285,7 @@ function renderExamReadiness() {
 
 	const level = snapshot.score >= 80 ? 'high' : snapshot.score >= 50 ? 'mid' : 'low';
 	ui.heroReadiness.dataset.level = level;
+	return snapshot;
 }
 
 function renderRoadmapChecks() {
@@ -2242,21 +2296,47 @@ function renderRoadmapChecks() {
 
 function renderStats() {
 	const p = getRoadmapProgress();
+	const nextStatsSnapshot = {
+		roadmap: p.percent,
+		accuracy: getAccuracy(),
+		exam: Number(state.examBest) || 0,
+		due: getDueCardCount(),
+		journal: Object.keys(state.wrongJournal).length
+	};
+
 	ui.roadmapSummary.textContent = t('roadmap.summary', { done: p.done, total: p.total });
-	ui.metricRoadmap.textContent = `${p.percent}%`;
-	ui.metricAccuracy.textContent = `${getAccuracy()}%`;
-	ui.metricExam.textContent = `${state.examBest}%`;
-	ui.metricDue.textContent = String(getDueCardCount());
-	ui.metricJournal.textContent = String(Object.keys(state.wrongJournal).length);
-	renderExamReadiness();
+	ui.metricRoadmap.textContent = `${nextStatsSnapshot.roadmap}%`;
+	ui.metricAccuracy.textContent = `${nextStatsSnapshot.accuracy}%`;
+	ui.metricExam.textContent = `${nextStatsSnapshot.exam}%`;
+	ui.metricDue.textContent = String(nextStatsSnapshot.due);
+	ui.metricJournal.textContent = String(nextStatsSnapshot.journal);
+
+	const readinessSnapshot = renderExamReadiness();
 	renderSessionGoal();
 	renderHistoryPanel();
+
+	if (lastStatsSnapshot) {
+		if (lastStatsSnapshot.roadmap !== nextStatsSnapshot.roadmap) replayUiAnimation(ui.metricRoadmap, 'ui-motion-kpi', 340);
+		if (lastStatsSnapshot.accuracy !== nextStatsSnapshot.accuracy) replayUiAnimation(ui.metricAccuracy, 'ui-motion-kpi', 340);
+		if (lastStatsSnapshot.exam !== nextStatsSnapshot.exam) replayUiAnimation(ui.metricExam, 'ui-motion-kpi', 340);
+		if (lastStatsSnapshot.due !== nextStatsSnapshot.due) replayUiAnimation(ui.metricDue, 'ui-motion-kpi', 340);
+		if (lastStatsSnapshot.journal !== nextStatsSnapshot.journal) replayUiAnimation(ui.metricJournal, 'ui-motion-kpi', 340);
+		if ((lastStatsSnapshot.readiness ?? 0) !== (readinessSnapshot?.score ?? 0)) {
+			replayUiAnimation(ui.heroReadinessValue, 'ui-motion-kpi', 360);
+			replayUiAnimation(ui.heroReadinessProgress, 'ui-motion-progress', 420);
+		}
+	}
+
+	lastStatsSnapshot = {
+		...nextStatsSnapshot,
+		readiness: readinessSnapshot?.score ?? 0
+	};
 }
 
 /* ---- Quiz ---- */
 
-function refillQuizDeck() {
-	quizDeck = shuffle(quizQuestions);
+function refillQuizDeck(source = quizQuestions) {
+	quizDeck = shuffle(Array.isArray(source) ? [...source] : []);
 }
 
 function getWeakestTopicRow() {
@@ -2264,34 +2344,34 @@ function getWeakestTopicRow() {
 	return rows.length ? rows[0] : null;
 }
 
-function getQuizTopicFilterValue() {
-	if (!ui.quizTopicFilter) return QUIZ_TOPIC_FILTER_ALL;
-	const value = String(ui.quizTopicFilter.value || QUIZ_TOPIC_FILTER_ALL);
+function getQuizCategoryValue() {
+	if (!ui.quizLaunchCategory) return QUIZ_TOPIC_FILTER_ALL;
+	const value = String(ui.quizLaunchCategory.value || QUIZ_TOPIC_FILTER_ALL);
 	if (value === QUIZ_TOPIC_FILTER_ALL || value === QUIZ_TOPIC_FILTER_WEAKEST) return value;
 	if (quizQuestions.some((question) => question.topic === value)) return value;
 	return QUIZ_TOPIC_FILTER_ALL;
 }
 
-function renderQuizTopicFocusHint() {
-	if (!ui.quizTopicFocus) return;
-	const filterValue = getQuizTopicFilterValue();
-	if (filterValue === QUIZ_TOPIC_FILTER_ALL) {
-		ui.quizTopicFocus.textContent = t('quiz.focusHintAll');
-		return;
+function getQuizCategoryScope(value = getQuizCategoryValue()) {
+	if (value === QUIZ_TOPIC_FILTER_ALL) {
+		return { effectiveTopic: '', questions: [...quizQuestions] };
 	}
-	if (filterValue === QUIZ_TOPIC_FILTER_WEAKEST) {
-		const weakest = getWeakestTopicRow();
-		ui.quizTopicFocus.textContent = weakest
-			? t('quiz.focusHintWeakest', { topic: weakest.topic, accuracy: weakest.accuracy, total: weakest.total })
-			: t('quiz.focusHintWeakestUnknown');
-		return;
+	if (value === QUIZ_TOPIC_FILTER_WEAKEST) {
+		const weakestTopic = getWeakestTopicRow()?.topic || '';
+		const weakestQuestions = weakestTopic
+			? quizQuestions.filter((question) => question.topic === weakestTopic)
+			: [...quizQuestions];
+		return { effectiveTopic: weakestTopic, questions: weakestQuestions };
 	}
-	ui.quizTopicFocus.textContent = t('quiz.focusHintTopic', { topic: filterValue });
+	return {
+		effectiveTopic: value,
+		questions: quizQuestions.filter((question) => question.topic === value)
+	};
 }
 
 function renderQuizTopicFilterOptions() {
-	if (!ui.quizTopicFilter) return;
-	const previous = getQuizTopicFilterValue();
+	if (!ui.quizLaunchCategory) return;
+	const previous = getQuizCategoryValue();
 	const locale = currentLanguage === 'de' ? 'de' : 'en';
 	const topics = [...new Set(quizQuestions.map((question) => String(question.topic || '').trim()).filter(Boolean))]
 		.sort((left, right) => left.localeCompare(right, locale));
@@ -2300,7 +2380,7 @@ function renderQuizTopicFilterOptions() {
 		? t('quiz.focusWeakestWithTopic', { topic: weakest.topic, accuracy: weakest.accuracy })
 		: t('quiz.focusWeakest');
 
-	ui.quizTopicFilter.innerHTML = '';
+	ui.quizLaunchCategory.innerHTML = '';
 	const optionRows = [
 		{ value: QUIZ_TOPIC_FILTER_ALL, label: t('quiz.focusAll') },
 		{ value: QUIZ_TOPIC_FILTER_WEAKEST, label: weakestLabel },
@@ -2310,21 +2390,11 @@ function renderQuizTopicFilterOptions() {
 		const option = document.createElement('option');
 		option.value = row.value;
 		option.textContent = row.label;
-		ui.quizTopicFilter.append(option);
+		ui.quizLaunchCategory.append(option);
 	});
-	ui.quizTopicFilter.value = optionRows.some((row) => row.value === previous)
+	ui.quizLaunchCategory.value = optionRows.some((row) => row.value === previous)
 		? previous
 		: QUIZ_TOPIC_FILTER_ALL;
-	renderQuizTopicFocusHint();
-}
-
-function resolveQuizFocusTopic() {
-	const filterValue = getQuizTopicFilterValue();
-	if (filterValue === QUIZ_TOPIC_FILTER_ALL) return '';
-	if (filterValue === QUIZ_TOPIC_FILTER_WEAKEST) {
-		return getWeakestTopicRow()?.topic || '';
-	}
-	return filterValue;
 }
 
 function pickQuestionFromDeck(topic = '') {
@@ -2352,6 +2422,41 @@ function pickQuestionFromDeck(topic = '') {
 
 function formatOptionLabel(optionIndex, optionText) {
 	return `${optionIndex + 1}. ${optionText}`;
+}
+
+function getEnabledOptionButtons(container) {
+	if (!container) return [];
+	return [...container.querySelectorAll('button.option')].filter((button) => !button.disabled);
+}
+
+function moveOptionFocus(container, direction = 1) {
+	const buttons = getEnabledOptionButtons(container);
+	if (!buttons.length) return false;
+
+	const current = document.activeElement;
+	let nextIndex = buttons.indexOf(current);
+	if (nextIndex === -1) {
+		nextIndex = direction >= 0 ? 0 : buttons.length - 1;
+	} else {
+		nextIndex = (nextIndex + direction + buttons.length) % buttons.length;
+	}
+
+	buttons[nextIndex].focus({ preventScroll: true });
+	return true;
+}
+
+function triggerFocusedOption(container) {
+	const current = document.activeElement;
+	if (
+		current instanceof HTMLButtonElement &&
+		container?.contains(current) &&
+		current.classList.contains('option') &&
+		!current.disabled
+	) {
+		current.click();
+		return true;
+	}
+	return false;
 }
 
 function renderQuizLearnRef(show = false) {
@@ -2405,26 +2510,119 @@ function renderQuizOptionOutcome(button, optionIndex, selectedIndex) {
 	}
 }
 
+function setQuizSummaryVisibility(visible) {
+	const questionRow = ui.quizTopic?.closest('.quiz-question-row');
+	if (questionRow) questionRow.hidden = visible;
+	if (ui.quizQuestion) ui.quizQuestion.hidden = visible;
+	if (ui.quizOptions) ui.quizOptions.hidden = visible;
+	if (ui.quizActions) ui.quizActions.hidden = visible;
+	if (ui.quizFeedback) ui.quizFeedback.hidden = visible;
+	if (ui.quizSummary) ui.quizSummary.hidden = !visible;
+	if (visible) {
+		if (ui.quizHintText) ui.quizHintText.hidden = true;
+		if (ui.quizLearnRef) ui.quizLearnRef.hidden = true;
+	}
+}
+
+function startQuizSession() {
+	if (!quizQuestions.length) {
+		quizSession = null;
+		quizDeck = [];
+		return;
+	}
+	const category = getQuizCategoryValue();
+	const scope = getQuizCategoryScope(category);
+	const scopedQuestions = scope.questions.length ? scope.questions : [...quizQuestions];
+	refillQuizDeck(scopedQuestions);
+	quizSession = {
+		category,
+		effectiveTopic: scope.effectiveTopic,
+		total: scopedQuestions.length,
+		answered: 0,
+		correct: 0,
+		byTopic: {},
+		completed: false
+	};
+}
+
+function renderQuizCompletionSummary() {
+	if (!ui.quizSummary || !ui.quizSummaryMeta || !ui.quizSummaryTopics || !ui.quizNext) return;
+	const answered = Math.max(0, Number(quizSession?.answered) || 0);
+	const correct = Math.max(0, Number(quizSession?.correct) || 0);
+	const accuracy = answered ? Math.round((correct / answered) * 100) : 0;
+	ui.quizSummaryMeta.textContent = t('quiz.summaryMeta', {
+		answered,
+		correct,
+		accuracy
+	});
+	ui.quizSummaryTopics.innerHTML = '';
+	const topicRows = Object.entries(quizSession?.byTopic || {})
+		.map(([topic, values]) => {
+			const total = Math.max(0, Number(values.total) || 0);
+			const topicCorrect = Math.max(0, Number(values.correct) || 0);
+			const topicAccuracy = total ? Math.round((topicCorrect / total) * 100) : 0;
+			return { topic, total, correct: topicCorrect, accuracy: topicAccuracy };
+		})
+		.sort((left, right) => right.total - left.total || right.accuracy - left.accuracy);
+	topicRows.forEach((row) => {
+		const line = document.createElement('p');
+		line.className = 'topic-trend-row';
+		line.textContent = t('quiz.summaryTopicLine', {
+			topic: row.topic,
+			correct: row.correct,
+			total: row.total,
+			accuracy: row.accuracy
+		});
+		ui.quizSummaryTopics.append(line);
+	});
+
+	setQuizSummaryVisibility(true);
+	ui.quizNext.disabled = false;
+	ui.quizNext.dataset.i18n = 'quiz.restart';
+	ui.quizNext.textContent = t('quiz.restart');
+	quizSession = quizSession
+		? { ...quizSession, completed: true }
+		: null;
+	activeQuestion = null;
+	quizLocked = true;
+	lastQuizSelectedIndex = null;
+}
+
 function showQuizQuestion(forcedQuestionId = null) {
 	if (!quizQuestions.length) return;
-	const baseQuestion = forcedQuestionId && questionById.has(forcedQuestionId)
-		? questionById.get(forcedQuestionId)
-		: pickQuestionFromDeck(resolveQuizFocusTopic());
+	let baseQuestion = null;
+	if (forcedQuestionId && questionById.has(forcedQuestionId)) {
+		baseQuestion = questionById.get(forcedQuestionId);
+		quizSession = null;
+	} else {
+		if (!quizSession || quizSession.completed) {
+			startQuizSession();
+		}
+		if (!quizDeck.length) {
+			renderQuizCompletionSummary();
+			return;
+		}
+		baseQuestion = pickQuestionFromDeck();
+	}
 	if (!baseQuestion) return;
 
 	activeQuestion = createRuntimeQuestion(baseQuestion);
 	quizLocked = false;
 	lastQuizSelectedIndex = null;
-	renderQuizTopicFocusHint();
+	setQuizSummaryVisibility(false);
 	ui.quizTopic.textContent = `${activeQuestion.topic} · ${activeQuestion.typeLabel}`;
 	ui.quizQuestion.textContent = activeQuestion.prompt;
+	ui.quizNext.dataset.i18n = 'quiz.nextQuestion';
+	ui.quizNext.textContent = t('quiz.nextQuestion');
 	const poolHint =
 		activeQuestion.type === 'single-choice'
 			? t('quiz.pool', { count: activeQuestion.answerPoolCount })
 			: '';
+	const answeredCount = quizSession ? quizSession.answered : state.quiz.answered;
+	const correctCount = quizSession ? quizSession.correct : state.quiz.correct;
 	ui.quizProgress.textContent = t('quiz.progress', {
-		answered: state.quiz.answered,
-		correct: state.quiz.correct,
+		answered: answeredCount,
+		correct: correctCount,
 		poolHint
 	});
 	ui.quizFeedback.textContent = '';
@@ -2454,6 +2652,10 @@ function showQuizQuestion(forcedQuestionId = null) {
 		button.onclick = () => submitQuizAnswer(optionIndex);
 		ui.quizOptions.append(button);
 	});
+	replayUiAnimation(ui.quizTopic, 'ui-motion-soft', 240);
+	replayUiAnimation(ui.quizQuestion, 'ui-motion-in', 320);
+	replayUiAnimation(ui.quizOptions, 'ui-motion-list', 420);
+	replayUiAnimation(ui.quizProgress, 'ui-motion-soft', 240);
 	syncAiChatBusyState();
 }
 
@@ -2508,6 +2710,16 @@ function submitQuizAnswer(selectedIndex) {
 		state.wrongJournal[activeQuestion.id] = wrong;
 	}
 	state.quiz.byTopic[activeQuestion.topic] = topicStats;
+	if (quizSession && !quizSession.completed) {
+		const sessionTopic = quizSession.byTopic[activeQuestion.topic] || { total: 0, correct: 0 };
+		quizSession.answered += 1;
+		sessionTopic.total += 1;
+		if (isCorrect) {
+			quizSession.correct += 1;
+			sessionTopic.correct += 1;
+		}
+		quizSession.byTopic[activeQuestion.topic] = sessionTopic;
+	}
 	trackDailyHistory({ answered: 1, correct: isCorrect ? 1 : 0 });
 	renderQuizTopicFilterOptions();
 
@@ -2533,12 +2745,19 @@ function submitQuizAnswer(selectedIndex) {
 	ui.quizSkip.hidden = true;
 	ui.quizFeedback.classList.add(isCorrect ? 'is-correct' : 'is-wrong');
 	ui.quizFeedback.textContent = `${isCorrect ? t('quiz.feedback.correct') : t('quiz.feedback.wrong')} ${activeQuestion.explanation}`;
+	replayUiAnimation(ui.quizFeedback, isCorrect ? 'ui-motion-success' : 'ui-motion-warn', 420);
 	renderQuizLearnRef(true);
 	ui.quizNext.disabled = false;
-	ui.quizNext.focus();
+	replayUiAnimation(ui.quizNext, 'ui-motion-kpi', 300);
 	void saveState();
 	renderStats();
 	renderJournal();
+	if (quizSession && quizSession.answered >= quizSession.total) {
+		renderQuizCompletionSummary();
+		ui.quizNext.focus();
+		return;
+	}
+	ui.quizNext.focus();
 }
 
 /* ---- Exam ---- */
@@ -2600,6 +2819,10 @@ function renderExamQuestion() {
 		};
 		ui.examOptions.append(button);
 	});
+
+	replayUiAnimation(ui.examProgress, 'ui-motion-soft', 240);
+	replayUiAnimation(ui.examQuestion, 'ui-motion-in', 320);
+	replayUiAnimation(ui.examOptions, 'ui-motion-list', 420);
 
 	ui.examNext.disabled = exam.answers[exam.index] === null;
 	ui.examNext.textContent = exam.index === exam.questions.length - 1 ? t('exam.finish') : t('exam.nextQuestion');
@@ -3005,7 +3228,7 @@ async function resetAll() {
 	renderStats();
 	renderJournal();
 	if (quizQuestions.length) {
-		refillQuizDeck();
+		startQuizSession();
 		showQuizQuestion();
 	}
 	chooseNextCard();
@@ -3039,7 +3262,8 @@ function bindRoadmapGlow() {
 async function openModeOverlay(mode) {
 	if (mode === 'quiz') {
 		await ensureQuestionPoolLoaded();
-		if (!activeQuestion) showQuizQuestion();
+		startQuizSession();
+		showQuizQuestion();
 		openOverlay(ui.overlayQuiz);
 		return;
 	}
@@ -3110,10 +3334,11 @@ function bindEvents() {
 
 	// Quiz events
 	if (ui.quizBookmark) ui.quizBookmark.onclick = () => toggleBookmark();
-	if (ui.quizTopicFilter) {
-		ui.quizTopicFilter.onchange = () => {
-			renderQuizTopicFocusHint();
-			if (quizQuestions.length) showQuizQuestion();
+	if (ui.quizLaunchCategory) {
+		ui.quizLaunchCategory.onchange = () => {
+			if (!quizQuestions.length) return;
+			startQuizSession();
+			if (activeOverlay === ui.overlayQuiz) showQuizQuestion();
 		};
 	}
 	ui.quizNext.onclick = () => showQuizQuestion();
@@ -3212,11 +3437,32 @@ function bindEvents() {
 
 	// Global keyboard shortcuts
 	document.addEventListener('keydown', (e) => {
-		if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+		const target = e.target;
+		if (
+			target instanceof HTMLElement &&
+			(target.tagName === 'INPUT' ||
+				target.tagName === 'TEXTAREA' ||
+				target.tagName === 'SELECT' ||
+				target.isContentEditable)
+		) return;
 
 		if (activeOverlay) {
 			// Quiz overlay shortcuts
 			if (activeOverlay === ui.overlayQuiz && !exam) {
+				const isArrowPrev = e.key === 'ArrowUp' || e.key === 'ArrowLeft';
+				const isArrowNext = e.key === 'ArrowDown' || e.key === 'ArrowRight';
+				if (!quizLocked && (isArrowPrev || isArrowNext)) {
+					if (moveOptionFocus(ui.quizOptions, isArrowNext ? 1 : -1)) {
+						e.preventDefault();
+						return;
+					}
+				}
+				if (!quizLocked && e.key === 'Enter') {
+					if (triggerFocusedOption(ui.quizOptions)) {
+						e.preventDefault();
+						return;
+					}
+				}
 				if (e.key >= '1' && e.key <= '9' && !quizLocked) {
 					const index = Number(e.key) - 1;
 					const buttons = [...ui.quizOptions.querySelectorAll('button')];
@@ -3248,6 +3494,18 @@ function bindEvents() {
 
 			// Exam overlay shortcuts
 			if (activeOverlay === ui.overlayExam && exam) {
+				const isArrowPrev = e.key === 'ArrowUp' || e.key === 'ArrowLeft';
+				const isArrowNext = e.key === 'ArrowDown' || e.key === 'ArrowRight';
+				if (isArrowPrev || isArrowNext) {
+					if (moveOptionFocus(ui.examOptions, isArrowNext ? 1 : -1)) {
+						e.preventDefault();
+						return;
+					}
+				}
+				if (e.key === 'Enter' && triggerFocusedOption(ui.examOptions)) {
+					e.preventDefault();
+					return;
+				}
 				if (e.key >= '1' && e.key <= '9') {
 					const index = Number(e.key) - 1;
 					const buttons = [...ui.examOptions.querySelectorAll('button')];
