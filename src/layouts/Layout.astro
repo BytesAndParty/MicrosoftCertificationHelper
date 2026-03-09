@@ -4,22 +4,39 @@ import '../styles/globals.css';
 ---
 
 <!doctype html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="light" data-accent="amber">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
+		<link rel="manifest" href="/manifest.webmanifest" />
+		<meta name="theme-color" content="#b45309" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+		<link rel="apple-touch-icon" href="/icon.svg" />
 		<meta name="generator" content={Astro.generator} />
 		<script is:inline>
 			(() => {
 				try {
 					const themeKey = 'ai900_theme_pref';
+					const fallbackKey = 'ai900_state_fallback';
 					const stored = localStorage.getItem(themeKey);
 					const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 					const resolved = stored === 'dark' || stored === 'light' ? stored : prefersDark ? 'dark' : 'light';
 					document.documentElement.dataset.theme = resolved;
 					document.documentElement.classList.toggle('dark', resolved === 'dark');
+
+					const allowedAccents = ['amber', 'emerald', 'cobalt', 'raspberry'];
+					let accent = 'amber';
+					const rawState = localStorage.getItem(fallbackKey);
+					if (rawState) {
+						const parsed = JSON.parse(rawState);
+						const candidate = parsed?.settings?.accentPalette ?? parsed?.state?.settings?.accentPalette;
+						if (typeof candidate === 'string' && allowedAccents.includes(candidate)) accent = candidate;
+					}
+					document.documentElement.dataset.accent = accent;
+
 					const lang = localStorage.getItem('ai900_lang_pref');
 					if (lang === 'de' || lang === 'en') document.documentElement.lang = lang;
 				} catch {}
@@ -29,6 +46,11 @@ import '../styles/globals.css';
 	</head>
 	<body>
 		<slot />
+		<script is:inline>
+			if ('serviceWorker' in navigator) {
+				navigator.serviceWorker.register('/sw.js').catch(() => {});
+			}
+		</script>
 	</body>
 </html>
 
