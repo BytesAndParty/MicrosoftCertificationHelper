@@ -2,10 +2,6 @@ import AiChatWidget from './AiChatWidget';
 import OverlayDialog from './OverlayDialog';
 import SettingsDialogContent from './SettingsDialogContent';
 import WelcomeDialogContent from './WelcomeDialogContent';
-import ExamModule from './modules/ExamModule';
-import FlashcardsModule from './modules/FlashcardsModule';
-import GlossaryModule from './modules/GlossaryModule';
-import JournalModule from './modules/JournalModule';
 
 interface RoadmapTheme {
 	id: string;
@@ -161,14 +157,6 @@ export default function StudyWorkspace({ roadmapThemes }: StudyWorkspaceProps) {
 						<div id="history-topic-trend" className="history-topic-trend"></div>
 					</div>
 				</section>
-
-			<ExamModule />
-
-			<FlashcardsModule />
-
-			<GlossaryModule />
-
-			<JournalModule />
 
 			<OverlayDialog id="overlay-settings" titleId="overlay-settings-title" titleI18n="settings.title" titleDefault="Settings">
 				<SettingsDialogContent />

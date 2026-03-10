@@ -3264,25 +3264,9 @@ async function openModeOverlay(mode) {
 		window.dispatchEvent(new CustomEvent('study-mode-open', { detail: { mode: 'quiz' } }));
 		return;
 	}
-	if (mode === 'exam') {
-		await ensureQuestionPoolLoaded();
-		openOverlay(ui.overlayExam);
+	if (mode === 'exam' || mode === 'flashcards' || mode === 'glossary' || mode === 'journal') {
+		window.dispatchEvent(new CustomEvent('study-mode-open', { detail: { mode } }));
 		return;
-	}
-	if (mode === 'flashcards') {
-		chooseNextCard();
-		openOverlay(ui.overlayFlashcards);
-		return;
-	}
-	if (mode === 'glossary') {
-		chooseNextGlossaryCard(ui.glossarySearch?.value || '');
-		openOverlay(ui.overlayGlossary);
-		return;
-	}
-	if (mode === 'journal') {
-		await ensureQuestionPoolLoaded();
-		renderJournal();
-		openOverlay(ui.overlayJournal);
 	}
 }
 
