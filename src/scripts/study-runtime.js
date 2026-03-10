@@ -1,16 +1,11 @@
 import { flashcards } from '../data/flashcards';
 import { glossaryTerms } from '../data/glossary-terms';
 import { roadmapThemes } from '../data/roadmap-themes';
-import { buildOptionPools, createRuntimeQuestion as buildRuntimeQuestion, getQuestionType, localizeQuestionData as localizeQuestion, shuffle } from '../lib/study/quiz';
-import { applySpacedRepetitionGrade, selectNextStudyCard } from '../lib/study/spaced-repetition';
 import { clampFloat, clampInt, DEFAULT_SETTINGS } from '../lib/study/settings';
 import { createDefaultStudyState, FALLBACK_KEY, hydrateStudyState } from '../lib/study/state';
 import { marked } from 'marked';
 
 const DB = { name: 'ai900-study-helper', version: 1, store: 'kv', key: 'state' };
-const EXAM_SECONDS = 20 * 60;
-const EXAM_MINUTES = Math.round(EXAM_SECONDS / 60);
-const EXAM_QUESTION_COUNT = 10;
 const THEME_KEY = 'ai900_theme_pref';
 const LANG_KEY = 'ai900_lang_pref';
 const AI_CHAT_LAYOUT_KEY = 'ai900_ai_chat_layout_v1';
@@ -25,52 +20,12 @@ const ACCENT_PREVIEW_COLORS = {
 };
 
 const byId = (id) => document.getElementById(id);
-const questionById = new Map();
 const themeById = new Map(roadmapThemes.map((theme) => [theme.id, theme]));
 const roadmapBoxes = [...document.querySelectorAll('[data-roadmap-key]')];
 const roadmapCards = [...document.querySelectorAll('.theme-card[data-roadmap-id]')];
 
 let quizQuestions = [];
 let quizDataPromise;
-
-function createEmptyOptionPools() {
-	return {
-		en: { topicOptionPool: {}, globalOptionPool: [] },
-		de: { topicOptionPool: {}, globalOptionPool: [] }
-	};
-}
-
-let optionPoolsByLanguage = createEmptyOptionPools();
-
-function buildOptionRationaleMap(language = 'en') {
-	const map = {};
-	quizQuestions.forEach((question) => {
-		const localized = localizeQuestion(question, language);
-		const options = Array.isArray(localized.options) ? localized.options : [];
-		const optionExplanations = localized.optionExplanations;
-		if (Array.isArray(optionExplanations)) {
-			optionExplanations.forEach((explanation, index) => {
-				const optionText = options[index];
-				if (optionText && typeof explanation === 'string' && explanation.trim()) {
-					map[optionText] = explanation.trim();
-				}
-			});
-		} else if (optionExplanations && typeof optionExplanations === 'object') {
-			Object.entries(optionExplanations).forEach(([optionText, explanation]) => {
-				if (typeof explanation === 'string' && explanation.trim()) {
-					map[optionText] = explanation.trim();
-				}
-			});
-		}
-		const correctOption = options[localized.answerIndex];
-		if (correctOption && typeof localized.explanation === 'string' && localized.explanation.trim() && !map[correctOption]) {
-			map[correctOption] = localized.explanation.trim();
-		}
-	});
-	return map;
-}
-
-let optionRationaleByLanguage = { en: {}, de: {} };
 
 const glossaryCards = glossaryTerms.map((item, index) => ({
 	id: `g${index + 1}`,
@@ -81,36 +36,14 @@ const glossaryCards = glossaryTerms.map((item, index) => ({
 	backDe: item.definitionDe || item.definition
 }));
 
-const glossaryLookup = new Map();
-glossaryTerms.forEach((item) => {
-	glossaryLookup.set(item.term.toLowerCase(), item);
-});
-
 async function ensureQuestionPoolLoaded() {
 	if (quizQuestions.length) return;
 	if (!quizDataPromise) {
 		quizDataPromise = import('../data/quiz-questions.js').then((module) => {
 			quizQuestions = Array.isArray(module.quizQuestions) ? module.quizQuestions : [];
-			questionById.clear();
-			quizQuestions.forEach((question) => {
-				questionById.set(question.id, question);
-			});
-			optionPoolsByLanguage = {
-				en: buildOptionPools(quizQuestions, 'en'),
-				de: buildOptionPools(quizQuestions, 'de')
-			};
-			optionRationaleByLanguage = {
-				en: buildOptionRationaleMap('en'),
-				de: buildOptionRationaleMap('de')
-			};
-			refillQuizDeck();
-			renderQuizTopicFilterOptions();
 			renderStats();
 		}).catch(() => {
 			quizQuestions = [];
-			optionPoolsByLanguage = createEmptyOptionPools();
-			optionRationaleByLanguage = { en: {}, de: {} };
-			renderQuizTopicFilterOptions();
 			renderStats();
 		});
 	}
@@ -136,67 +69,10 @@ const ui = {
 	historyStreak: byId('history-streak'),
 	historyHeatmap: byId('history-heatmap'),
 	historyTopicTrend: byId('history-topic-trend'),
-	quizProgress: byId('quiz-progress'),
-	quizLaunchCategory: byId('quiz-launch-category'),
-	quizTopic: byId('quiz-topic'),
-	quizQuestion: byId('quiz-question'),
-	quizOptions: byId('quiz-options'),
-	quizActions: byId('quiz-actions'),
-	quizFeedback: byId('quiz-feedback'),
-	quizLearnRef: byId('quiz-learn-ref'),
-	quizLearnRefPrefix: byId('quiz-learn-ref-prefix'),
-	quizLearnRefLink: byId('quiz-learn-ref-link'),
-	quizSummary: byId('quiz-summary'),
-	quizSummaryMeta: byId('quiz-summary-meta'),
-	quizSummaryTopics: byId('quiz-summary-topics'),
-	quizNext: byId('quiz-next'),
-	examStart: byId('exam-start'),
-	examTimer: byId('exam-timer'),
-	examStage: byId('exam-stage'),
-	examProgress: byId('exam-progress'),
-	examQuestion: byId('exam-question'),
-	examOptions: byId('exam-options'),
-	examNext: byId('exam-next'),
-	examResult: byId('exam-result'),
-	examReview: byId('exam-review'),
-	flashBox: byId('flashcard-box'),
-	flashTopic: byId('flashcard-topic'),
-	flashFront: byId('flashcard-front'),
-	flashBack: byId('flashcard-back'),
-	flashShow: byId('flashcard-show'),
-	flashHint: byId('flashcard-hint'),
-	flashcardChatSend: byId('flashcard-chat-send'),
-	flashHintText: byId('flashcard-hint-text'),
-	flashGrades: byId('flashcard-grade-actions'),
-	flashAgain: byId('flashcard-again'),
-	flashGood: byId('flashcard-good'),
-	flashEasy: byId('flashcard-easy'),
-	flashMeta: byId('flashcard-meta'),
-	journalList: byId('journal-list'),
-	quizHint: byId('quiz-hint'),
-	quizSkip: byId('quiz-skip'),
-	quizChatSend: byId('quiz-chat-send'),
-	quizHintText: byId('quiz-hint-text'),
-	quizBookmark: byId('quiz-bookmark'),
-	glossarySearch: byId('glossary-search'),
-	glossaryCardCount: byId('glossary-card-count'),
-	glossaryCardFront: byId('glossary-card-front'),
-	glossaryCardBack: byId('glossary-card-back'),
-	glossaryCardShow: byId('glossary-card-show'),
-	glossaryGrades: byId('glossary-grade-actions'),
-	glossaryCardAgain: byId('glossary-card-again'),
-	glossaryCardGood: byId('glossary-card-good'),
-	glossaryCardEasy: byId('glossary-card-easy'),
-	glossaryCardMeta: byId('glossary-card-meta'),
 	resetProgress: byId('reset-progress'),
 	themeToggle: byId('theme-toggle'),
 	languageToggle: byId('language-toggle'),
 	shortcutsPanel: byId('shortcuts-panel'),
-	overlayQuiz: byId('overlay-quiz'),
-	overlayExam: byId('overlay-exam'),
-	overlayFlashcards: byId('overlay-flashcards'),
-	overlayGlossary: byId('overlay-glossary'),
-	overlayJournal: byId('overlay-journal'),
 	overlaySettings: byId('overlay-settings'),
 	overlayWelcome: byId('overlay-welcome'),
 	settingsToggle: byId('settings-toggle'),
@@ -603,22 +479,9 @@ const i18n = {
 let state = createDefaultStudyState();
 let dbPromise;
 let saveTimer;
-let quizDeck = [];
-let quizSession = null;
-let activeQuestion = null;
-let quizLocked = false;
-let lastQuizSelectedIndex = null;
-let exam = null;
-let examInterval;
-let activeCard = null;
-let cardShown = false;
-let flashHintShown = false;
-let activeGlossaryCard = null;
-let glossaryCardShown = false;
 let currentLanguage = 'en';
 let activeOverlay = null;
 let previousFocusElement = null;
-let flashSwipeTimer;
 let toastTimer;
 let aiChatMessages = [];
 let aiChatPending = false;
@@ -631,8 +494,6 @@ const AZURE_RESPONSES_MODEL = DEFAULT_SETTINGS.aiModel;
 const AI_CHAT_MIN_WIDTH = 320;
 const AI_CHAT_MIN_HEIGHT = 280;
 const AI_CHAT_VIEWPORT_MARGIN = 10;
-const QUIZ_TOPIC_FILTER_ALL = 'all';
-const QUIZ_TOPIC_FILTER_WEAKEST = 'weakest';
 const AI_CHAT_ALLOWED_TAGS = new Set([
 	'p', 'br', 'strong', 'em', 'b', 'i', 'u', 'del', 'ul', 'ol', 'li', 'code', 'pre', 'blockquote',
 	'a', 'hr', 'h1', 'h2', 'h3', 'h4', 'table', 'thead', 'tbody', 'tr', 'th', 'td'
@@ -653,18 +514,6 @@ const SESSION_PRESETS = {
 	focus: { labelKey: 'session.goalFocus', targetAnswers: 20, targetAccuracy: 75, durationMinutes: 30 },
 	accuracy: { labelKey: 'session.goalAccuracy', targetAnswers: 15, targetAccuracy: 90, durationMinutes: 25 }
 };
-
-const HINT_STOPWORDS_EN = new Set([
-	'the', 'and', 'for', 'with', 'from', 'that', 'this', 'into', 'your', 'you', 'are', 'can', 'also', 'than',
-	'only', 'more', 'most', 'used', 'using', 'when', 'what', 'where', 'which', 'about', 'core', 'azure', 'service',
-	'model', 'models', 'card', 'cards', 'data', 'text', 'through', 'into', 'each', 'their', 'them', 'they', 'its'
-]);
-const HINT_STOPWORDS_DE = new Set([
-	'der', 'die', 'das', 'den', 'dem', 'des', 'und', 'oder', 'ein', 'eine', 'einer', 'einem', 'eines', 'mit',
-	'für', 'fuer', 'von', 'auf', 'aus', 'bei', 'als', 'auch', 'nur', 'mehr', 'wenn', 'was', 'wie', 'welche',
-	'welcher', 'welches', 'diese', 'dieser', 'dieses', 'dass', 'ist', 'sind', 'wird', 'werden', 'kann', 'können',
-	'koennen', 'durch', 'über', 'ueber', 'dein', 'deine', 'deiner', 'deinem', 'deines', 'karte', 'karten'
-]);
 
 function resolveLanguage(language) {
 	return language === 'de' ? 'de' : 'en';
@@ -697,11 +546,6 @@ function t(key, vars = {}) {
 function formatDate(timestamp) {
 	const locale = currentLanguage === 'de' ? 'de-DE' : 'en-US';
 	return new Intl.DateTimeFormat(locale, { dateStyle: 'short', timeStyle: 'short' }).format(new Date(timestamp));
-}
-
-function getTypeLabel(type) {
-	if (type === 'true-false') return t('type.trueFalse');
-	return t('type.multipleChoice');
 }
 
 function replayUiAnimation(node, className, durationMs = 420) {
@@ -869,10 +713,6 @@ function openOverlay(overlayElement) {
 
 function closeOverlay(overlayElement) {
 	if (!overlayElement || overlayElement.hidden) return;
-	if (overlayElement === ui.overlayExam && exam) {
-		if (!confirm(t('exam.leaveConfirm'))) return;
-		finishExam({ forceFail: true, aborted: true });
-	}
 	if (overlayElement === ui.overlaySettings) {
 		const savedPalette = resolveAccentPalette(state.settings.accentPalette);
 		applyAccentPalette(savedPalette);
@@ -985,7 +825,6 @@ function applyLanguage(language, { persist = true } = {}) {
 
 	applyLanguageToStaticUi();
 	applyLanguageToRoadmap();
-	renderQuizTopicFilterOptions();
 
 	if (ui.languageToggle) {
 		ui.languageToggle.textContent = currentLanguage === 'en' ? 'DE' : 'EN';
@@ -994,146 +833,14 @@ function applyLanguage(language, { persist = true } = {}) {
 
 	applyTheme(document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light');
 
-	if (activeQuestion) {
-		if (!quizLocked) {
-			showQuizQuestion(activeQuestion.id);
-		} else {
-			const baseQuestion = questionById.get(activeQuestion.id);
-			const localizedBase = baseQuestion ? localizeQuestionData(baseQuestion) : null;
-				if (localizedBase) {
-					activeQuestion.prompt = localizedBase.prompt;
-					activeQuestion.hint = localizedBase.hint;
-					activeQuestion.explanation = localizedBase.explanation;
-					activeQuestion.learnRef = localizedBase.learnRef;
-					activeQuestion.optionExplanationsByOption = {
-						...(activeQuestion.optionExplanationsByOption || {}),
-						...buildDisplayedOptionExplanationMap(localizedBase, activeQuestion.options)
-					};
-				}
-			activeQuestion.typeLabel = getTypeLabel(getQuestionType(activeQuestion));
-			ui.quizTopic.textContent = `${activeQuestion.topic} · ${activeQuestion.typeLabel}`;
-			ui.quizQuestion.textContent = activeQuestion.prompt;
-			const poolHint =
-				activeQuestion.type === 'single-choice'
-					? t('quiz.pool', { count: activeQuestion.answerPoolCount })
-					: '';
-			const answeredCount = quizSession ? quizSession.answered : state.quiz.answered;
-			const correctCount = quizSession ? quizSession.correct : state.quiz.correct;
-			ui.quizProgress.textContent = t('quiz.progress', {
-				answered: answeredCount,
-				correct: correctCount,
-				poolHint
-			});
-			if (!ui.quizHintText.hidden) ui.quizHintText.textContent = activeQuestion.hint || activeQuestion.explanation;
-			if (ui.quizFeedback.textContent) {
-				const isCorrect = ui.quizFeedback.classList.contains('is-correct');
-				ui.quizFeedback.textContent = `${isCorrect ? t('quiz.feedback.correct') : t('quiz.feedback.wrong')} ${activeQuestion.explanation}`;
-				renderQuizLearnRef(true);
-			} else {
-				renderQuizLearnRef(false);
-			}
-			if (lastQuizSelectedIndex !== null) {
-				[...ui.quizOptions.querySelectorAll('button')].forEach((button) => {
-					const index = Number(button.dataset.index);
-					renderQuizOptionOutcome(button, index, lastQuizSelectedIndex);
-				});
-			}
-		}
-	}
-	if (quizSession?.completed) {
-		renderQuizCompletionSummary();
-	}
-
-	if (exam && Array.isArray(exam.questions)) {
-		exam.questions.forEach((question) => {
-			question.typeLabel = getTypeLabel(getQuestionType(question));
-		});
-	}
-
 	renderStats();
-	renderJournal();
-	if (exam) renderExamQuestion();
-	if (activeCard) renderCard();
-	if (activeGlossaryCard) renderGlossaryCard();
 	syncAiChatVisibility();
 	renderAiChatMessages();
+	window.dispatchEvent(new CustomEvent('language-changed', { detail: { language: currentLanguage } }));
 }
 
 function toggleLanguage() {
 	applyLanguage(currentLanguage === 'en' ? 'de' : 'en');
-}
-
-/* ---- Question helpers ---- */
-
-function localizeQuestionData(question, language = currentLanguage) {
-	return localizeQuestion(question, language);
-}
-
-function buildDisplayedOptionExplanationMap(localizedQuestion, runtimeOptions) {
-	const map = {};
-	if (!localizedQuestion || !Array.isArray(runtimeOptions)) return map;
-	const { optionExplanations } = localizedQuestion;
-	const baseOptions = Array.isArray(localizedQuestion.options) ? localizedQuestion.options : [];
-
-	if (Array.isArray(optionExplanations)) {
-		optionExplanations.forEach((explanation, index) => {
-			const optionText = baseOptions[index];
-			if (typeof explanation === 'string' && explanation.trim() && optionText && runtimeOptions.includes(optionText)) {
-				map[optionText] = explanation.trim();
-			}
-		});
-		return map;
-	}
-
-	if (optionExplanations && typeof optionExplanations === 'object') {
-		Object.entries(optionExplanations).forEach(([optionText, explanation]) => {
-			if (runtimeOptions.includes(optionText) && typeof explanation === 'string' && explanation.trim()) {
-				map[optionText] = explanation.trim();
-			}
-		});
-	}
-
-	return map;
-}
-
-function createRuntimeQuestion(baseQuestion) {
-	const runtimeQuestion = buildRuntimeQuestion(baseQuestion, {
-		language: currentLanguage,
-		optionPoolsByLanguage,
-		getTypeLabel,
-		trueLabel: currentLanguage === 'de' ? 'Wahr' : 'True',
-		falseLabel: currentLanguage === 'de' ? 'Falsch' : 'False'
-	});
-	const localizedBase = localizeQuestionData(baseQuestion);
-	runtimeQuestion.optionExplanationsByOption = {
-		...(runtimeQuestion.optionExplanationsByOption || {}),
-		...buildDisplayedOptionExplanationMap(localizedBase, runtimeQuestion.options)
-	};
-	return runtimeQuestion;
-}
-
-function extractHintKeywords(text, language = currentLanguage) {
-	if (!text) return [];
-	const stopwords = language === 'de' ? HINT_STOPWORDS_DE : HINT_STOPWORDS_EN;
-	const tokens = text
-		.toLowerCase()
-		.replace(/[^\p{L}\p{N}\s-]/gu, ' ')
-		.split(/\s+/)
-		.filter((token) => token.length >= 4 && !stopwords.has(token));
-	const uniqueTokens = [];
-	for (const token of tokens) {
-		if (uniqueTokens.includes(token)) continue;
-		uniqueTokens.push(token);
-		if (uniqueTokens.length >= 3) break;
-	}
-	return uniqueTokens;
-}
-
-function buildFlashcardHint(card) {
-	const back = currentLanguage === 'de' && card.backDe ? card.backDe : card.back;
-	const keywords = extractHintKeywords(back);
-	if (!keywords.length) return t('flashcards.hintFallback');
-	return t('flashcards.hintPrefix', { keywords: keywords.join(', ') });
 }
 
 /* ---- Persistence ---- */
@@ -1207,7 +914,6 @@ function hydrate(saved) {
 		state.historyDaily = {};
 	}
 	applyAccentPalette(state.settings.accentPalette);
-	renderQuizTopicFilterOptions();
 }
 
 /* ---- Settings ---- */
@@ -1510,8 +1216,6 @@ function createAiChatPendingElement() {
 function syncAiChatBusyState() {
 	if (ui.aiChatSend) ui.aiChatSend.disabled = aiChatPending;
 	if (ui.aiChatInput) ui.aiChatInput.disabled = aiChatPending;
-	if (ui.quizChatSend) ui.quizChatSend.disabled = aiChatPending || !activeQuestion;
-	if (ui.flashcardChatSend) ui.flashcardChatSend.disabled = aiChatPending || !activeCard;
 	if (ui.aiChatPanel) ui.aiChatPanel.classList.toggle('is-busy', aiChatPending);
 }
 
@@ -1737,17 +1441,7 @@ function renderAiChatMessages() {
 
 function syncAiChatVisibility() {
 	if (!ui.aiChatWidget) return;
-	const disabledByExam = Boolean(exam);
-	ui.aiChatWidget.hidden = disabledByExam;
-
-	if (disabledByExam) {
-		ui.aiChatPanel.hidden = true;
-		ui.aiChatWidget.dataset.open = 'false';
-		setAiChatError('');
-		syncAiChatBusyState();
-		return;
-	}
-
+	ui.aiChatWidget.hidden = false;
 	ui.aiChatWidget.dataset.open = ui.aiChatPanel && !ui.aiChatPanel.hidden ? 'true' : 'false';
 	renderAiChatMessages();
 }
@@ -1759,10 +1453,6 @@ function toggleAiChatPanel(forceOpen) {
 	ui.aiChatPanel.hidden = !shouldOpen;
 	ui.aiChatWidget.dataset.open = shouldOpen ? 'true' : 'false';
 	if (shouldOpen) {
-		if (exam) {
-			setAiChatError(t('chat.errorExam'));
-			return;
-		}
 		if (!ui.aiChatPanel.dataset.userSized) {
 			restoreAiChatPanelLayout();
 		}
@@ -1783,43 +1473,6 @@ function getActiveStudyContext() {
 	const lines = [];
 	lines.push(`Language: ${currentLanguage}`);
 	lines.push(`Quiz stats: answered=${state.quiz.answered}, correct=${state.quiz.correct}`);
-
-	if (activeOverlay === ui.overlayQuiz && activeQuestion) {
-		lines.push('Mode: quiz');
-		lines.push(`Topic: ${activeQuestion.topic}`);
-		lines.push(`Question: ${activeQuestion.prompt}`);
-		lines.push(`Options: ${activeQuestion.options.map((option, index) => `${index + 1}. ${option}`).join(' | ')}`);
-		lines.push(`Current explanation: ${activeQuestion.explanation}`);
-	}
-
-	if (activeOverlay === ui.overlayExam && exam) {
-		const question = exam.questions[exam.index];
-		if (question) {
-			lines.push('Mode: exam');
-			lines.push(`Question ${exam.index + 1}/${exam.questions.length}`);
-			lines.push(`Topic: ${question.topic}`);
-			lines.push(`Question: ${question.prompt}`);
-			lines.push(`Options: ${question.options.map((option, index) => `${index + 1}. ${option}`).join(' | ')}`);
-		}
-	}
-
-	if (activeOverlay === ui.overlayFlashcards && activeCard) {
-		const front = currentLanguage === 'de' && activeCard.frontDe ? activeCard.frontDe : activeCard.front;
-		const back = currentLanguage === 'de' && activeCard.backDe ? activeCard.backDe : activeCard.back;
-		lines.push('Mode: flashcards');
-		lines.push(`Topic: ${activeCard.topic}`);
-		lines.push(`Card front: ${front}`);
-		lines.push(`Card back: ${back}`);
-	}
-
-	if (activeOverlay === ui.overlayGlossary && activeGlossaryCard) {
-		const front = currentLanguage === 'de' && activeGlossaryCard.frontDe ? activeGlossaryCard.frontDe : activeGlossaryCard.front;
-		const back = currentLanguage === 'de' && activeGlossaryCard.backDe ? activeGlossaryCard.backDe : activeGlossaryCard.back;
-		lines.push('Mode: glossary');
-		lines.push(`Term: ${front}`);
-		lines.push(`Definition: ${back}`);
-	}
-
 	return lines.join('\n');
 }
 
@@ -1889,10 +1542,6 @@ async function requestAiChatAnswer() {
 
 async function sendAiChatMessage(rawMessage) {
 	if (aiChatPending) return;
-	if (exam) {
-		setAiChatError(t('chat.errorExam'));
-		return;
-	}
 
 	const content = String(rawMessage || '').trim();
 	if (!content) return;
@@ -1931,65 +1580,6 @@ async function sendAiChatMessage(rawMessage) {
 		aiChatPending = false;
 		renderAiChatMessages();
 	}
-}
-
-function buildQuizItemChatPrompt() {
-	if (!activeQuestion) return '';
-	const isDe = currentLanguage === 'de';
-	const lines = [];
-	lines.push(
-		isDe
-			? 'Hilf mir bei dieser Quizfrage. Erkläre die richtige Antwort und warum die anderen Optionen nicht passen.'
-			: 'Help me with this quiz item. Explain the correct answer and why the other options are wrong.'
-	);
-	lines.push('');
-	lines.push(`${isDe ? 'Thema' : 'Topic'}: ${activeQuestion.topic}`);
-	lines.push(`${isDe ? 'Frage' : 'Question'}: ${activeQuestion.prompt}`);
-	lines.push(`${isDe ? 'Optionen' : 'Options'}:`);
-	activeQuestion.options.forEach((option, index) => {
-		lines.push(`${index + 1}. ${option}`);
-	});
-	return lines.join('\n');
-}
-
-function buildFlashcardItemChatPrompt() {
-	if (!activeCard) return '';
-	const isDe = currentLanguage === 'de';
-	const front = currentLanguage === 'de' && activeCard.frontDe ? activeCard.frontDe : activeCard.front;
-	const back = currentLanguage === 'de' && activeCard.backDe ? activeCard.backDe : activeCard.back;
-	return [
-		isDe
-			? 'Hilf mir bei dieser Flashcard. Erkläre das Thema einfach und gib mir ein kurzes Lernbeispiel.'
-			: 'Help me with this flashcard. Explain the topic simply and give me one short study example.',
-		'',
-		`${isDe ? 'Thema' : 'Topic'}: ${activeCard.topic}`,
-		`${isDe ? 'Vorderseite' : 'Front'}: ${front}`,
-		`${isDe ? 'Rückseite' : 'Back'}: ${back}`
-	].join('\n');
-}
-
-async function sendQuizItemToAiChat() {
-	if (!activeQuestion) return;
-	if (!isAiChatConfigured()) {
-		const message = t('chat.errorConfig');
-		setAiChatError(message);
-		showToast(message, { tone: 'error' });
-		return;
-	}
-	toggleAiChatPanel(true);
-	await sendAiChatMessage(buildQuizItemChatPrompt());
-}
-
-async function sendFlashcardItemToAiChat() {
-	if (!activeCard) return;
-	if (!isAiChatConfigured()) {
-		const message = t('chat.errorConfig');
-		setAiChatError(message);
-		showToast(message, { tone: 'error' });
-		return;
-	}
-	toggleAiChatPanel(true);
-	await sendAiChatMessage(buildFlashcardItemChatPrompt());
 }
 
 /* ---- Stats & metrics ---- */
@@ -2333,891 +1923,6 @@ function renderStats() {
 	};
 }
 
-/* ---- Quiz ---- */
-
-function refillQuizDeck(source = quizQuestions) {
-	quizDeck = shuffle(Array.isArray(source) ? [...source] : []);
-}
-
-function getWeakestTopicRow() {
-	const rows = getTopicMasteryRows(1);
-	return rows.length ? rows[0] : null;
-}
-
-function getQuizCategoryValue() {
-	if (!ui.quizLaunchCategory) return QUIZ_TOPIC_FILTER_ALL;
-	const value = String(ui.quizLaunchCategory.value || QUIZ_TOPIC_FILTER_ALL);
-	if (value === QUIZ_TOPIC_FILTER_ALL || value === QUIZ_TOPIC_FILTER_WEAKEST) return value;
-	if (quizQuestions.some((question) => question.topic === value)) return value;
-	return QUIZ_TOPIC_FILTER_ALL;
-}
-
-function getQuizCategoryScope(value = getQuizCategoryValue()) {
-	if (value === QUIZ_TOPIC_FILTER_ALL) {
-		return { effectiveTopic: '', questions: [...quizQuestions] };
-	}
-	if (value === QUIZ_TOPIC_FILTER_WEAKEST) {
-		const weakestTopic = getWeakestTopicRow()?.topic || '';
-		const weakestQuestions = weakestTopic
-			? quizQuestions.filter((question) => question.topic === weakestTopic)
-			: [...quizQuestions];
-		return { effectiveTopic: weakestTopic, questions: weakestQuestions };
-	}
-	return {
-		effectiveTopic: value,
-		questions: quizQuestions.filter((question) => question.topic === value)
-	};
-}
-
-function renderQuizTopicFilterOptions() {
-	if (!ui.quizLaunchCategory) return;
-	const previous = getQuizCategoryValue();
-	const locale = currentLanguage === 'de' ? 'de' : 'en';
-	const topics = [...new Set(quizQuestions.map((question) => String(question.topic || '').trim()).filter(Boolean))]
-		.sort((left, right) => left.localeCompare(right, locale));
-	const weakest = getWeakestTopicRow();
-	const weakestLabel = weakest
-		? t('quiz.focusWeakestWithTopic', { topic: weakest.topic, accuracy: weakest.accuracy })
-		: t('quiz.focusWeakest');
-
-	ui.quizLaunchCategory.innerHTML = '';
-	const optionRows = [
-		{ value: QUIZ_TOPIC_FILTER_ALL, label: t('quiz.focusAll') },
-		{ value: QUIZ_TOPIC_FILTER_WEAKEST, label: weakestLabel },
-		...topics.map((topic) => ({ value: topic, label: topic }))
-	];
-	optionRows.forEach((row) => {
-		const option = document.createElement('option');
-		option.value = row.value;
-		option.textContent = row.label;
-		ui.quizLaunchCategory.append(option);
-	});
-	ui.quizLaunchCategory.value = optionRows.some((row) => row.value === previous)
-		? previous
-		: QUIZ_TOPIC_FILTER_ALL;
-}
-
-function pickQuestionFromDeck(topic = '') {
-	if (!quizDeck.length) refillQuizDeck();
-	if (!quizDeck.length) return null;
-	if (!topic) return quizDeck.pop();
-
-	for (let index = quizDeck.length - 1; index >= 0; index -= 1) {
-		if (quizDeck[index]?.topic === topic) {
-			const [question] = quizDeck.splice(index, 1);
-			return question;
-		}
-	}
-
-	refillQuizDeck();
-	for (let index = quizDeck.length - 1; index >= 0; index -= 1) {
-		if (quizDeck[index]?.topic === topic) {
-			const [question] = quizDeck.splice(index, 1);
-			return question;
-		}
-	}
-
-	return quizDeck.pop();
-}
-
-function formatOptionLabel(optionIndex, optionText) {
-	return `${optionIndex + 1}. ${optionText}`;
-}
-
-function getEnabledOptionButtons(container) {
-	if (!container) return [];
-	return [...container.querySelectorAll('button.option')].filter((button) => !button.disabled);
-}
-
-function moveOptionFocus(container, direction = 1) {
-	const buttons = getEnabledOptionButtons(container);
-	if (!buttons.length) return false;
-
-	const current = document.activeElement;
-	let nextIndex = buttons.indexOf(current);
-	if (nextIndex === -1) {
-		nextIndex = direction >= 0 ? 0 : buttons.length - 1;
-	} else {
-		nextIndex = (nextIndex + direction + buttons.length) % buttons.length;
-	}
-
-	buttons[nextIndex].focus({ preventScroll: true });
-	return true;
-}
-
-function triggerFocusedOption(container) {
-	const current = document.activeElement;
-	if (
-		current instanceof HTMLButtonElement &&
-		container?.contains(current) &&
-		current.classList.contains('option') &&
-		!current.disabled
-	) {
-		current.click();
-		return true;
-	}
-	return false;
-}
-
-function renderQuizLearnRef(show = false) {
-	if (!ui.quizLearnRef || !ui.quizLearnRefPrefix || !ui.quizLearnRefLink) return;
-	if (!show || !activeQuestion?.learnRef?.url) {
-		ui.quizLearnRef.hidden = true;
-		ui.quizLearnRefLink.removeAttribute('href');
-		ui.quizLearnRefLink.textContent = '';
-		ui.quizLearnRefPrefix.textContent = '';
-		return;
-	}
-	const refTitle = activeQuestion.learnRef.title || activeQuestion.learnRef.url;
-	ui.quizLearnRefPrefix.textContent = `${t('quiz.learnRefPrefix')} `;
-	ui.quizLearnRefLink.href = activeQuestion.learnRef.url;
-	ui.quizLearnRefLink.textContent = refTitle;
-	ui.quizLearnRef.hidden = false;
-}
-
-function buildQuizOptionReason(optionIndex) {
-	if (!activeQuestion) return '';
-	const optionText = activeQuestion.options[optionIndex] || '';
-	const explicitReason = activeQuestion.optionExplanationsByOption?.[optionText];
-	const globalReason = optionRationaleByLanguage[currentLanguage]?.[optionText];
-	const optionReason = explicitReason || globalReason || activeQuestion.explanation;
-	if (optionIndex === activeQuestion.correctIndex) {
-		return t('quiz.optionReasonCorrect', {
-			answer: optionText,
-			explanation: optionReason
-		});
-	}
-	return t('quiz.optionReasonWrong', {
-		answer: optionText,
-		correct: activeQuestion.correctText,
-		explanation: optionReason
-	});
-}
-
-function renderQuizOptionOutcome(button, optionIndex, selectedIndex) {
-	if (!activeQuestion) return;
-	const label = button.querySelector('.option-label');
-	const reason = button.querySelector('.option-reason');
-	const isCorrectOption = optionIndex === activeQuestion.correctIndex;
-	const isWrongSelection = selectedIndex !== activeQuestion.correctIndex && optionIndex === selectedIndex;
-	const marker = isCorrectOption ? '\u2713 ' : isWrongSelection ? '\u2717 ' : '';
-	if (label) {
-		label.textContent = `${marker}${formatOptionLabel(optionIndex, activeQuestion.options[optionIndex])}`;
-	}
-	if (reason) {
-		reason.textContent = buildQuizOptionReason(optionIndex);
-		reason.hidden = false;
-	}
-}
-
-function setQuizSummaryVisibility(visible) {
-	const questionRow = ui.quizTopic?.closest('.quiz-question-row');
-	if (questionRow) questionRow.hidden = visible;
-	if (ui.quizQuestion) ui.quizQuestion.hidden = visible;
-	if (ui.quizOptions) ui.quizOptions.hidden = visible;
-	if (ui.quizActions) ui.quizActions.hidden = visible;
-	if (ui.quizFeedback) ui.quizFeedback.hidden = visible;
-	if (ui.quizSummary) ui.quizSummary.hidden = !visible;
-	if (visible) {
-		if (ui.quizHintText) ui.quizHintText.hidden = true;
-		if (ui.quizLearnRef) ui.quizLearnRef.hidden = true;
-	}
-}
-
-function startQuizSession() {
-	if (!quizQuestions.length) {
-		quizSession = null;
-		quizDeck = [];
-		return;
-	}
-	const category = getQuizCategoryValue();
-	const scope = getQuizCategoryScope(category);
-	const scopedQuestions = scope.questions.length ? scope.questions : [...quizQuestions];
-	refillQuizDeck(scopedQuestions);
-	quizSession = {
-		category,
-		effectiveTopic: scope.effectiveTopic,
-		total: scopedQuestions.length,
-		answered: 0,
-		correct: 0,
-		byTopic: {},
-		completed: false
-	};
-}
-
-function renderQuizCompletionSummary() {
-	if (!ui.quizSummary || !ui.quizSummaryMeta || !ui.quizSummaryTopics || !ui.quizNext) return;
-	const answered = Math.max(0, Number(quizSession?.answered) || 0);
-	const correct = Math.max(0, Number(quizSession?.correct) || 0);
-	const accuracy = answered ? Math.round((correct / answered) * 100) : 0;
-	ui.quizSummaryMeta.textContent = t('quiz.summaryMeta', {
-		answered,
-		correct,
-		accuracy
-	});
-	ui.quizSummaryTopics.innerHTML = '';
-	const topicRows = Object.entries(quizSession?.byTopic || {})
-		.map(([topic, values]) => {
-			const total = Math.max(0, Number(values.total) || 0);
-			const topicCorrect = Math.max(0, Number(values.correct) || 0);
-			const topicAccuracy = total ? Math.round((topicCorrect / total) * 100) : 0;
-			return { topic, total, correct: topicCorrect, accuracy: topicAccuracy };
-		})
-		.sort((left, right) => right.total - left.total || right.accuracy - left.accuracy);
-	topicRows.forEach((row) => {
-		const line = document.createElement('p');
-		line.className = 'topic-trend-row';
-		line.textContent = t('quiz.summaryTopicLine', {
-			topic: row.topic,
-			correct: row.correct,
-			total: row.total,
-			accuracy: row.accuracy
-		});
-		ui.quizSummaryTopics.append(line);
-	});
-
-	setQuizSummaryVisibility(true);
-	ui.quizNext.disabled = false;
-	ui.quizNext.dataset.i18n = 'quiz.restart';
-	ui.quizNext.textContent = t('quiz.restart');
-	quizSession = quizSession
-		? { ...quizSession, completed: true }
-		: null;
-	activeQuestion = null;
-	quizLocked = true;
-	lastQuizSelectedIndex = null;
-}
-
-function showQuizQuestion(forcedQuestionId = null) {
-	if (!quizQuestions.length) return;
-	let baseQuestion = null;
-	if (forcedQuestionId && questionById.has(forcedQuestionId)) {
-		baseQuestion = questionById.get(forcedQuestionId);
-		quizSession = null;
-	} else {
-		if (!quizSession || quizSession.completed) {
-			startQuizSession();
-		}
-		if (!quizDeck.length) {
-			renderQuizCompletionSummary();
-			return;
-		}
-		baseQuestion = pickQuestionFromDeck();
-	}
-	if (!baseQuestion) return;
-
-	activeQuestion = createRuntimeQuestion(baseQuestion);
-	quizLocked = false;
-	lastQuizSelectedIndex = null;
-	setQuizSummaryVisibility(false);
-	ui.quizTopic.textContent = `${activeQuestion.topic} · ${activeQuestion.typeLabel}`;
-	ui.quizQuestion.textContent = activeQuestion.prompt;
-	ui.quizNext.dataset.i18n = 'quiz.nextQuestion';
-	ui.quizNext.textContent = t('quiz.nextQuestion');
-	const poolHint =
-		activeQuestion.type === 'single-choice'
-			? t('quiz.pool', { count: activeQuestion.answerPoolCount })
-			: '';
-	const answeredCount = quizSession ? quizSession.answered : state.quiz.answered;
-	const correctCount = quizSession ? quizSession.correct : state.quiz.correct;
-	ui.quizProgress.textContent = t('quiz.progress', {
-		answered: answeredCount,
-		correct: correctCount,
-		poolHint
-	});
-	ui.quizFeedback.textContent = '';
-	ui.quizFeedback.className = 'feedback';
-	renderQuizLearnRef(false);
-	ui.quizHintText.textContent = '';
-	ui.quizHintText.hidden = true;
-	ui.quizHint.hidden = false;
-	ui.quizSkip.hidden = false;
-	ui.quizOptions.innerHTML = '';
-	ui.quizNext.disabled = true;
-	if (ui.quizChatSend) ui.quizChatSend.disabled = aiChatPending;
-	updateBookmarkIcon();
-
-	activeQuestion.options.forEach((option, optionIndex) => {
-		const button = document.createElement('button');
-		button.type = 'button';
-		button.className = 'option';
-		button.dataset.index = String(optionIndex);
-		const label = document.createElement('span');
-		label.className = 'option-label';
-		label.textContent = formatOptionLabel(optionIndex, option);
-		const reason = document.createElement('span');
-		reason.className = 'option-reason';
-		reason.hidden = true;
-		button.append(label, reason);
-		button.onclick = () => submitQuizAnswer(optionIndex);
-		ui.quizOptions.append(button);
-	});
-	replayUiAnimation(ui.quizTopic, 'ui-motion-soft', 240);
-	replayUiAnimation(ui.quizQuestion, 'ui-motion-in', 320);
-	replayUiAnimation(ui.quizOptions, 'ui-motion-list', 420);
-	replayUiAnimation(ui.quizProgress, 'ui-motion-soft', 240);
-	syncAiChatBusyState();
-}
-
-function updateBookmarkIcon() {
-	if (!activeQuestion || !ui.quizBookmark) return;
-	const isSaved = Boolean(state.savedQuestions[activeQuestion.id]);
-	ui.quizBookmark.classList.toggle('is-saved', isSaved);
-	ui.quizBookmark.innerHTML = isSaved ? '&#9829;' : '&#9825;';
-}
-
-function toggleBookmark() {
-	if (!activeQuestion) return;
-	if (state.savedQuestions[activeQuestion.id]) {
-		delete state.savedQuestions[activeQuestion.id];
-	} else {
-		state.savedQuestions[activeQuestion.id] = { savedAt: Date.now() };
-	}
-	updateBookmarkIcon();
-	void saveState();
-}
-
-function getGlossaryTooltip(optionText) {
-	const match = glossaryLookup.get(optionText.toLowerCase());
-	if (!match) return null;
-	return currentLanguage === 'de' && match.definitionDe ? match.definitionDe : match.definition;
-}
-
-function submitQuizAnswer(selectedIndex) {
-	if (quizLocked || !activeQuestion) return;
-	quizLocked = true;
-	lastQuizSelectedIndex = selectedIndex;
-
-	const isCorrect = selectedIndex === activeQuestion.correctIndex;
-	const topicStats = state.quiz.byTopic[activeQuestion.topic] || { total: 0, correct: 0 };
-	state.quiz.answered += 1;
-	topicStats.total += 1;
-	if (isCorrect) {
-		state.quiz.correct += 1;
-		topicStats.correct += 1;
-		const questionId = String(activeQuestion.id || '').trim();
-		if (questionId) {
-			if (!state.quiz.correctByQuestion || typeof state.quiz.correctByQuestion !== 'object') {
-				state.quiz.correctByQuestion = {};
-			}
-			const currentHits = Number(state.quiz.correctByQuestion[questionId]) || 0;
-			state.quiz.correctByQuestion[questionId] = currentHits + 1;
-		}
-	} else {
-		const wrong = state.wrongJournal[activeQuestion.id] || { count: 0, lastWrongAt: 0 };
-		wrong.count += 1;
-		wrong.lastWrongAt = Date.now();
-		state.wrongJournal[activeQuestion.id] = wrong;
-	}
-	state.quiz.byTopic[activeQuestion.topic] = topicStats;
-	if (quizSession && !quizSession.completed) {
-		const sessionTopic = quizSession.byTopic[activeQuestion.topic] || { total: 0, correct: 0 };
-		quizSession.answered += 1;
-		sessionTopic.total += 1;
-		if (isCorrect) {
-			quizSession.correct += 1;
-			sessionTopic.correct += 1;
-		}
-		quizSession.byTopic[activeQuestion.topic] = sessionTopic;
-	}
-	trackDailyHistory({ answered: 1, correct: isCorrect ? 1 : 0 });
-	renderQuizTopicFilterOptions();
-
-	[...ui.quizOptions.querySelectorAll('button')].forEach((button) => {
-		const index = Number(button.dataset.index);
-		const originalText = activeQuestion.options[index];
-		button.disabled = true;
-		if (index === activeQuestion.correctIndex) {
-			button.classList.add('is-correct');
-		}
-		if (!isCorrect && index === selectedIndex) {
-			button.classList.add('is-wrong');
-		}
-		renderQuizOptionOutcome(button, index, selectedIndex);
-		const tooltip = getGlossaryTooltip(originalText);
-		if (tooltip) {
-			button.classList.add('has-tooltip');
-			button.dataset.tooltip = tooltip;
-		}
-	});
-
-	ui.quizHint.hidden = true;
-	ui.quizSkip.hidden = true;
-	ui.quizFeedback.classList.add(isCorrect ? 'is-correct' : 'is-wrong');
-	ui.quizFeedback.textContent = `${isCorrect ? t('quiz.feedback.correct') : t('quiz.feedback.wrong')} ${activeQuestion.explanation}`;
-	replayUiAnimation(ui.quizFeedback, isCorrect ? 'ui-motion-success' : 'ui-motion-warn', 420);
-	renderQuizLearnRef(true);
-	ui.quizNext.disabled = false;
-	replayUiAnimation(ui.quizNext, 'ui-motion-kpi', 300);
-	void saveState();
-	renderStats();
-	renderJournal();
-	if (quizSession && quizSession.answered >= quizSession.total) {
-		renderQuizCompletionSummary();
-		ui.quizNext.focus();
-		return;
-	}
-	ui.quizNext.focus();
-}
-
-/* ---- Exam ---- */
-
-function pickExamQuestions(count) {
-	const grouped = quizQuestions.reduce((acc, question) => {
-		if (!acc[question.topic]) acc[question.topic] = [];
-		acc[question.topic].push(question);
-		return acc;
-	}, {});
-
-	const selected = [];
-	const usedIds = new Set();
-	for (const topic of shuffle(Object.keys(grouped))) {
-		const candidate = shuffle(grouped[topic])[0];
-		if (!candidate || usedIds.has(candidate.id)) continue;
-		selected.push(candidate);
-		usedIds.add(candidate.id);
-		if (selected.length >= count) return selected;
-	}
-
-	for (const candidate of shuffle(quizQuestions)) {
-		if (selected.length >= count) break;
-		if (usedIds.has(candidate.id)) continue;
-		selected.push(candidate);
-		usedIds.add(candidate.id);
-	}
-
-	return selected;
-}
-
-function examClockText() {
-	if (!exam) return '20:00';
-	const remaining = Math.max(0, Math.floor((exam.endsAt - Date.now()) / 1000));
-	const mm = String(Math.floor(remaining / 60)).padStart(2, '0');
-	const ss = String(remaining % 60).padStart(2, '0');
-	return `${mm}:${ss}`;
-}
-
-function renderExamQuestion() {
-	const question = exam.questions[exam.index];
-	ui.examProgress.textContent = t('exam.questionProgress', {
-		current: exam.index + 1,
-		total: exam.questions.length,
-		typeLabel: question.typeLabel
-	});
-	ui.examQuestion.textContent = question.prompt;
-	ui.examOptions.innerHTML = '';
-
-	question.options.forEach((option, optionIndex) => {
-		const button = document.createElement('button');
-		button.type = 'button';
-		button.className = 'option';
-		if (exam.answers[exam.index] === optionIndex) button.classList.add('is-selected');
-		button.textContent = formatOptionLabel(optionIndex, option);
-		button.onclick = () => {
-			exam.answers[exam.index] = optionIndex;
-			renderExamQuestion();
-		};
-		ui.examOptions.append(button);
-	});
-
-	replayUiAnimation(ui.examProgress, 'ui-motion-soft', 240);
-	replayUiAnimation(ui.examQuestion, 'ui-motion-in', 320);
-	replayUiAnimation(ui.examOptions, 'ui-motion-list', 420);
-
-	ui.examNext.disabled = exam.answers[exam.index] === null;
-	ui.examNext.textContent = exam.index === exam.questions.length - 1 ? t('exam.finish') : t('exam.nextQuestion');
-}
-
-function renderExamSummary({ score, correctCount, total, topicStats, aborted = false }) {
-	ui.examResult.innerHTML = '';
-	const scoreLine = document.createElement('p');
-	scoreLine.textContent = t('exam.result', {
-		score,
-		correct: correctCount,
-		total
-	});
-	ui.examResult.append(scoreLine);
-
-	if (aborted) {
-		const abortedLine = document.createElement('p');
-		abortedLine.className = 'meta';
-		abortedLine.textContent = t('exam.abortedPenalty');
-		ui.examResult.append(abortedLine);
-	}
-
-	const topicTitle = document.createElement('p');
-	topicTitle.className = 'meta';
-	topicTitle.textContent = t('exam.topicBreakdown');
-	ui.examResult.append(topicTitle);
-
-	const topicList = document.createElement('ul');
-	Object.entries(topicStats)
-		.sort(([left], [right]) => left.localeCompare(right))
-		.forEach(([topic, values]) => {
-			const item = document.createElement('li');
-			item.textContent = `${topic}: ${values.correct}/${values.total}`;
-			topicList.append(item);
-		});
-	ui.examResult.append(topicList);
-
-	const historyLine = document.createElement('p');
-	historyLine.className = 'meta';
-	historyLine.textContent = t('exam.bestSaved', {
-		best: state.examBest,
-		savedAt: formatDate(Date.now())
-	});
-	ui.examResult.append(historyLine);
-}
-
-function renderExamReview(reviewRows) {
-	ui.examReview.innerHTML = '';
-	if (!reviewRows.length) return;
-
-	const title = document.createElement('h4');
-	title.textContent = t('exam.reviewTitle');
-	ui.examReview.append(title);
-
-	reviewRows.forEach((row, index) => {
-		const card = document.createElement('article');
-		card.className = `review-item ${row.isCorrect ? 'is-correct' : 'is-wrong'}`;
-
-		const header = document.createElement('div');
-		header.className = 'review-head';
-		const label = document.createElement('p');
-		label.className = 'meta';
-		label.textContent = t('exam.reviewLabel', {
-			index: index + 1,
-			topic: row.question.topic,
-			typeLabel: row.question.typeLabel
-		});
-		const badge = document.createElement('span');
-		badge.className = `review-badge ${row.isCorrect ? 'ok' : 'bad'}`;
-		badge.textContent = row.isCorrect ? t('exam.reviewBadgeCorrect') : t('exam.reviewBadgeWrong');
-		header.append(label, badge);
-
-		const prompt = document.createElement('h5');
-		prompt.textContent = row.question.prompt;
-
-		const selectedLine = document.createElement('p');
-		selectedLine.className = 'review-line';
-		selectedLine.textContent =
-			row.selectedText === null
-				? t('exam.reviewYourAnswerNone')
-				: t('exam.reviewYourAnswer', { answer: row.selectedText });
-
-		const correctLine = document.createElement('p');
-		correctLine.className = 'review-line';
-		correctLine.textContent = t('exam.reviewCorrectAnswer', { answer: row.correctText });
-
-		const explanation = document.createElement('p');
-		explanation.className = 'review-line';
-		explanation.textContent = t('exam.reviewExplanation', { explanation: row.question.explanation });
-
-		card.append(header, prompt, selectedLine, correctLine, explanation);
-		ui.examReview.append(card);
-	});
-}
-
-async function startExam() {
-	await ensureQuestionPoolLoaded();
-	if (!quizQuestions.length) return;
-	const count = Math.min(EXAM_QUESTION_COUNT, quizQuestions.length);
-	const startConfirmed = confirm(
-		t('exam.startConfirm', { total: count, minutes: EXAM_MINUTES })
-	);
-	if (!startConfirmed) return;
-	exam = {
-		questions: pickExamQuestions(count).map((question) => createRuntimeQuestion(question)),
-		answers: Array.from({ length: count }, () => null),
-		index: 0,
-		endsAt: Date.now() + EXAM_SECONDS * 1000
-	};
-
-	ui.examResult.innerHTML = '';
-	ui.examReview.innerHTML = '';
-	ui.examStart.hidden = true;
-	ui.examStage.hidden = false;
-	renderExamQuestion();
-	ui.examTimer.textContent = examClockText();
-	ui.examTimer.setAttribute('aria-label', t('a11y.timeRemaining', { time: examClockText() }));
-
-	if (examInterval) clearInterval(examInterval);
-	examInterval = setInterval(() => {
-		const clockText = examClockText();
-		ui.examTimer.textContent = clockText;
-		ui.examTimer.setAttribute('aria-label', t('a11y.timeRemaining', { time: clockText }));
-		if (exam && Date.now() >= exam.endsAt) finishExam();
-	}, 1000);
-	syncAiChatVisibility();
-}
-
-function nextExamQuestion() {
-	if (!exam || exam.answers[exam.index] === null) return;
-	if (exam.index >= exam.questions.length - 1) {
-		finishExam();
-		return;
-	}
-	exam.index += 1;
-	renderExamQuestion();
-}
-
-function updateJournalFromExamWrongAnswers(reviewRows) {
-	const now = Date.now();
-	reviewRows
-		.filter((row) => !row.isCorrect)
-		.forEach((row) => {
-			const wrong = state.wrongJournal[row.question.id] || { count: 0, lastWrongAt: 0 };
-			wrong.count += 1;
-			wrong.lastWrongAt = now;
-			state.wrongJournal[row.question.id] = wrong;
-		});
-}
-
-function finishExam({ forceFail = false, aborted = false } = {}) {
-	if (!exam) return;
-	if (examInterval) clearInterval(examInterval);
-	examInterval = undefined;
-
-	const topicStats = {};
-	const reviewRows = exam.questions.map((question, index) => {
-		const selectedIndex = exam.answers[index];
-		const isCorrect = selectedIndex === question.correctIndex;
-		if (!topicStats[question.topic]) topicStats[question.topic] = { total: 0, correct: 0 };
-		topicStats[question.topic].total += 1;
-		if (isCorrect) topicStats[question.topic].correct += 1;
-
-		return {
-			question,
-			isCorrect,
-			selectedText: selectedIndex === null ? null : question.options[selectedIndex],
-			correctText: question.correctText
-		};
-	});
-
-	if (forceFail) {
-		reviewRows.forEach((row) => {
-			row.isCorrect = false;
-		});
-		Object.values(topicStats).forEach((stats) => {
-			stats.correct = 0;
-		});
-	}
-
-	const correctCount = reviewRows.filter((row) => row.isCorrect).length;
-	const score = Math.round((correctCount / exam.questions.length) * 100);
-	trackDailyHistory({ answered: exam.questions.length, correct: correctCount });
-	state.examBest = Math.max(state.examBest, score);
-	state.examHistory.unshift({
-		at: Date.now(),
-		score,
-		correct: correctCount,
-		total: exam.questions.length
-	});
-	state.examHistory = state.examHistory.slice(0, 15);
-
-	updateJournalFromExamWrongAnswers(reviewRows);
-	void saveState();
-
-	ui.examStart.hidden = false;
-	ui.examStage.hidden = true;
-	ui.examTimer.textContent = '20:00';
-	renderExamSummary({
-		score,
-		correctCount,
-		total: exam.questions.length,
-		topicStats,
-		aborted
-	});
-	renderExamReview(reviewRows);
-
-	exam = null;
-	syncAiChatVisibility();
-	renderStats();
-	renderJournal();
-	ui.examResult.setAttribute('tabindex', '-1');
-	ui.examResult.focus();
-}
-
-/* ---- Flashcards (SM-2) ---- */
-
-function clearFlashcardSwipeClasses() {
-	if (!ui.flashBox) return;
-	ui.flashBox.classList.remove('swipe-again', 'swipe-good', 'swipe-easy');
-}
-
-function animateFlashcardSwipe(grade) {
-	if (!ui.flashBox) return Promise.resolve();
-	clearFlashcardSwipeClasses();
-	const className = grade === 'again' ? 'swipe-again' : grade === 'easy' ? 'swipe-easy' : 'swipe-good';
-	// Restart animation if the same grade is triggered quickly.
-	void ui.flashBox.offsetWidth;
-	ui.flashBox.classList.add(className);
-	return new Promise((resolve) => {
-		let resolved = false;
-		const done = () => {
-			if (resolved) return;
-			resolved = true;
-			if (flashSwipeTimer) {
-				clearTimeout(flashSwipeTimer);
-				flashSwipeTimer = undefined;
-			}
-			clearFlashcardSwipeClasses();
-			resolve();
-		};
-		ui.flashBox.addEventListener('animationend', done, { once: true });
-		flashSwipeTimer = setTimeout(done, 320);
-	});
-}
-
-function chooseNextCard() {
-	activeCard = selectNextStudyCard(flashcards, state.flashcards, {
-		now: Date.now(),
-		newCardsPerDay: state.settings.newCardsPerDay
-	});
-	cardShown = false;
-	flashHintShown = false;
-	clearFlashcardSwipeClasses();
-	renderCard();
-}
-
-function renderCard() {
-	if (!activeCard) {
-		if (ui.flashcardChatSend) ui.flashcardChatSend.disabled = true;
-		syncAiChatBusyState();
-		return;
-	}
-	const progress = state.flashcards[activeCard.id];
-	const front = currentLanguage === 'de' && activeCard.frontDe ? activeCard.frontDe : activeCard.front;
-	const back = currentLanguage === 'de' && activeCard.backDe ? activeCard.backDe : activeCard.back;
-	ui.flashTopic.textContent = activeCard.topic;
-	ui.flashFront.textContent = front;
-	ui.flashBack.textContent = back;
-	ui.flashBox?.classList.toggle('is-revealed', cardShown);
-	ui.flashBack.hidden = !cardShown;
-	ui.flashShow.hidden = cardShown;
-	ui.flashGrades.hidden = !cardShown;
-	const hintText = buildFlashcardHint(activeCard);
-	ui.flashHintText.textContent = hintText;
-	ui.flashHintText.hidden = !flashHintShown;
-	ui.flashHint.hidden = flashHintShown || !hintText;
-	const flashDueCount = flashcards.filter((c) => state.flashcards[c.id]?.dueAt <= Date.now()).length;
-	ui.flashMeta.textContent = flashDueCount
-		? t('flashcards.dueCards', { count: flashDueCount })
-		: t('flashcards.nextCard', { date: formatDate(progress.dueAt) });
-	syncAiChatBusyState();
-}
-
-async function rateCard(grade) {
-	if (!activeCard) return;
-	const progress = state.flashcards[activeCard.id];
-	state.flashcards[activeCard.id] = applySpacedRepetitionGrade(progress, grade, state.settings);
-	trackDailyHistory({ reviews: 1 });
-	void saveState();
-	renderStats();
-	await animateFlashcardSwipe(grade);
-	chooseNextCard();
-}
-
-/* ---- Glossary Flashcards (SM-2) ---- */
-
-function chooseNextGlossaryCard(filter = '') {
-	const query = filter.trim().toLowerCase();
-
-	const filtered = glossaryCards.filter((card) => {
-		if (!query) return true;
-		const def = currentLanguage === 'de' && card.backDe ? card.backDe : card.back;
-		return card.front.toLowerCase().includes(query) || def.toLowerCase().includes(query);
-	});
-
-	activeGlossaryCard = selectNextStudyCard(filtered, state.glossaryFlashcards, {
-		now: Date.now(),
-		newCardsPerDay: state.settings.newGlossaryPerDay
-	});
-	glossaryCardShown = false;
-	renderGlossaryCard();
-}
-
-function renderGlossaryCard() {
-	if (!activeGlossaryCard) {
-		ui.glossaryCardFront.textContent = t('glossary.empty');
-		ui.glossaryCardBack.textContent = '';
-		ui.glossaryCardBack.hidden = true;
-		ui.glossaryCardShow.hidden = true;
-		ui.glossaryGrades.hidden = true;
-		ui.glossaryCardCount.textContent = '';
-		ui.glossaryCardMeta.textContent = '';
-		return;
-	}
-
-	const progress = state.glossaryFlashcards[activeGlossaryCard.id];
-	const front = currentLanguage === 'de' && activeGlossaryCard.frontDe ? activeGlossaryCard.frontDe : activeGlossaryCard.front;
-	const back = currentLanguage === 'de' && activeGlossaryCard.backDe ? activeGlossaryCard.backDe : activeGlossaryCard.back;
-	ui.glossaryCardCount.textContent = activeGlossaryCard.topic;
-	ui.glossaryCardFront.textContent = front;
-	ui.glossaryCardBack.textContent = back;
-	ui.glossaryCardBack.hidden = !glossaryCardShown;
-	ui.glossaryCardShow.hidden = glossaryCardShown;
-	ui.glossaryGrades.hidden = !glossaryCardShown;
-	const glossaryDueCount = glossaryCards.filter((c) => state.glossaryFlashcards[c.id]?.dueAt <= Date.now()).length;
-	ui.glossaryCardMeta.textContent = glossaryDueCount
-		? t('glossary.dueCards', { count: glossaryDueCount })
-		: t('glossary.nextCard', { date: formatDate(progress.dueAt) });
-}
-
-function rateGlossaryCard(grade) {
-	if (!activeGlossaryCard) return;
-	const progress = state.glossaryFlashcards[activeGlossaryCard.id];
-	state.glossaryFlashcards[activeGlossaryCard.id] = applySpacedRepetitionGrade(progress, grade, state.settings);
-	trackDailyHistory({ reviews: 1 });
-	void saveState();
-	renderStats();
-	chooseNextGlossaryCard(ui.glossarySearch?.value || '');
-}
-
-/* ---- Journal ---- */
-
-function renderJournal() {
-	const items = Object.entries(state.wrongJournal)
-		.map(([id, data]) => ({
-			id,
-			question: questionById.get(id),
-			count: Number(data.count) || 0,
-			last: Number(data.lastWrongAt) || 0
-		}))
-		.filter((item) => item.question)
-		.sort((left, right) => right.count - left.count || right.last - left.last);
-
-	ui.journalList.innerHTML = '';
-	if (!items.length) {
-		ui.journalList.innerHTML = `<p class="meta">${t('journal.empty')}</p>`;
-		return;
-	}
-
-	items.forEach((item) => {
-		const row = document.createElement('article');
-		row.className = 'journal-item';
-		const title = document.createElement('h4');
-		title.textContent = localizeQuestionData(item.question).prompt;
-		const meta = document.createElement('p');
-		meta.className = 'meta';
-		meta.textContent = t('journal.rowMeta', {
-			count: item.count,
-			last: formatDate(item.last)
-		});
-		const button = document.createElement('button');
-		button.type = 'button';
-		button.className = 'secondary';
-		button.textContent = t('journal.practiceNow');
-		button.onclick = () => {
-			closeOverlay(activeOverlay);
-			showQuizQuestion(item.id);
-			openOverlay(ui.overlayQuiz);
-		};
-		row.append(title, meta, button);
-		ui.journalList.append(row);
-	});
-}
-
 /* ---- Reset ---- */
 
 async function resetAll() {
@@ -3226,19 +1931,7 @@ async function resetAll() {
 	state = hydrateStudyState(null, flashcards, glossaryCards);
 	renderRoadmapChecks();
 	renderStats();
-	renderJournal();
-	if (quizQuestions.length) {
-		startQuizSession();
-		showQuizQuestion();
-	}
-	chooseNextCard();
-	chooseNextGlossaryCard();
 	syncAiChatVisibility();
-	ui.examStart.hidden = false;
-	ui.examStage.hidden = true;
-	ui.examResult.innerHTML = '';
-	ui.examReview.innerHTML = '';
-	ui.examTimer.textContent = '20:00';
 	await saveState(true);
 }
 
@@ -3313,62 +2006,6 @@ function bindEvents() {
 		};
 	}
 
-	// Quiz events
-	if (ui.quizBookmark) ui.quizBookmark.onclick = () => toggleBookmark();
-	if (ui.quizLaunchCategory) {
-		ui.quizLaunchCategory.onchange = () => {
-			if (!quizQuestions.length) return;
-			startQuizSession();
-			if (activeOverlay === ui.overlayQuiz) showQuizQuestion();
-		};
-	}
-	ui.quizNext.onclick = () => showQuizQuestion();
-	ui.quizHint.onclick = () => {
-		if (!activeQuestion) return;
-		const hintText = activeQuestion.hint || activeQuestion.explanation;
-		ui.quizHintText.textContent = hintText;
-		ui.quizHintText.hidden = false;
-		ui.quizHint.hidden = true;
-	};
-	ui.quizSkip.onclick = () => showQuizQuestion();
-	if (ui.quizChatSend) {
-		ui.quizChatSend.onclick = () => {
-			void sendQuizItemToAiChat();
-		};
-	}
-
-	// Exam events
-	ui.examStart.onclick = () => void startExam();
-	ui.examNext.onclick = () => nextExamQuestion();
-
-	// Flashcard events
-	ui.flashShow.onclick = () => {
-		cardShown = true;
-		renderCard();
-	};
-	ui.flashHint.onclick = () => {
-		flashHintShown = true;
-		renderCard();
-	};
-	ui.flashAgain.onclick = () => rateCard('again');
-	ui.flashGood.onclick = () => rateCard('good');
-	ui.flashEasy.onclick = () => rateCard('easy');
-	if (ui.flashcardChatSend) {
-		ui.flashcardChatSend.onclick = () => {
-			void sendFlashcardItemToAiChat();
-		};
-	}
-
-	// Glossary flashcard events
-	ui.glossaryCardShow.onclick = () => {
-		glossaryCardShown = true;
-		renderGlossaryCard();
-	};
-	ui.glossaryCardAgain.onclick = () => rateGlossaryCard('again');
-	ui.glossaryCardGood.onclick = () => rateGlossaryCard('good');
-	ui.glossaryCardEasy.onclick = () => rateGlossaryCard('easy');
-	ui.glossarySearch.oninput = (event) => chooseNextGlossaryCard(event.target.value);
-
 	if (ui.settingsToggle) ui.settingsToggle.onclick = () => {
 		populateSettingsUi();
 		openOverlay(ui.overlaySettings);
@@ -3428,134 +2065,6 @@ function bindEvents() {
 		) return;
 
 		if (activeOverlay) {
-			// Quiz overlay shortcuts
-			if (activeOverlay === ui.overlayQuiz && !exam) {
-				const isArrowPrev = e.key === 'ArrowUp' || e.key === 'ArrowLeft';
-				const isArrowNext = e.key === 'ArrowDown' || e.key === 'ArrowRight';
-				if (!quizLocked && (isArrowPrev || isArrowNext)) {
-					if (moveOptionFocus(ui.quizOptions, isArrowNext ? 1 : -1)) {
-						e.preventDefault();
-						return;
-					}
-				}
-				if (!quizLocked && e.key === 'Enter') {
-					if (triggerFocusedOption(ui.quizOptions)) {
-						e.preventDefault();
-						return;
-					}
-				}
-				if (e.key >= '1' && e.key <= '9' && !quizLocked) {
-					const index = Number(e.key) - 1;
-					const buttons = [...ui.quizOptions.querySelectorAll('button')];
-					if (buttons[index] && !buttons[index].disabled) {
-						e.preventDefault();
-						buttons[index].click();
-					}
-					return;
-				}
-				if (e.key === 'h' || e.key === 'H') {
-					if (!ui.quizHint.hidden) { e.preventDefault(); ui.quizHint.click(); }
-					return;
-				}
-				if (e.key === 's' || e.key === 'S') {
-					if (!ui.quizSkip.hidden) { e.preventDefault(); ui.quizSkip.click(); }
-					return;
-				}
-				if ((e.key === 'n' || e.key === 'N' || e.key === 'Enter') && !ui.quizNext.disabled) {
-					e.preventDefault();
-					ui.quizNext.click();
-					return;
-				}
-				if (e.key === 'b' || e.key === 'B') {
-					e.preventDefault();
-					if (ui.quizBookmark) ui.quizBookmark.click();
-					return;
-				}
-			}
-
-			// Exam overlay shortcuts
-			if (activeOverlay === ui.overlayExam && exam) {
-				const isArrowPrev = e.key === 'ArrowUp' || e.key === 'ArrowLeft';
-				const isArrowNext = e.key === 'ArrowDown' || e.key === 'ArrowRight';
-				if (isArrowPrev || isArrowNext) {
-					if (moveOptionFocus(ui.examOptions, isArrowNext ? 1 : -1)) {
-						e.preventDefault();
-						return;
-					}
-				}
-				if (e.key === 'Enter' && triggerFocusedOption(ui.examOptions)) {
-					e.preventDefault();
-					return;
-				}
-				if (e.key >= '1' && e.key <= '9') {
-					const index = Number(e.key) - 1;
-					const buttons = [...ui.examOptions.querySelectorAll('button')];
-					if (buttons[index]) { e.preventDefault(); buttons[index].click(); }
-					return;
-				}
-				if ((e.key === 'n' || e.key === 'N' || e.key === 'Enter') && !ui.examNext.disabled) {
-					e.preventDefault();
-					ui.examNext.click();
-					return;
-				}
-			}
-			if (activeOverlay === ui.overlayExam && !exam) {
-				if ((e.key === 's' || e.key === 'S' || e.key === 'Enter') && !ui.examStart.hidden) {
-					e.preventDefault();
-					ui.examStart.click();
-					return;
-				}
-			}
-
-			// Flashcard overlay shortcuts
-			if (activeOverlay === ui.overlayFlashcards) {
-				if ((e.key === ' ' || e.key === 'Enter') && !ui.flashShow.hidden) {
-					e.preventDefault();
-					ui.flashShow.click();
-					return;
-				}
-				if ((e.key === 'h' || e.key === 'H') && !ui.flashHint.hidden) {
-					e.preventDefault();
-					ui.flashHint.click();
-					return;
-				}
-				if (e.key === 'n' || e.key === 'N') {
-					e.preventDefault();
-					chooseNextCard();
-					return;
-				}
-				if (!ui.flashGrades.hidden) {
-					if (e.key === '1') { e.preventDefault(); ui.flashAgain.click(); return; }
-					if (e.key === '2') { e.preventDefault(); ui.flashGood.click(); return; }
-					if (e.key === '3') { e.preventDefault(); ui.flashEasy.click(); return; }
-				}
-			}
-
-			// Glossary overlay shortcuts
-			if (activeOverlay === ui.overlayGlossary) {
-				if ((e.key === ' ' || e.key === 'Enter') && !ui.glossaryCardShow.hidden) {
-					e.preventDefault();
-					ui.glossaryCardShow.click();
-					return;
-				}
-				if (e.key === 'n' || e.key === 'N') {
-					e.preventDefault();
-					chooseNextGlossaryCard(ui.glossarySearch?.value || '');
-					return;
-				}
-				if (e.key === 'f' || e.key === 'F') {
-					e.preventDefault();
-					ui.glossarySearch?.focus();
-					ui.glossarySearch?.select();
-					return;
-				}
-				if (!ui.glossaryGrades.hidden) {
-					if (e.key === '1') { e.preventDefault(); ui.glossaryCardAgain.click(); return; }
-					if (e.key === '2') { e.preventDefault(); ui.glossaryCardGood.click(); return; }
-					if (e.key === '3') { e.preventDefault(); ui.glossaryCardEasy.click(); return; }
-				}
-			}
-
 			// Global shortcuts in overlay
 			if (e.key === 'd' || e.key === 'D') { e.preventDefault(); toggleTheme(); return; }
 			if (e.key === 'l' || e.key === 'L') { e.preventDefault(); toggleLanguage(); return; }
@@ -3631,8 +2140,6 @@ async function init() {
 	await ensureQuestionPoolLoaded();
 	renderRoadmapChecks();
 	renderStats();
-	chooseNextCard();
-	chooseNextGlossaryCard();
 	syncAiChatVisibility();
 	renderAiChatMessages();
 	await saveState(true);
