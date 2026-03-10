@@ -6,7 +6,6 @@ import ExamModule from './modules/ExamModule';
 import FlashcardsModule from './modules/FlashcardsModule';
 import GlossaryModule from './modules/GlossaryModule';
 import JournalModule from './modules/JournalModule';
-import QuizModule from './modules/QuizModule';
 
 interface RoadmapTheme {
 	id: string;
@@ -162,8 +161,6 @@ export default function StudyWorkspace({ roadmapThemes }: StudyWorkspaceProps) {
 						<div id="history-topic-trend" className="history-topic-trend"></div>
 					</div>
 				</section>
-
-				<QuizModule />
 
 			<ExamModule />
 

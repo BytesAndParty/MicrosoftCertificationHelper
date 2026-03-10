@@ -3261,10 +3261,7 @@ function bindRoadmapGlow() {
 
 async function openModeOverlay(mode) {
 	if (mode === 'quiz') {
-		await ensureQuestionPoolLoaded();
-		startQuizSession();
-		showQuizQuestion();
-		openOverlay(ui.overlayQuiz);
+		window.dispatchEvent(new CustomEvent('study-mode-open', { detail: { mode: 'quiz' } }));
 		return;
 	}
 	if (mode === 'exam') {
