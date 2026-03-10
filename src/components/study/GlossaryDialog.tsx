@@ -1,32 +1,19 @@
-import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../ui/dialog';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Badge } from '../ui/badge';
-import { Card } from '../ui/card';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useStudyStore } from '../../lib/study/store';
-import { selectNextStudyCard } from '../../lib/study/spaced-repetition';
-import { glossaryTerms } from '../../data/glossary-terms';
 import { useLanguage } from '../../lib/use-language';
 import { useHotkeys } from '../../lib/use-hotkeys';
+import { selectNextStudyCard } from '../../lib/study/spaced-repetition';
+import { glossaryTerms } from '../../data/glossary-terms';
 import { formatDate } from '../../lib/format';
 
-/* -------------------------------------------------------------------------- */
-/*  Data                                                                      */
-/* -------------------------------------------------------------------------- */
-
-const glossaryCards = glossaryTerms.map((item, index) => ({
-	id: `g${index + 1}`,
+const glossaryCards = glossaryTerms.map((item: any, i: number) => ({
+	id: `g${i + 1}`,
 	topic: 'Glossary',
 	front: item.term,
 	back: item.definition,
 	frontDe: item.term,
 	backDe: item.definitionDe || item.definition,
 }));
-
-/* -------------------------------------------------------------------------- */
-/*  i18n                                                                      */
-/* -------------------------------------------------------------------------- */
 
 const i18n = {
 	en: {
@@ -35,232 +22,154 @@ const i18n = {
 		search: 'Search',
 		placeholder: 'Term or keyword...',
 		showDef: 'Show definition',
-		empty: 'No matches found.',
-		dueCards: (n: number) => `Due terms: ${n}`,
-		nextCard: (d: string) => `Next term: ${d}`,
 		again: 'Again',
 		good: 'Good',
 		easy: 'Easy',
-		shortcuts: 'Space/Enter reveal | N next term | F search | 1 again | 2 good | 3 easy | ESC close',
+		dueCards: '{count} terms due',
+		nextCard: 'Next review: {date}',
+		empty: 'No terms match your search.',
+		shortcutTip: 'Shortcuts: Space/Enter reveal | N next | F search | 1 again | 2 good | 3 easy',
 	},
 	de: {
 		title: 'Glossar',
-		meta: 'AI-900 Begriffe als Karteikarten durchblättern.',
+		meta: 'Blättere durch AI-900-Begriffe als Lernkarten.',
 		search: 'Suche',
 		placeholder: 'Begriff oder Stichwort...',
 		showDef: 'Definition zeigen',
-		empty: 'Keine Treffer.',
-		dueCards: (n: number) => `Fällige Begriffe: ${n}`,
-		nextCard: (d: string) => `Nächster Begriff: ${d}`,
 		again: 'Nochmal',
 		good: 'Gut',
-		easy: 'Sicher',
-		shortcuts: 'Leertaste/Enter Aufdecken | N Nächster Begriff | F Suche | 1 Nochmal | 2 Gut | 3 Sicher | ESC Schließen',
+		easy: 'Leicht',
+		dueCards: '{count} Begriffe fällig',
+		nextCard: 'Nächste Wiederholung: {date}',
+		empty: 'Keine Begriffe gefunden.',
+		shortcutTip: 'Shortcuts: Leertaste/Enter aufdecken | N Nächster | F Suche | 1 Nochmal | 2 Gut | 3 Leicht',
 	},
 } as const;
 
-/* -------------------------------------------------------------------------- */
-/*  Component                                                                 */
-/* -------------------------------------------------------------------------- */
-
 interface GlossaryDialogProps {
 	open: boolean;
-	onOpenChange: (open: boolean) => void;
+	onClose: () => void;
 }
 
-export function GlossaryDialog({ open, onOpenChange }: GlossaryDialogProps) {
+export default function GlossaryDialog({ open, onClose }: GlossaryDialogProps) {
 	const lang = useLanguage();
 	const t = i18n[lang];
+	const glossaryProgress = useStudyStore(s => s.glossaryFlashcards);
+	const settings = useStudyStore(s => s.settings);
+	const rateGlossaryCard = useStudyStore(s => s.rateGlossaryCard);
 
-	const glossaryFlashcards = useStudyStore((s) => s.glossaryFlashcards);
-	const settings = useStudyStore((s) => s.settings);
-	const rateGlossaryCard = useStudyStore((s) => s.rateGlossaryCard);
+	const [searchQuery, setSearchQuery] = useState('');
+	const [activeCard, setActiveCard] = useState<any>(null);
+	const [revealed, setRevealed] = useState(false);
+	const searchRef = useMemo(() => ({ current: null as HTMLInputElement | null }), []);
 
-	const [search, setSearch] = useState('');
-	const [shown, setShown] = useState(false);
-	const [activeCard, setActiveCard] = useState<(typeof glossaryCards)[number] | null>(null);
+	const filteredCards = useMemo(() => {
+		const q = searchQuery.trim().toLowerCase();
+		if (!q) return glossaryCards;
+		return glossaryCards.filter(c => {
+			const def = lang === 'de' && c.backDe ? c.backDe : c.back;
+			return c.front.toLowerCase().includes(q) || def.toLowerCase().includes(q);
+		});
+	}, [searchQuery, lang]);
 
-	const searchRef = useRef<HTMLInputElement>(null);
+	const chooseNext = useCallback(() => {
+		const card = selectNextStudyCard(filteredCards, glossaryProgress, {
+			now: Date.now(),
+			newCardsPerDay: settings.newGlossaryPerDay,
+		});
+		setActiveCard(card);
+		setRevealed(false);
+	}, [filteredCards, glossaryProgress, settings]);
 
-	const chooseNext = useCallback(
-		(filter = '') => {
-			const query = filter.trim().toLowerCase();
-			const filtered = glossaryCards.filter((card) => {
-				if (!query) return true;
-				const def = lang === 'de' && card.backDe ? card.backDe : card.back;
-				return card.front.toLowerCase().includes(query) || def.toLowerCase().includes(query);
-			});
-			const next = selectNextStudyCard(filtered, glossaryFlashcards, {
-				now: Date.now(),
-				newCardsPerDay: settings?.newGlossaryPerDay,
-			});
-			setActiveCard(next);
-			setShown(false);
-		},
-		[glossaryFlashcards, settings?.newGlossaryPerDay, lang]
-	);
-
-	// Pick first card when dialog opens
 	useEffect(() => {
-		if (open) {
-			chooseNext(search);
-		}
-	}, [open]); // eslint-disable-line react-hooks/exhaustive-deps
+		if (open) chooseNext();
+	}, [open]);
 
-	const handleRate = useCallback(
-		(grade: 'again' | 'good' | 'easy') => {
-			if (!activeCard) return;
-			rateGlossaryCard(activeCard.id, grade);
-			chooseNext(search);
-		},
-		[activeCard, rateGlossaryCard, chooseNext, search]
+	const handleRate = useCallback((grade: 'again' | 'good' | 'easy') => {
+		if (!activeCard) return;
+		rateGlossaryCard(activeCard.id, grade);
+		chooseNext();
+	}, [activeCard, rateGlossaryCard, chooseNext]);
+
+	const front = activeCard ? (lang === 'de' && activeCard.frontDe ? activeCard.frontDe : activeCard.front) : '';
+	const back = activeCard ? (lang === 'de' && activeCard.backDe ? activeCard.backDe : activeCard.back) : '';
+
+	const dueCount = useMemo(() =>
+		glossaryCards.filter(c => glossaryProgress[c.id]?.dueAt <= Date.now()).length,
+		[glossaryProgress]
 	);
 
-	const handleShow = useCallback(() => setShown(true), []);
-
-	const handleSearch = useCallback(
-		(value: string) => {
-			setSearch(value);
-			chooseNext(value);
-		},
-		[chooseNext]
-	);
-
-	// Derived display values
-	const front = activeCard
-		? lang === 'de' && activeCard.frontDe
-			? activeCard.frontDe
-			: activeCard.front
-		: '';
-	const back = activeCard
-		? lang === 'de' && activeCard.backDe
-			? activeCard.backDe
-			: activeCard.back
+	const metaText = activeCard
+		? dueCount > 0
+			? t.dueCards.replace('{count}', String(dueCount))
+			: t.nextCard.replace('{date}', formatDate(glossaryProgress[activeCard.id]?.dueAt || Date.now()))
 		: '';
 
-	const progress = activeCard ? glossaryFlashcards[activeCard.id] : null;
+	const keyMap = useMemo(() => ({
+		' ': (e: KeyboardEvent) => { if (!revealed) { e.preventDefault(); setRevealed(true); } },
+		'Enter': (e: KeyboardEvent) => { if (!revealed) { e.preventDefault(); setRevealed(true); } },
+		'n': (e: KeyboardEvent) => { e.preventDefault(); chooseNext(); },
+		'f': (e: KeyboardEvent) => { e.preventDefault(); searchRef.current?.focus(); searchRef.current?.select(); },
+		'1': (e: KeyboardEvent) => { if (revealed) { e.preventDefault(); handleRate('again'); } },
+		'2': (e: KeyboardEvent) => { if (revealed) { e.preventDefault(); handleRate('good'); } },
+		'3': (e: KeyboardEvent) => { if (revealed) { e.preventDefault(); handleRate('easy'); } },
+		'Escape': (e: KeyboardEvent) => { e.preventDefault(); onClose(); },
+	}), [revealed, handleRate, chooseNext, onClose, searchRef]);
 
-	const dueCount = useMemo(
-		() => glossaryCards.filter((c) => glossaryFlashcards[c.id]?.dueAt <= Date.now()).length,
-		[glossaryFlashcards]
-	);
+	useHotkeys(keyMap, open);
 
-	const metaText = !activeCard
-		? ''
-		: dueCount > 0
-			? t.dueCards(dueCount)
-			: progress
-				? t.nextCard(formatDate(progress.dueAt, lang))
-				: '';
-
-	// Keyboard shortcuts (active only when dialog is open)
-	useHotkeys(
-		[
-			{
-				key: ' ',
-				handler: () => { if (!shown && activeCard) handleShow(); },
-			},
-			{
-				key: 'Enter',
-				handler: () => { if (!shown && activeCard) handleShow(); },
-			},
-			{
-				key: 'n',
-				handler: () => chooseNext(search),
-			},
-			{
-				key: 'f',
-				handler: () => {
-					searchRef.current?.focus();
-					searchRef.current?.select();
-				},
-			},
-			{
-				key: '1',
-				handler: () => { if (shown) handleRate('again'); },
-			},
-			{
-				key: '2',
-				handler: () => { if (shown) handleRate('good'); },
-			},
-			{
-				key: '3',
-				handler: () => { if (shown) handleRate('easy'); },
-			},
-		],
-		open
-	);
+	if (!open) return null;
 
 	return (
-		<Dialog open={open} onOpenChange={onOpenChange}>
-			<DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
-				<DialogHeader>
-					<DialogTitle>{t.title}</DialogTitle>
-					<DialogDescription>{t.meta}</DialogDescription>
-				</DialogHeader>
-
-				{/* Search */}
-				<div className="grid gap-1.5">
-					<label htmlFor="glossary-search-react" className="text-sm font-medium">
-						{t.search}
-					</label>
-					<Input
-						ref={searchRef}
-						id="glossary-search-react"
-						type="search"
-						placeholder={t.placeholder}
-						value={search}
-						onChange={(e) => handleSearch(e.target.value)}
-					/>
+		<div className="overlay" role="dialog" aria-modal="true">
+			<div className="overlay-backdrop" onClick={onClose}></div>
+			<div className="overlay-container card">
+				<div className="overlay-header">
+					<h2>{t.title}</h2>
+					<p className="meta">{t.meta}</p>
+					<button type="button" className="overlay-close" aria-label="Close" onClick={onClose}>&times;</button>
 				</div>
+				<div className="overlay-body">
+					<div className="glossary-search-row">
+						<label className="search-label" htmlFor="glossary-search-react">{t.search}</label>
+						<input
+							ref={el => { searchRef.current = el; }}
+							id="glossary-search-react"
+							type="search"
+							placeholder={t.placeholder}
+							value={searchQuery}
+							onChange={e => { setSearchQuery(e.target.value); }}
+							onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); chooseNext(); } }}
+						/>
+					</div>
 
-				{/* Flashcard */}
-				<Card className="p-5" aria-live="polite">
 					{activeCard ? (
 						<>
-							<Badge variant="secondary" className="mb-3">
-								{activeCard.topic}
-							</Badge>
-							<h4 className="text-lg font-semibold mb-2">{front}</h4>
-							{shown && (
-								<p className="text-sm text-muted-foreground">{back}</p>
-							)}
+							<div className={`flashcard ${revealed ? 'is-revealed' : ''}`} aria-live="polite">
+								<p className="chip">{activeCard.topic}</p>
+								<h4>{front}</h4>
+								{revealed && <p>{back}</p>}
+							</div>
+							<div className="flash-actions">
+								{!revealed && (
+									<button type="button" className="secondary" onClick={() => setRevealed(true)}>{t.showDef}</button>
+								)}
+								{revealed && (
+									<div className="grade-actions">
+										<button type="button" className="danger" onClick={() => handleRate('again')}>{t.again}</button>
+										<button type="button" className="primary" onClick={() => handleRate('good')}>{t.good}</button>
+										<button type="button" className="secondary" onClick={() => handleRate('easy')}>{t.easy}</button>
+									</div>
+								)}
+							</div>
+							<p className="meta">{metaText}</p>
 						</>
 					) : (
-						<p className="text-sm text-muted-foreground">{t.empty}</p>
+						<p className="meta">{t.empty}</p>
 					)}
-				</Card>
-
-				{/* Actions */}
-				<div className="flex flex-wrap items-center gap-2">
-					{activeCard && !shown && (
-						<Button variant="secondary" onClick={handleShow}>
-							{t.showDef}
-						</Button>
-					)}
-					{shown && (
-						<>
-							<Button variant="destructive" size="sm" onClick={() => handleRate('again')}>
-								{t.again}
-							</Button>
-							<Button variant="default" size="sm" onClick={() => handleRate('good')}>
-								{t.good}
-							</Button>
-							<Button variant="secondary" size="sm" onClick={() => handleRate('easy')}>
-								{t.easy}
-							</Button>
-						</>
-					)}
+					<p className="overlay-shortcut-tip">{t.shortcutTip}</p>
 				</div>
-
-				{/* Meta */}
-				{metaText && (
-					<p className="text-xs text-muted-foreground">{metaText}</p>
-				)}
-
-				{/* Shortcut hint */}
-				<p className="text-[0.7rem] text-muted-foreground/70">{t.shortcuts}</p>
-			</DialogContent>
-		</Dialog>
+			</div>
+		</div>
 	);
 }

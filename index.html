@@ -1,22 +1,12 @@
----
-const { title = 'Microsoft Certification Helper' } = Astro.props;
-import '../styles/globals.css';
----
-
 <!doctype html>
 <html lang="en" data-theme="light" data-accent="amber">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
-		<link rel="manifest" href="/manifest.webmanifest" />
-		<meta name="theme-color" content="#b45309" />
-		<meta name="apple-mobile-web-app-capable" content="yes" />
-		<meta name="apple-mobile-web-app-status-bar-style" content="default" />
-		<link rel="apple-touch-icon" href="/icon.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<script is:inline>
+		<title>AI-900 Study Companion</title>
+		<script>
 			(() => {
 				try {
 					const themeKey = 'ai900_theme_pref';
@@ -42,26 +32,9 @@ import '../styles/globals.css';
 				} catch {}
 			})();
 		</script>
-		<title>{title}</title>
 	</head>
 	<body>
-		<slot />
-		<script is:inline>
-			if ('serviceWorker' in navigator) {
-				navigator.serviceWorker.register('/sw.js').catch(() => {});
-			}
-		</script>
+		<div id="root"></div>
+		<script type="module" src="/src/main.tsx"></script>
 	</body>
 </html>
-
-<style>
-	html {
-		margin: 0;
-		padding: 0;
-	}
-
-	body {
-		margin: 0;
-		min-height: 100vh;
-	}
-</style>
