@@ -8,33 +8,38 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('supports a fast daily learning flow across core modules', async ({ page }) => {
-	const quizMode = page.locator('[data-mode="quiz"]');
-	await quizMode.click();
-	await expect(page.locator('#overlay-quiz')).toBeVisible();
-	await expect(page.locator('#quiz-question')).not.toBeEmpty();
+	// --- Quiz ---
+	await page.locator('[data-mode="quiz"]').click();
+	const quizDialog = page.locator('[data-testid="dialog-quiz"]');
+	await expect(quizDialog).toBeVisible();
+	await expect(quizDialog.locator('h4')).not.toBeEmpty();
 
-	const firstQuizOption = page.locator('#quiz-options button').first();
+	const firstQuizOption = quizDialog.locator('.option-btn').first();
 	await expect(firstQuizOption).toBeVisible();
 	await firstQuizOption.click();
-	await expect(page.locator('#quiz-feedback')).not.toBeEmpty();
-	await page.locator('#overlay-quiz .overlay-close').click();
-	await expect(page.locator('#overlay-quiz')).toBeHidden();
+	await expect(quizDialog.locator('.feedback')).toBeVisible();
+	await quizDialog.locator('.overlay-close').click();
+	await expect(quizDialog).toBeHidden();
 
-	const flashcardsMode = page.locator('[data-mode="flashcards"]');
-	await flashcardsMode.click();
-	await expect(page.locator('#overlay-flashcards')).toBeVisible();
-	await page.locator('#flashcard-show').click();
-	await expect(page.locator('#flashcard-back')).toBeVisible();
+	// --- Flashcards ---
+	await page.locator('[data-mode="flashcards"]').click();
+	const flashDialog = page.locator('[data-testid="dialog-flashcards"]');
+	await expect(flashDialog).toBeVisible();
+
+	const showAnswer = flashDialog.locator('.flash-actions button.secondary').first();
+	await showAnswer.click();
+	await expect(flashDialog.locator('.flashcard.is-revealed')).toBeVisible();
 	await page.keyboard.press('2');
-	await expect(page.locator('#flashcard-front')).not.toBeEmpty();
-	await page.locator('#overlay-flashcards .overlay-close').click();
-	await expect(page.locator('#overlay-flashcards')).toBeHidden();
+	await expect(flashDialog.locator('.flashcard h4')).not.toBeEmpty();
+	await flashDialog.locator('.overlay-close').click();
+	await expect(flashDialog).toBeHidden();
 
-	const glossaryMode = page.locator('[data-mode="glossary"]');
-	await glossaryMode.click();
-	await expect(page.locator('#overlay-glossary')).toBeVisible();
-	await page.locator('#glossary-search').fill('model');
-	await expect(page.locator('#glossary-card-front')).not.toBeEmpty();
-	await page.locator('#overlay-glossary .overlay-close').click();
-	await expect(page.locator('#overlay-glossary')).toBeHidden();
+	// --- Glossary ---
+	await page.locator('[data-mode="glossary"]').click();
+	const glossaryDialog = page.locator('[data-testid="dialog-glossary"]');
+	await expect(glossaryDialog).toBeVisible();
+	await glossaryDialog.locator('#glossary-search-react').fill('model');
+	await expect(glossaryDialog.locator('.flashcard h4')).not.toBeEmpty();
+	await glossaryDialog.locator('.overlay-close').click();
+	await expect(glossaryDialog).toBeHidden();
 });

@@ -51,6 +51,8 @@ async function ensureQuestionPoolLoaded() {
 }
 
 const ui = {
+	roadmapSummary: byId('roadmap-summary'),
+	metricRoadmap: byId('metric-roadmap'),
 	metricAccuracy: byId('metric-accuracy'),
 	metricExam: byId('metric-exam'),
 	metricDue: byId('metric-due'),
@@ -59,6 +61,11 @@ const ui = {
 	heroReadinessProgress: byId('hero-readiness-progress'),
 	heroReadinessValue: byId('hero-readiness-value'),
 	heroReadinessMeta: byId('hero-readiness-meta'),
+	sessionStatus: byId('session-status'),
+	sessionProgress: byId('session-progress'),
+	sessionProgressValue: byId('session-progress-value'),
+	sessionDetails: byId('session-details'),
+	sessionClear: byId('session-clear'),
 	historyStreak: byId('history-streak'),
 	historyHeatmap: byId('history-heatmap'),
 	historyTopicTrend: byId('history-topic-trend'),
@@ -479,7 +486,7 @@ let toastTimer;
 let aiChatMessages = [];
 let aiChatPending = false;
 let lastStatsSnapshot = null;
-let revealObserver;
+let lastSessionProgress = null;
 
 const AI_CHAT_HISTORY_LIMIT = 12;
 const AZURE_RESPONSES_API_VERSION = '2025-04-01-preview';
@@ -502,6 +509,11 @@ marked.setOptions({
 	breaks: true
 });
 
+const SESSION_PRESETS = {
+	sprint: { labelKey: 'session.goalSprint', targetAnswers: 10, targetAccuracy: 70, durationMinutes: 15 },
+	focus: { labelKey: 'session.goalFocus', targetAnswers: 20, targetAccuracy: 75, durationMinutes: 30 },
+	accuracy: { labelKey: 'session.goalAccuracy', targetAnswers: 15, targetAccuracy: 90, durationMinutes: 25 }
+};
 
 function resolveLanguage(language) {
 	return language === 'de' ? 'de' : 'en';
@@ -762,6 +774,22 @@ function handleOverlayKeydown(e) {
 
 /* ---- i18n ---- */
 
+function applyLanguageToRoadmap() {
+	document.querySelectorAll('[data-roadmap-id]').forEach((card) => {
+		const theme = themeById.get(card.dataset.roadmapId);
+		if (!theme) return;
+		const isDe = currentLanguage === 'de';
+		const h3 = card.querySelector('h3');
+		const p = card.querySelector('p');
+		if (h3) h3.textContent = isDe && theme.titleDe ? theme.titleDe : theme.title;
+		if (p) p.textContent = isDe && theme.goalDe ? theme.goalDe : theme.goal;
+		const spans = card.querySelectorAll('li span');
+		const todos = isDe && theme.todosDe ? theme.todosDe : theme.todos;
+		spans.forEach((span, i) => {
+			if (todos[i]) span.textContent = todos[i];
+		});
+	});
+}
 
 function applyLanguageToStaticUi() {
 	document.querySelectorAll('[data-i18n]').forEach((node) => {
@@ -812,10 +840,7 @@ function applyLanguage(language, { persist = true } = {}) {
 }
 
 function toggleLanguage() {
-	const next = currentLanguage === 'en' ? 'de' : 'en';
-	applyLanguage(next);
-	// Sync React LanguageToggle via custom event
-	window.dispatchEvent(new CustomEvent('language-changed', { detail: { language: next } }));
+	applyLanguage(currentLanguage === 'en' ? 'de' : 'en');
 }
 
 /* ---- Persistence ---- */
@@ -882,6 +907,9 @@ async function saveState(immediate = false) {
 
 function hydrate(saved) {
 	state = hydrateStudyState(saved, flashcards, glossaryCards);
+	if (!state.sessionGoal || typeof state.sessionGoal !== 'object') {
+		clearSessionGoal();
+	}
 	if (!state.historyDaily || typeof state.historyDaily !== 'object') {
 		state.historyDaily = {};
 	}
@@ -1582,7 +1610,120 @@ function trackDailyHistory({ answered = 0, correct = 0, reviews = 0, at = Date.n
 	day.reviews += reviews;
 }
 
+function clearSessionGoal() {
+	state.sessionGoal = {
+		preset: '',
+		startedAt: 0,
+		durationMinutes: 0,
+		targetAnswers: 0,
+		targetAccuracy: 0,
+		answeredStart: state.quiz.answered,
+		correctStart: state.quiz.correct,
+		completedAt: 0,
+		failedAt: 0
+	};
+}
 
+function startSessionGoal(presetKey) {
+	const preset = SESSION_PRESETS[presetKey];
+	if (!preset) return;
+	state.sessionGoal = {
+		preset: presetKey,
+		startedAt: Date.now(),
+		durationMinutes: preset.durationMinutes,
+		targetAnswers: preset.targetAnswers,
+		targetAccuracy: preset.targetAccuracy,
+		answeredStart: state.quiz.answered,
+		correctStart: state.quiz.correct,
+		completedAt: 0,
+		failedAt: 0
+	};
+	renderStats();
+	void saveState();
+}
+
+function getSessionSnapshot(now = Date.now()) {
+	const goal = state.sessionGoal;
+	if (!goal || !goal.startedAt || !goal.targetAnswers) return null;
+	const answered = Math.max(0, state.quiz.answered - goal.answeredStart);
+	const correct = Math.max(0, state.quiz.correct - goal.correctStart);
+	const accuracy = answered ? Math.round((correct / answered) * 100) : 0;
+	const elapsed = Math.max(0, Math.round((now - goal.startedAt) / 60000));
+	const minutesLeft = Math.max(0, goal.durationMinutes - elapsed);
+	const progress = Math.max(0, Math.min(100, Math.round((answered / goal.targetAnswers) * 100)));
+	const isCompleted = answered >= goal.targetAnswers && accuracy >= goal.targetAccuracy;
+	const isFailed = !isCompleted && elapsed >= goal.durationMinutes;
+	return {
+		goal,
+		answered,
+		accuracy,
+		elapsed,
+		minutesLeft,
+		progress,
+		isCompleted,
+		isFailed
+	};
+}
+
+function renderSessionGoal() {
+	if (!ui.sessionStatus || !ui.sessionDetails || !ui.sessionProgress || !ui.sessionProgressValue) return;
+	const previousProgress = lastSessionProgress;
+	const snapshot = getSessionSnapshot();
+	if (!snapshot) {
+		ui.sessionStatus.textContent = t('session.statusIdle');
+		ui.sessionDetails.textContent = t('session.detailIdle');
+		ui.sessionProgress.value = 0;
+		ui.sessionProgressValue.textContent = '0%';
+		if ((previousProgress ?? 0) !== 0) {
+			replayUiAnimation(ui.sessionProgress, 'ui-motion-progress', 380);
+			replayUiAnimation(ui.sessionProgressValue, 'ui-motion-kpi', 340);
+		}
+		lastSessionProgress = 0;
+		return;
+	}
+
+	const preset = SESSION_PRESETS[snapshot.goal.preset];
+	const label = preset ? t(preset.labelKey) : snapshot.goal.preset;
+	let changed = false;
+	if (snapshot.isCompleted && !snapshot.goal.completedAt) {
+		snapshot.goal.completedAt = Date.now();
+		snapshot.goal.failedAt = 0;
+		changed = true;
+	}
+	if (snapshot.isFailed && !snapshot.goal.failedAt && !snapshot.goal.completedAt) {
+		snapshot.goal.failedAt = Date.now();
+		changed = true;
+	}
+
+	let statusKey = 'session.statusActive';
+	let detailKey = 'session.detailActive';
+	if (snapshot.goal.completedAt) {
+		statusKey = 'session.statusCompleted';
+		detailKey = 'session.detailCompleted';
+	} else if (snapshot.goal.failedAt) {
+		statusKey = 'session.statusFailed';
+		detailKey = 'session.detailFailed';
+	}
+
+	ui.sessionStatus.textContent = t(statusKey, { label });
+	ui.sessionDetails.textContent = t(detailKey, {
+		answered: snapshot.answered,
+		targetAnswers: snapshot.goal.targetAnswers,
+		accuracy: snapshot.accuracy,
+		targetAccuracy: snapshot.goal.targetAccuracy,
+		minutesLeft: snapshot.minutesLeft,
+		elapsed: snapshot.elapsed
+	});
+	ui.sessionProgress.value = snapshot.progress;
+	ui.sessionProgressValue.textContent = `${snapshot.progress}%`;
+	if (previousProgress !== null && previousProgress !== snapshot.progress) {
+		replayUiAnimation(ui.sessionProgress, 'ui-motion-progress', 380);
+		replayUiAnimation(ui.sessionProgressValue, 'ui-motion-kpi', 340);
+	}
+	lastSessionProgress = snapshot.progress;
+
+	if (changed) void saveState();
+}
 
 function getTopicMasteryRows(minAnswered = 1) {
 	return Object.entries(state.quiz.byTopic || {})
@@ -1655,6 +1796,11 @@ function renderHistoryPanel() {
 	});
 }
 
+function getRoadmapProgress() {
+	const total = roadmapThemes.reduce((sum, theme) => sum + theme.todos.length, 0);
+	const done = roadmapBoxes.reduce((sum, box) => sum + (box.checked ? 1 : 0), 0);
+	return { total, done, percent: total ? Math.round((done / total) * 100) : 0 };
+}
 
 function getAccuracy() {
 	return state.quiz.answered ? Math.round((state.quiz.correct / state.quiz.answered) * 100) : 0;
@@ -1732,23 +1878,35 @@ function renderExamReadiness() {
 	return snapshot;
 }
 
+function renderRoadmapChecks() {
+	roadmapBoxes.forEach((box) => {
+		box.checked = Boolean(state.roadmapDone[box.dataset.roadmapKey]);
+	});
+}
+
 function renderStats() {
+	const p = getRoadmapProgress();
 	const nextStatsSnapshot = {
+		roadmap: p.percent,
 		accuracy: getAccuracy(),
 		exam: Number(state.examBest) || 0,
 		due: getDueCardCount(),
 		journal: Object.keys(state.wrongJournal).length
 	};
 
-	if (ui.metricAccuracy) ui.metricAccuracy.textContent = `${nextStatsSnapshot.accuracy}%`;
-	if (ui.metricExam) ui.metricExam.textContent = `${nextStatsSnapshot.exam}%`;
-	if (ui.metricDue) ui.metricDue.textContent = String(nextStatsSnapshot.due);
-	if (ui.metricJournal) ui.metricJournal.textContent = String(nextStatsSnapshot.journal);
+	ui.roadmapSummary.textContent = t('roadmap.summary', { done: p.done, total: p.total });
+	ui.metricRoadmap.textContent = `${nextStatsSnapshot.roadmap}%`;
+	ui.metricAccuracy.textContent = `${nextStatsSnapshot.accuracy}%`;
+	ui.metricExam.textContent = `${nextStatsSnapshot.exam}%`;
+	ui.metricDue.textContent = String(nextStatsSnapshot.due);
+	ui.metricJournal.textContent = String(nextStatsSnapshot.journal);
 
 	const readinessSnapshot = renderExamReadiness();
+	renderSessionGoal();
 	renderHistoryPanel();
 
 	if (lastStatsSnapshot) {
+		if (lastStatsSnapshot.roadmap !== nextStatsSnapshot.roadmap) replayUiAnimation(ui.metricRoadmap, 'ui-motion-kpi', 340);
 		if (lastStatsSnapshot.accuracy !== nextStatsSnapshot.accuracy) replayUiAnimation(ui.metricAccuracy, 'ui-motion-kpi', 340);
 		if (lastStatsSnapshot.exam !== nextStatsSnapshot.exam) replayUiAnimation(ui.metricExam, 'ui-motion-kpi', 340);
 		if (lastStatsSnapshot.due !== nextStatsSnapshot.due) replayUiAnimation(ui.metricDue, 'ui-motion-kpi', 340);
@@ -1763,14 +1921,6 @@ function renderStats() {
 		...nextStatsSnapshot,
 		readiness: readinessSnapshot?.score ?? 0
 	};
-
-	// Sync dashboard state to React via event
-	window.dispatchEvent(new CustomEvent('dashboard-sync', { detail: {
-		metrics: nextStatsSnapshot,
-		readiness: readinessSnapshot || null,
-		historyDaily: structuredClone(state.historyDaily || {}),
-		quiz: structuredClone(state.quiz),
-	} }));
 }
 
 /* ---- Reset ---- */
@@ -1779,12 +1929,28 @@ async function resetAll() {
 	if (!confirm(t('reset.confirm'))) return;
 	if (activeOverlay) closeOverlay(activeOverlay);
 	state = hydrateStudyState(null, flashcards, glossaryCards);
+	renderRoadmapChecks();
 	renderStats();
 	syncAiChatVisibility();
 	await saveState(true);
 }
 
+function bindRoadmapGlow() {
+	roadmapCards.forEach((card) => {
+		card.addEventListener('mousemove', (event) => {
+			const rect = card.getBoundingClientRect();
+			const x = event.clientX - rect.left;
+			const y = event.clientY - rect.top;
+			card.style.setProperty('--glow-x', `${x}px`);
+			card.style.setProperty('--glow-y', `${y}px`);
+		});
 
+		card.addEventListener('mouseleave', () => {
+			card.style.removeProperty('--glow-x');
+			card.style.removeProperty('--glow-y');
+		});
+	});
+}
 
 async function openModeOverlay(mode) {
 	if (mode === 'quiz') {
@@ -1805,154 +1971,20 @@ function toggleShortcutsPanel() {
 	}
 }
 
-function setupScrollReveals() {
-	const revealNodes = Array.from(document.querySelectorAll('.flat-home .reveal'));
-	if (!revealNodes.length) return;
-
-	if (revealObserver) {
-		revealObserver.disconnect();
-		revealObserver = null;
-	}
-
-	const reducedMotion = REDUCED_MOTION_MEDIA.matches;
-	const canObserve = typeof window.IntersectionObserver === 'function' && !reducedMotion;
-	if (!canObserve) {
-		revealNodes.forEach((node, index) => {
-			node.classList.add('is-visible');
-			node.style.setProperty('--reveal-delay', `${Math.min(index * 45, 240)}ms`);
-		});
-		return;
-	}
-
-	revealObserver = new IntersectionObserver((entries) => {
-		entries.forEach((entry) => {
-			if (!entry.isIntersecting) return;
-			entry.target.classList.add('is-visible');
-			revealObserver?.unobserve(entry.target);
-		});
-	}, {
-		root: null,
-		rootMargin: '0px 0px -12% 0px',
-		threshold: 0.12
-	});
-
-	revealNodes.forEach((node, index) => {
-		node.classList.remove('is-visible');
-		node.style.setProperty('--reveal-delay', `${Math.min(index * 45, 240)}ms`);
-		revealObserver.observe(node);
-	});
-}
-
 /* ---- Event binding ---- */
 
 function bindEvents() {
 	if (ui.themeToggle) ui.themeToggle.onclick = () => toggleTheme();
 	if (ui.languageToggle) ui.languageToggle.onclick = () => toggleLanguage();
+	bindRoadmapGlow();
 
-	// Listen for language changes from React LanguageToggle component
-	window.addEventListener('language-changed', (e) => {
-		const lang = e.detail?.language;
-		if (lang && lang !== currentLanguage) {
-			applyLanguage(lang, { persist: false });
-		}
-	});
-
-	// Listen for glossary card ratings from React GlossaryDialog
-	window.addEventListener('glossary-rated', (e) => {
-		const { cardId, progress } = e.detail || {};
-		if (cardId && progress) {
-			state.glossaryFlashcards[cardId] = progress;
-			trackDailyHistory({ reviews: 1 });
-			void saveState();
+	roadmapBoxes.forEach((box) => {
+		box.onchange = () => {
+			state.roadmapDone[box.dataset.roadmapKey] = box.checked;
 			renderStats();
-		}
-	});
-
-	// Listen for flashcard ratings from React FlashcardsDialog
-	window.addEventListener('flashcard-rated', (e) => {
-		const { cardId, progress } = e.detail || {};
-		if (cardId && progress) {
-			state.flashcards[cardId] = progress;
-			trackDailyHistory({ reviews: 1 });
 			void saveState();
-			renderStats();
-		}
+		};
 	});
-
-	// flashcard-discuss is now handled by React AiChatSheet
-
-	// Listen for journal "Practice now" from React JournalDialog
-	window.addEventListener('journal-practice', (e) => {
-		const { questionId } = e.detail || {};
-		if (!questionId) return;
-		window.dispatchEvent(new CustomEvent('study-mode-open', {
-			detail: { mode: 'quiz', questionId },
-		}));
-	});
-
-	// Listen for exam results from React ExamDialog
-	window.addEventListener('exam-finished', (e) => {
-		const { answered, correct, wrongRows } = e.detail || {};
-		if (typeof answered === 'number') {
-			trackDailyHistory({ answered, correct: correct || 0 });
-		}
-		if (Array.isArray(wrongRows)) {
-			const now = Date.now();
-			wrongRows.forEach(({ questionId }) => {
-				if (!questionId) return;
-				const wrong = state.wrongJournal[questionId] || { count: 0, lastWrongAt: 0 };
-				wrong.count += 1;
-				wrong.lastWrongAt = now;
-				state.wrongJournal[questionId] = wrong;
-			});
-			window.dispatchEvent(new CustomEvent('journal-updated', { detail: { wrongJournal: { ...state.wrongJournal } } }));
-		}
-		void saveState();
-		renderStats();
-	});
-
-	// Listen for quiz answer events from React QuizDialog
-	window.addEventListener('quiz-answered', (e) => {
-		const { questionId, topic, isCorrect } = e.detail || {};
-		if (!questionId || !topic) return;
-		const topicStats = state.quiz.byTopic[topic] || { total: 0, correct: 0 };
-		state.quiz.answered += 1;
-		topicStats.total += 1;
-		if (isCorrect) {
-			state.quiz.correct += 1;
-			topicStats.correct += 1;
-			if (!state.quiz.correctByQuestion || typeof state.quiz.correctByQuestion !== 'object') {
-				state.quiz.correctByQuestion = {};
-			}
-			state.quiz.correctByQuestion[questionId] = (Number(state.quiz.correctByQuestion[questionId]) || 0) + 1;
-		} else {
-			const wrong = state.wrongJournal[questionId] || { count: 0, lastWrongAt: 0 };
-			wrong.count += 1;
-			wrong.lastWrongAt = Date.now();
-			state.wrongJournal[questionId] = wrong;
-			window.dispatchEvent(new CustomEvent('journal-updated', { detail: { wrongJournal: { ...state.wrongJournal } } }));
-		}
-		state.quiz.byTopic[topic] = topicStats;
-		trackDailyHistory({ answered: 1, correct: isCorrect ? 1 : 0 });
-		void saveState();
-		renderStats();
-		window.dispatchEvent(new CustomEvent('quiz-stats-updated', { detail: { quiz: structuredClone(state.quiz) } }));
-	});
-
-	// Listen for bookmark toggle from React QuizDialog
-	window.addEventListener('quiz-bookmark', (e) => {
-		const { questionId } = e.detail || {};
-		if (!questionId) return;
-		if (state.savedQuestions[questionId]) {
-			delete state.savedQuestions[questionId];
-		} else {
-			state.savedQuestions[questionId] = { savedAt: Date.now() };
-		}
-		void saveState();
-		window.dispatchEvent(new CustomEvent('bookmark-synced', { detail: { savedQuestions: { ...state.savedQuestions } } }));
-	});
-
-	// quiz-discuss is now handled by React AiChatSheet
 
 	// Hero mode buttons
 	document.querySelectorAll('[data-mode]').forEach((btn) => {
@@ -1975,31 +2007,49 @@ function bindEvents() {
 	}
 
 	if (ui.settingsToggle) ui.settingsToggle.onclick = () => {
-		window.dispatchEvent(new CustomEvent('study-mode-open', { detail: { mode: 'settings' } }));
+		populateSettingsUi();
+		openOverlay(ui.overlaySettings);
 	};
-
-	// Listen for settings changes from React SettingsDialog
-	window.addEventListener('settings-changed', (e) => {
-		const detail = e.detail;
-		if (detail) {
-			Object.assign(state.settings, detail);
-		} else {
-			// Re-read from Zustand store
-			const storeState = window.__zustandStore?.getState?.();
-			if (storeState?.settings) Object.assign(state.settings, storeState.settings);
-		}
-		applyAccentPalette(state.settings.accentPalette);
-		syncAiChatVisibility();
-		if (isAiChatConfigured()) setAiChatError('');
-		void saveState();
-	});
+	if (ui.settingsSave) ui.settingsSave.onclick = () => saveSettings();
+	if (ui.settingsReset) ui.settingsReset.onclick = () => resetSettings();
+	if (ui.settingAccentPalette) {
+		const handleAccentPaletteChange = () => {
+			const previewPalette = resolveAccentPalette(ui.settingAccentPalette.value);
+			renderAccentPreview(previewPalette);
+			applyAccentPalette(previewPalette);
+			if (state.settings.accentPalette !== previewPalette) {
+				state.settings.accentPalette = previewPalette;
+				void saveState();
+			}
+		};
+		ui.settingAccentPalette.onchange = handleAccentPaletteChange;
+		ui.settingAccentPalette.oninput = handleAccentPaletteChange;
+	}
+	if (ui.settingAiWindowReset) ui.settingAiWindowReset.onclick = () => resetAiChatWindowLayout();
 	if (ui.welcomeStart) ui.welcomeStart.onclick = () => {
 		state.hasSeenWelcome = true;
 		void saveState();
 		closeOverlay(activeOverlay);
 	};
 
-	// AI Chat is now handled by React AiChatSheet
+	if (ui.aiChatToggle) ui.aiChatToggle.onclick = () => toggleAiChatPanel();
+	if (ui.aiChatClose) ui.aiChatClose.onclick = () => toggleAiChatPanel(false);
+	if (ui.aiChatForm) {
+		ui.aiChatForm.onsubmit = (event) => {
+			event.preventDefault();
+			void sendAiChatMessage(ui.aiChatInput?.value || '');
+		};
+	}
+	if (ui.aiChatInput) {
+		ui.aiChatInput.addEventListener('keydown', (event) => {
+			if (event.key === 'Enter' && !event.shiftKey) {
+				event.preventDefault();
+				void sendAiChatMessage(ui.aiChatInput.value);
+			}
+		});
+	}
+	setupAiChatResize();
+	setupAiChatDrag();
 
 	if (ui.resetProgress) ui.resetProgress.onclick = () => void resetAll();
 
@@ -2023,7 +2073,7 @@ function bindEvents() {
 			if (e.key === 'f' || e.key === 'F') { e.preventDefault(); void openModeOverlay('flashcards'); return; }
 			if (e.key === 'g' || e.key === 'G') { e.preventDefault(); void openModeOverlay('glossary'); return; }
 			if (e.key === 'j' || e.key === 'J') { e.preventDefault(); void openModeOverlay('journal'); return; }
-			if (e.key === 'o' || e.key === 'O') { e.preventDefault(); window.dispatchEvent(new CustomEvent('study-mode-open', { detail: { mode: 'settings' } })); return; }
+			if (e.key === 'o' || e.key === 'O') { e.preventDefault(); populateSettingsUi(); openOverlay(ui.overlaySettings); return; }
 			return;
 		}
 
@@ -2055,7 +2105,8 @@ function bindEvents() {
 		}
 		if (e.key === 'o' || e.key === 'O') {
 			e.preventDefault();
-			window.dispatchEvent(new CustomEvent('study-mode-open', { detail: { mode: 'settings' } }));
+			populateSettingsUi();
+			openOverlay(ui.overlaySettings);
 			return;
 		}
 		if (e.key === '?') {
@@ -2080,14 +2131,14 @@ function bindEvents() {
 async function init() {
 	applyLanguage(readStoredLanguage(), { persist: false });
 	applyTheme(resolveTheme(readStoredTheme()));
-	const initialAccent = resolveAccentPalette(document.documentElement.dataset.accent || DEFAULT_SETTINGS.accentPalette);
-	applyAccentPalette(initialAccent);
+	applyAccentPalette(DEFAULT_SETTINGS.accentPalette);
 	bindSystemTheme();
 	bindEvents();
 	restoreAiChatPanelLayout();
 	const saved = await loadState();
 	hydrate(saved);
 	await ensureQuestionPoolLoaded();
+	renderRoadmapChecks();
 	renderStats();
 	syncAiChatVisibility();
 	renderAiChatMessages();

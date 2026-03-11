@@ -2,9 +2,13 @@ import type { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
 
 export async function dismissWelcomeIfVisible(page: Page) {
-	const welcomeOverlay = page.locator('#overlay-welcome');
-	if (await welcomeOverlay.isVisible()) {
-		await page.locator('#welcome-start').click();
-		await expect(welcomeOverlay).toBeHidden();
+	// Wait for the app to initialize — the welcome overlay appears after init()
+	const welcomeStart = page.locator('#welcome-start');
+	try {
+		await welcomeStart.waitFor({ state: 'visible', timeout: 5000 });
+		await welcomeStart.click();
+		await expect(page.locator('#overlay-welcome')).toBeHidden();
+	} catch {
+		// Welcome overlay didn't appear (returning user with saved state)
 	}
 }

@@ -258,7 +258,7 @@ export default function QuizDialog({ open, onClose }: QuizDialogProps) {
 	});
 
 	return (
-		<div className="overlay" role="dialog" aria-modal="true" ref={overlayRef}>
+		<div className="overlay" role="dialog" aria-modal="true" data-testid="dialog-quiz" ref={overlayRef}>
 			<div className="overlay-backdrop" onClick={handleClose}></div>
 			<div className="overlay-container card">
 				<div className="overlay-header">

@@ -24,7 +24,8 @@ export function selectNextStudyCard(cards, progressById, options = {}) {
 
 	const due = cards.filter((card) => {
 		const progress = progressById[card.id];
-		if (!progress || progress.dueAt > now) return false;
+		if (!progress) return canShowNew;
+		if (progress.dueAt > now) return false;
 		if (progress.last === 'new' && !canShowNew) return false;
 		return true;
 	});
@@ -34,7 +35,8 @@ export function selectNextStudyCard(cards, progressById, options = {}) {
 		: cards
 				.filter((card) => {
 					const progress = progressById[card.id];
-					return progress && (progress.last !== 'new' || canShowNew);
+					if (!progress) return canShowNew;
+					return progress.last !== 'new' || canShowNew;
 				})
 				.sort((left, right) => (progressById[left.id]?.dueAt ?? 0) - (progressById[right.id]?.dueAt ?? 0));
 

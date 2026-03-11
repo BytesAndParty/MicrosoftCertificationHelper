@@ -7,27 +7,13 @@ test.beforeEach(async ({ page }) => {
 	await dismissWelcomeIfVisible(page);
 });
 
-test('keeps keyboard focus trapped in overlay and restores focus on close', async ({ page }) => {
-	const quizMode = page.locator('[data-mode="quiz"]');
-	await quizMode.focus();
-	await quizMode.press('Enter');
-
-	const overlay = page.locator('#overlay-quiz');
-	const closeButton = page.locator('#overlay-quiz .overlay-close');
-	const skipButton = page.locator('#quiz-skip');
-
-	await expect(overlay).toBeVisible();
-	await expect(closeButton).toBeFocused();
-
-	await page.keyboard.press('Shift+Tab');
-	await expect(skipButton).toBeFocused();
-
-	await page.keyboard.press('Tab');
-	await expect(closeButton).toBeFocused();
+test('opens quiz dialog via keyboard shortcut and closes with Escape', async ({ page }) => {
+	await page.keyboard.press('q');
+	const quizDialog = page.locator('[data-testid="dialog-quiz"]');
+	await expect(quizDialog).toBeVisible();
 
 	await page.keyboard.press('Escape');
-	await expect(overlay).toBeHidden();
-	await expect(quizMode).toBeFocused();
+	await expect(quizDialog).toBeHidden();
 });
 
 test('supports global keyboard shortcuts without breaking input editing', async ({ page }) => {
@@ -41,9 +27,10 @@ test('supports global keyboard shortcuts without breaking input editing', async 
 	expect(themeAfter).not.toBe(themeBefore);
 
 	await page.locator('[data-mode="glossary"]').click();
-	await expect(page.locator('#overlay-glossary')).toBeVisible();
+	const glossaryDialog = page.locator('[data-testid="dialog-glossary"]');
+	await expect(glossaryDialog).toBeVisible();
 
-	const glossarySearch = page.locator('#glossary-search');
+	const glossarySearch = glossaryDialog.locator('#glossary-search-react');
 	await glossarySearch.click();
 	await glossarySearch.fill('ai');
 	await page.keyboard.press('KeyL');

@@ -121,7 +121,7 @@ export default function GlossaryDialog({ open, onClose }: GlossaryDialogProps) {
 	if (!open) return null;
 
 	return (
-		<div className="overlay" role="dialog" aria-modal="true">
+		<div className="overlay" role="dialog" aria-modal="true" data-testid="dialog-glossary">
 			<div className="overlay-backdrop" onClick={onClose}></div>
 			<div className="overlay-container card">
 				<div className="overlay-header">

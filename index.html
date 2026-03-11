@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-theme="light" data-accent="amber">
+<html lang="en" data-theme="light">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,23 +10,11 @@
 			(() => {
 				try {
 					const themeKey = 'ai900_theme_pref';
-					const fallbackKey = 'ai900_state_fallback';
 					const stored = localStorage.getItem(themeKey);
 					const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 					const resolved = stored === 'dark' || stored === 'light' ? stored : prefersDark ? 'dark' : 'light';
 					document.documentElement.dataset.theme = resolved;
 					document.documentElement.classList.toggle('dark', resolved === 'dark');
-
-					const allowedAccents = ['amber', 'emerald', 'cobalt', 'raspberry'];
-					let accent = 'amber';
-					const rawState = localStorage.getItem(fallbackKey);
-					if (rawState) {
-						const parsed = JSON.parse(rawState);
-						const candidate = parsed?.settings?.accentPalette ?? parsed?.state?.settings?.accentPalette;
-						if (typeof candidate === 'string' && allowedAccents.includes(candidate)) accent = candidate;
-					}
-					document.documentElement.dataset.accent = accent;
-
 					const lang = localStorage.getItem('ai900_lang_pref');
 					if (lang === 'de' || lang === 'en') document.documentElement.lang = lang;
 				} catch {}
