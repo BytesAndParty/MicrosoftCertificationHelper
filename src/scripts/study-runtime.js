@@ -118,8 +118,8 @@ const i18n = {
 				'metrics.dueCards': 'Due Cards',
 				'metrics.journal': 'Error Journal',
 				'readiness.label': 'Exam readiness',
-				'readiness.metaIdle': 'Readiness is reliable after each question is answered correctly at least once.',
-				'readiness.meta': 'Quiz {accuracy}% | Best exam {exam}% | Mastered {mastered}/{total} questions',
+				'readiness.metaIdle': '100% when every question has been answered correctly at least once.',
+				'readiness.meta': '{mastered}/{total} questions mastered',
 				'session.title': 'Session Goal',
 			'session.goalSprint': 'Sprint 10',
 			'session.goalFocus': 'Focus 20',
@@ -302,8 +302,8 @@ const i18n = {
 				'metrics.dueCards': 'Fällige Karten',
 				'metrics.journal': 'Fehlerjournal',
 				'readiness.label': 'Prüfungs-Readiness',
-				'readiness.metaIdle': 'Der Score wird erst verlässlich, wenn jede Frage mindestens einmal richtig beantwortet wurde.',
-				'readiness.meta': 'Quiz {accuracy}% | Beste Prüfung {exam}% | Beherrscht {mastered}/{total} Fragen',
+				'readiness.metaIdle': '100% wenn jede Frage mindestens einmal richtig beantwortet wurde.',
+				'readiness.meta': '{mastered}/{total} Fragen beherrscht',
 				'session.title': 'Session-Ziel',
 			'session.goalSprint': 'Sprint 10',
 			'session.goalFocus': 'Fokus 20',
@@ -1835,23 +1835,10 @@ function getQuestionMasterySnapshot() {
 }
 
 function getExamReadinessSnapshot() {
-	const quizAccuracy = getAccuracy();
 	const mastery = getQuestionMasterySnapshot();
-	const hasExamData = (Array.isArray(state.examHistory) && state.examHistory.length > 0) || state.examBest > 0;
-	const examSignal = hasExamData
-		? Math.max(0, Math.min(100, Number(state.examBest) || 0))
-		: Math.max(0, Math.min(100, quizAccuracy));
-	const topicCoverage = getQuizTopicCoveragePercent();
-	const baseReadiness = Math.round((quizAccuracy * 0.4) + (examSignal * 0.35) + (topicCoverage * 0.25));
-	const confidenceFactor = mastery.coverage / 100;
-	const readiness = mastery.total > 0
-		? Math.round(baseReadiness * confidenceFactor)
-		: 0;
-	const score = Math.max(0, Math.min(100, readiness));
+	const score = mastery.total > 0 ? mastery.coverage : 0;
 	return {
 		score,
-		quizAccuracy,
-		examSignal,
 		mastered: mastery.mastered,
 		totalQuestions: mastery.total,
 		masteryCoverage: mastery.coverage
@@ -1864,10 +1851,8 @@ function renderExamReadiness() {
 	const snapshot = getExamReadinessSnapshot();
 	ui.heroReadinessProgress.value = snapshot.score;
 	ui.heroReadinessValue.textContent = `${snapshot.score}%`;
-	ui.heroReadinessMeta.textContent = snapshot.totalQuestions > 0 || snapshot.examSignal > 0
+	ui.heroReadinessMeta.textContent = snapshot.totalQuestions > 0
 		? t('readiness.meta', {
-			accuracy: snapshot.quizAccuracy,
-			exam: snapshot.examSignal,
 			mastered: snapshot.mastered,
 			total: snapshot.totalQuestions
 		})

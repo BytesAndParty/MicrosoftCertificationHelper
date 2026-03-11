@@ -16,31 +16,25 @@ interface StudyWorkspaceProps {
 
 export default function StudyWorkspace({ roadmapThemes }: StudyWorkspaceProps) {
 	return (
-		<main className="page">
-			<a href="#roadmap" className="skip-link" data-i18n="a11y.skipLink">
-				Skip to study workspace
-			</a>
-			<header className="hero reveal">
-				<div className="hero-readiness" id="hero-readiness">
-					<div className="hero-readiness-head">
-						<p data-i18n="readiness.label">Exam readiness</p>
-						<strong id="hero-readiness-value">0%</strong>
-					</div>
-					<progress id="hero-readiness-progress" max={100} value={0} data-i18n-aria-label="readiness.label" aria-label="Exam readiness"></progress>
-					<p id="hero-readiness-meta" className="hero-readiness-meta" data-i18n="readiness.metaIdle">
-						Readiness is reliable after each question is answered correctly at least once.
-					</p>
+		<>
+		<nav className="top-nav" aria-label="Main navigation">
+			<div className="top-nav-inner">
+				<div className="top-nav-brand">
+					<p className="eyebrow">AI-900 Prep Workspace</p>
+					<h1>Microsoft Certification Helper</h1>
 				</div>
-				<div className="hero-top">
-					<div>
-						<p className="eyebrow">AI-900 Prep Workspace</p>
-						<h1>Microsoft Certification Helper</h1>
-						<p className="hero-copy" data-i18n="hero.copy">
-							Quiz mode, exam mode, flashcards, an error journal, and a glossary with local progress stored in
-							the browser database.
+				<div className="top-nav-right">
+					<div className="top-nav-readiness" id="hero-readiness">
+						<div className="hero-readiness-head">
+							<p data-i18n="readiness.label">Exam readiness</p>
+							<strong id="hero-readiness-value">0%</strong>
+						</div>
+						<progress id="hero-readiness-progress" max={100} value={0} data-i18n-aria-label="readiness.label" aria-label="Exam readiness"></progress>
+						<p id="hero-readiness-meta" className="hero-readiness-meta" data-i18n="readiness.metaIdle">
+							100% when every question has been answered correctly at least once.
 						</p>
 					</div>
-					<div className="hero-controls">
+					<div className="top-nav-controls">
 						<button id="theme-toggle" type="button" className="secondary theme-toggle" aria-label="Switch to dark mode">
 							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
 								<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
@@ -57,6 +51,13 @@ export default function StudyWorkspace({ roadmapThemes }: StudyWorkspaceProps) {
 						</button>
 					</div>
 				</div>
+			</div>
+		</nav>
+		<main className="page">
+			<a href="#roadmap" className="skip-link" data-i18n="a11y.skipLink">
+				Skip to study workspace
+			</a>
+			<header className="hero reveal">
 				<nav className="hero-modes" aria-label="Study modes" data-i18n-aria-label="tabs.ariaLabel">
 					<button type="button" className="mode-btn" data-mode="quiz" data-tooltip="Answer questions with instant feedback and track your accuracy over time." data-i18n-tooltip="tooltip.quiz">
 						<span className="mode-icon" aria-hidden="true">&#9997;</span>
@@ -182,5 +183,6 @@ export default function StudyWorkspace({ roadmapThemes }: StudyWorkspaceProps) {
 			</section>
 			<div id="study-toast" className="study-toast" role="alert" aria-live="assertive" hidden></div>
 		</main>
+		</>
 	);
 }
