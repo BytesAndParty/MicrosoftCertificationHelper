@@ -1,0 +1,33 @@
+@import 'tailwindcss';
+
+/*
+ * Theme tokens — minimal palette for a study app.
+ * Neutral surfaces, clear accent for interactive elements.
+ */
+@theme {
+	--color-surface: oklch(0.985 0 0);
+	--color-surface-alt: oklch(0.965 0 0);
+	--color-border: oklch(0.87 0 0);
+	--color-text: oklch(0.2 0 0);
+	--color-text-muted: oklch(0.55 0 0);
+	--color-accent: oklch(0.555 0.146 49);
+	--color-accent-fg: oklch(0.98 0 0);
+
+	--font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+	--font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+/* Dark mode overrides */
+.dark {
+	--color-surface: oklch(0.145 0 0);
+	--color-surface-alt: oklch(0.19 0 0);
+	--color-border: oklch(0.3 0 0);
+	--color-text: oklch(0.93 0 0);
+	--color-text-muted: oklch(0.6 0 0);
+}
+
+@layer base {
+	body {
+		@apply bg-surface text-text font-sans antialiased;
+	}
+}
