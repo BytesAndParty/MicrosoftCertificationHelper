@@ -3142,5 +3142,1828 @@ export const quizQuestions = [
 			"title": "Introduction to machine learning concepts (Microsoft Learn)",
 			"url": "https://learn.microsoft.com/en-us/training/modules/fundamentals-machine-learning/"
 		}
+	},
+	{
+		"id": "q79",
+		"topic": "Computer Vision",
+		"prompt": "Which Azure AI Vision capability generates a natural-language sentence describing an image?",
+		"hint": "Think about which feature produces human-readable text about the visual content of a photo.",
+		"options": [
+			"Image tagging",
+			"Image captioning",
+			"Smart cropping",
+			"Spatial analysis"
+		],
+		"optionExplanations": [
+			"\"Image tagging\" is not the best fit for this question. The correct answer is \"Image captioning\". Image tagging returns individual keywords, not full sentences describing the scene.",
+			"Correct: Image captioning generates a natural-language description of the image content.",
+			"\"Smart cropping\" is not the best fit for this question. The correct answer is \"Image captioning\". Smart cropping identifies areas of interest for thumbnails but does not produce text descriptions.",
+			"\"Spatial analysis\" is not the best fit for this question. The correct answer is \"Image captioning\". Spatial analysis detects people movement in video feeds, not text descriptions of images."
+		],
+		"answerIndex": 1,
+		"explanation": "Image captioning in Azure AI Vision analyzes an image and returns a human-readable sentence describing its content.",
+		"promptDe": "Welche Funktion von Azure AI Vision erzeugt einen naturlichsprachlichen Satz, der ein Bild beschreibt?",
+		"hintDe": "Uberlege, welches Feature menschlich lesbaren Text uber den visuellen Inhalt eines Fotos erstellt.",
+		"explanationDe": "Bildbeschriftung in Azure AI Vision analysiert ein Bild und gibt einen menschlich lesbaren Satz zuruck, der den Inhalt beschreibt.",
+		"optionsDe": [
+			"Bild-Tagging",
+			"Bildbeschriftung",
+			"Smart Cropping",
+			"Raumliche Analyse"
+		],
+		"optionExplanationsDe": [
+			"\"Bild-Tagging\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Bildbeschriftung\". Bild-Tagging gibt einzelne Schlusselworter zuruck, keine vollstandigen Satze.",
+			"Richtig: Bildbeschriftung erzeugt eine naturlichsprachliche Beschreibung des Bildinhalts.",
+			"\"Smart Cropping\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Bildbeschriftung\". Smart Cropping identifiziert Interessenbereiche fur Thumbnails, erzeugt aber keine Textbeschreibungen.",
+			"\"Raumliche Analyse\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Bildbeschriftung\". Raumliche Analyse erkennt Personenbewegungen in Videofeeds, nicht Textbeschreibungen von Bildern."
+		],
+		"learnRef": {
+			"title": "Analyze images with Azure AI Vision",
+			"url": "https://learn.microsoft.com/en-us/training/modules/analyze-images/"
+		},
+		"learnRefDe": {
+			"title": "Analyze images with Azure AI Vision (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/analyze-images/"
+		}
+	},
+	{
+		"id": "q80",
+		"topic": "Computer Vision",
+		"prompt": "What does the image tagging feature in Azure AI Vision return?",
+		"hint": "Consider the difference between individual labels and full sentences.",
+		"options": [
+			"A single confidence score for the whole image",
+			"A list of relevant tags with confidence scores",
+			"A bounding box around every object",
+			"A translated caption in multiple languages"
+		],
+		"optionExplanations": [
+			"\"A single confidence score for the whole image\" is not the best fit for this question. The correct answer is \"A list of relevant tags with confidence scores\". Image tagging returns multiple tags, not a single overall score.",
+			"Correct: Image tagging returns a set of relevant keyword tags, each with an associated confidence score.",
+			"\"A bounding box around every object\" is not the best fit for this question. The correct answer is \"A list of relevant tags with confidence scores\". Bounding boxes are returned by object detection, not by tagging.",
+			"\"A translated caption in multiple languages\" is not the best fit for this question. The correct answer is \"A list of relevant tags with confidence scores\". Translated captions are not the output of image tagging."
+		],
+		"answerIndex": 1,
+		"explanation": "Image tagging analyzes visual content and returns keyword tags, each with a confidence score indicating how likely the tag applies.",
+		"promptDe": "Was gibt die Bild-Tagging-Funktion in Azure AI Vision zuruck?",
+		"hintDe": "Uberlege den Unterschied zwischen einzelnen Labels und ganzen Satzen.",
+		"explanationDe": "Bild-Tagging analysiert den visuellen Inhalt und gibt eine Liste von Schlusselwort-Tags zuruck, jeweils mit einem Konfidenzwert.",
+		"optionsDe": [
+			"Einen einzelnen Konfidenzwert fur das gesamte Bild",
+			"Eine Liste relevanter Tags mit Konfidenzwerten",
+			"Einen Begrenzungsrahmen um jedes Objekt",
+			"Eine ubersetzte Beschriftung in mehreren Sprachen"
+		],
+		"optionExplanationsDe": [
+			"\"Einen einzelnen Konfidenzwert fur das gesamte Bild\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Eine Liste relevanter Tags mit Konfidenzwerten\". Bild-Tagging gibt mehrere Tags zuruck, nicht einen einzelnen Gesamtwert.",
+			"Richtig: Bild-Tagging gibt eine Reihe relevanter Schlusselwort-Tags zuruck, jeweils mit einem Konfidenzwert.",
+			"\"Einen Begrenzungsrahmen um jedes Objekt\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Eine Liste relevanter Tags mit Konfidenzwerten\". Begrenzungsrahmen werden durch Objekterkennung geliefert, nicht durch Tagging.",
+			"\"Eine ubersetzte Beschriftung in mehreren Sprachen\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Eine Liste relevanter Tags mit Konfidenzwerten\". Ubersetzte Beschriftungen sind nicht die Ausgabe von Bild-Tagging."
+		],
+		"learnRef": {
+			"title": "Analyze images with Azure AI Vision",
+			"url": "https://learn.microsoft.com/en-us/training/modules/analyze-images/"
+		},
+		"learnRefDe": {
+			"title": "Analyze images with Azure AI Vision (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/analyze-images/"
+		}
+	},
+	{
+		"id": "q81",
+		"topic": "Computer Vision",
+		"prompt": "Which Azure AI Vision feature automatically selects the most visually interesting region when generating a thumbnail?",
+		"hint": "Think about which feature focuses on the area of interest rather than just center-cropping.",
+		"options": [
+			"Object detection",
+			"Smart cropping",
+			"Optical character recognition",
+			"Image classification"
+		],
+		"optionExplanations": [
+			"\"Object detection\" is not the best fit for this question. The correct answer is \"Smart cropping\". Object detection identifies and locates objects but does not generate thumbnails.",
+			"Correct: Smart cropping uses area-of-interest detection to create thumbnails focused on the most important part of the image.",
+			"\"Optical character recognition\" is not the best fit for this question. The correct answer is \"Smart cropping\". OCR extracts text from images and is unrelated to thumbnail generation.",
+			"\"Image classification\" is not the best fit for this question. The correct answer is \"Smart cropping\". Image classification assigns category labels, it does not generate thumbnails."
+		],
+		"answerIndex": 1,
+		"explanation": "Smart cropping in Azure AI Vision identifies the area of interest in an image and generates a thumbnail focused on that region.",
+		"promptDe": "Welche Azure AI Vision-Funktion wahlt automatisch den visuell interessantesten Bereich beim Erstellen eines Thumbnails aus?",
+		"hintDe": "Uberlege, welche Funktion sich auf den Interessenbereich konzentriert, statt nur in der Mitte zu beschneiden.",
+		"explanationDe": "Smart Cropping in Azure AI Vision identifiziert den Interessenbereich in einem Bild und erstellt ein Thumbnail, das auf diesen Bereich fokussiert ist.",
+		"optionsDe": [
+			"Objekterkennung",
+			"Smart Cropping",
+			"Optische Zeichenerkennung",
+			"Bildklassifizierung"
+		],
+		"optionExplanationsDe": [
+			"\"Objekterkennung\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Smart Cropping\". Objekterkennung identifiziert und lokalisiert Objekte, erstellt aber keine Thumbnails.",
+			"Richtig: Smart Cropping nutzt die Erkennung von Interessenbereichen, um Thumbnails zu erstellen, die auf den wichtigsten Teil des Bildes fokussiert sind.",
+			"\"Optische Zeichenerkennung\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Smart Cropping\". OCR extrahiert Text aus Bildern und hat nichts mit Thumbnail-Erstellung zu tun.",
+			"\"Bildklassifizierung\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Smart Cropping\". Bildklassifizierung weist Kategorielabels zu, erstellt aber keine Thumbnails."
+		],
+		"learnRef": {
+			"title": "Analyze images with Azure AI Vision",
+			"url": "https://learn.microsoft.com/en-us/training/modules/analyze-images/"
+		},
+		"learnRefDe": {
+			"title": "Analyze images with Azure AI Vision (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/analyze-images/"
+		}
+	},
+	{
+		"id": "q82",
+		"topic": "Computer Vision",
+		"prompt": "Which Azure AI Vision capability can detect and track people moving through a defined zone in a video feed?",
+		"hint": "Consider which feature is designed for monitoring physical spaces in real time.",
+		"options": [
+			"Image captioning",
+			"Custom Vision classification",
+			"Spatial analysis",
+			"OCR"
+		],
+		"optionExplanations": [
+			"\"Image captioning\" is not the best fit for this question. The correct answer is \"Spatial analysis\". Image captioning generates text descriptions of static images, it does not track movement.",
+			"\"Custom Vision classification\" is not the best fit for this question. The correct answer is \"Spatial analysis\". Custom Vision classifies images into categories but does not perform real-time people tracking.",
+			"Correct: Spatial analysis in Azure AI Vision can detect people, track their movement, and monitor defined zones in video feeds.",
+			"\"OCR\" is not the best fit for this question. The correct answer is \"Spatial analysis\". OCR extracts text from images and is not related to people tracking."
+		],
+		"answerIndex": 2,
+		"explanation": "Spatial analysis uses video feeds to detect people and understand their movement through physical spaces.",
+		"promptDe": "Welche Azure AI Vision-Funktion kann Personen erkennen und verfolgen, die sich durch eine definierte Zone in einem Videofeed bewegen?",
+		"hintDe": "Uberlege, welches Feature fur die Uberwachung physischer Raume in Echtzeit konzipiert ist.",
+		"explanationDe": "Raumliche Analyse nutzt Videofeeds, um Personen zu erkennen und ihre Bewegung durch physische Raume zu verstehen.",
+		"optionsDe": [
+			"Bildbeschriftung",
+			"Custom Vision Klassifizierung",
+			"Raumliche Analyse",
+			"OCR"
+		],
+		"optionExplanationsDe": [
+			"\"Bildbeschriftung\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Raumliche Analyse\". Bildbeschriftung erzeugt Textbeschreibungen statischer Bilder, verfolgt keine Bewegungen.",
+			"\"Custom Vision Klassifizierung\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Raumliche Analyse\". Custom Vision klassifiziert Bilder, fuhrt aber keine Personenverfolgung durch.",
+			"Richtig: Raumliche Analyse kann Personen erkennen, ihre Bewegung verfolgen und definierte Zonen uberwachen.",
+			"\"OCR\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Raumliche Analyse\". OCR extrahiert Text aus Bildern."
+		],
+		"learnRef": {
+			"title": "Analyze video with Azure AI Vision",
+			"url": "https://learn.microsoft.com/en-us/training/modules/analyze-video/"
+		},
+		"learnRefDe": {
+			"title": "Analyze video with Azure AI Vision (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/analyze-video/"
+		}
+	},
+	{
+		"id": "q83",
+		"topic": "Computer Vision",
+		"prompt": "What is the primary difference between face detection and face verification in Azure AI Face?",
+		"hint": "One finds faces in an image, the other checks if two faces belong to the same person.",
+		"options": [
+			"Face detection identifies a specific person; face verification finds faces",
+			"Face detection locates faces in an image; face verification checks if two faces match the same person",
+			"Face detection requires enrollment; face verification does not",
+			"There is no difference; they are the same operation"
+		],
+		"optionExplanations": [
+			"\"Face detection identifies a specific person; face verification finds faces\" is not the best fit for this question. The correct answer is \"Face detection locates faces in an image; face verification checks if two faces match the same person\". This reverses the definitions.",
+			"Correct: Face detection locates and returns bounding boxes for faces, while face verification performs a one-to-one match between two faces.",
+			"\"Face detection requires enrollment; face verification does not\" is not the best fit for this question. The correct answer is \"Face detection locates faces in an image; face verification checks if two faces match the same person\". Face detection does not require enrollment.",
+			"\"There is no difference; they are the same operation\" is not the best fit for this question. The correct answer is \"Face detection locates faces in an image; face verification checks if two faces match the same person\". They are distinct operations."
+		],
+		"answerIndex": 1,
+		"explanation": "Face detection finds faces and returns locations. Face verification is a one-to-one comparison checking whether two faces belong to the same individual.",
+		"promptDe": "Was ist der Hauptunterschied zwischen Gesichtserkennung und Gesichtsverifizierung in Azure AI Face?",
+		"hintDe": "Eine findet Gesichter in einem Bild, die andere pruft, ob zwei Gesichter zur selben Person gehoren.",
+		"explanationDe": "Gesichtserkennung findet Gesichter und gibt deren Positionen zuruck. Gesichtsverifizierung ist ein Eins-zu-eins-Vergleich.",
+		"optionsDe": [
+			"Gesichtserkennung identifiziert eine bestimmte Person; Gesichtsverifizierung findet Gesichter",
+			"Gesichtserkennung lokalisiert Gesichter; Gesichtsverifizierung pruft, ob zwei Gesichter zur selben Person gehoren",
+			"Gesichtserkennung erfordert Registrierung; Gesichtsverifizierung nicht",
+			"Es gibt keinen Unterschied; es ist dieselbe Operation"
+		],
+		"optionExplanationsDe": [
+			"\"Gesichtserkennung identifiziert eine bestimmte Person; Gesichtsverifizierung findet Gesichter\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Gesichtserkennung lokalisiert Gesichter; Gesichtsverifizierung pruft, ob zwei Gesichter zur selben Person gehoren\". Dies vertauscht die Definitionen.",
+			"Richtig: Gesichtserkennung lokalisiert Gesichter und gibt Begrenzungsrahmen zuruck, wahrend Gesichtsverifizierung einen Eins-zu-eins-Vergleich durchfuhrt.",
+			"\"Gesichtserkennung erfordert Registrierung; Gesichtsverifizierung nicht\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Gesichtserkennung lokalisiert Gesichter; Gesichtsverifizierung pruft, ob zwei Gesichter zur selben Person gehoren\". Gesichtserkennung erfordert keine Registrierung.",
+			"\"Es gibt keinen Unterschied; es ist dieselbe Operation\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Gesichtserkennung lokalisiert Gesichter; Gesichtsverifizierung pruft, ob zwei Gesichter zur selben Person gehoren\". Es sind verschiedene Operationen."
+		],
+		"learnRef": {
+			"title": "Detect and analyze faces with Azure AI Face",
+			"url": "https://learn.microsoft.com/en-us/training/modules/detect-analyze-faces/"
+		},
+		"learnRefDe": {
+			"title": "Detect and analyze faces with Azure AI Face (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/detect-analyze-faces/"
+		}
+	},
+	{
+		"id": "q84",
+		"topic": "Computer Vision",
+		"prompt": "What does face identification do in Azure AI Face, compared to face verification?",
+		"hint": "One is a one-to-one check, the other searches among many enrolled faces.",
+		"options": [
+			"It detects faces without matching them",
+			"It performs a one-to-one comparison between two face images",
+			"It matches a detected face against a group of enrolled persons to determine who it is",
+			"It generates a synthetic face image from text"
+		],
+		"optionExplanations": [
+			"\"It detects faces without matching them\" is not the best fit for this question. The correct answer is \"It matches a detected face against a group of enrolled persons to determine who it is\". Detecting without matching is face detection.",
+			"\"It performs a one-to-one comparison between two face images\" is not the best fit for this question. The correct answer is \"It matches a detected face against a group of enrolled persons to determine who it is\". A one-to-one comparison is face verification.",
+			"Correct: Face identification performs a one-to-many search, matching a detected face against enrolled persons to determine identity.",
+			"\"It generates a synthetic face image from text\" is not the best fit for this question. The correct answer is \"It matches a detected face against a group of enrolled persons to determine who it is\". That is an image generation task."
+		],
+		"answerIndex": 2,
+		"explanation": "Face identification is a one-to-many operation comparing a detected face against a group of enrolled persons to determine identity.",
+		"promptDe": "Was macht Gesichtsidentifizierung in Azure AI Face im Vergleich zur Gesichtsverifizierung?",
+		"hintDe": "Eine ist ein Eins-zu-eins-Vergleich, die andere sucht unter vielen registrierten Gesichtern.",
+		"explanationDe": "Gesichtsidentifizierung ist eine Eins-zu-viele-Operation, die ein erkanntes Gesicht mit registrierten Personen abgleicht.",
+		"optionsDe": [
+			"Sie erkennt Gesichter, ohne sie zuzuordnen",
+			"Sie fuhrt einen Eins-zu-eins-Vergleich durch",
+			"Sie gleicht ein erkanntes Gesicht mit einer Gruppe registrierter Personen ab",
+			"Sie generiert ein synthetisches Gesichtsbild aus Text"
+		],
+		"optionExplanationsDe": [
+			"\"Sie erkennt Gesichter, ohne sie zuzuordnen\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Sie gleicht ein erkanntes Gesicht mit einer Gruppe registrierter Personen ab\". Das ist Gesichtserkennung, nicht Identifizierung.",
+			"\"Sie fuhrt einen Eins-zu-eins-Vergleich durch\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Sie gleicht ein erkanntes Gesicht mit einer Gruppe registrierter Personen ab\". Ein Eins-zu-eins-Vergleich ist Verifizierung.",
+			"Richtig: Gesichtsidentifizierung fuhrt eine Eins-zu-viele-Suche durch und gleicht ein erkanntes Gesicht mit registrierten Personen ab.",
+			"\"Sie generiert ein synthetisches Gesichtsbild aus Text\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Sie gleicht ein erkanntes Gesicht mit einer Gruppe registrierter Personen ab\". Das ist eine Bildgenerierungsaufgabe."
+		],
+		"learnRef": {
+			"title": "Detect and analyze faces with Azure AI Face",
+			"url": "https://learn.microsoft.com/en-us/training/modules/detect-analyze-faces/"
+		},
+		"learnRefDe": {
+			"title": "Detect and analyze faces with Azure AI Face (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/detect-analyze-faces/"
+		}
+	},
+	{
+		"id": "q85",
+		"topic": "Computer Vision",
+		"prompt": "What is liveness detection in Azure AI Face used for?",
+		"hint": "Think about preventing someone from holding up a photo to impersonate another person.",
+		"options": [
+			"Determining the age and gender of a detected face",
+			"Verifying that the face in front of the camera is a real person and not a photo or mask",
+			"Identifying which person in a database a face belongs to",
+			"Detecting emotional expressions on a face"
+		],
+		"optionExplanations": [
+			"\"Determining the age and gender of a detected face\" is not the best fit for this question. The correct answer is \"Verifying that the face in front of the camera is a real person and not a photo or mask\". Age estimation is face attribute analysis, not liveness.",
+			"Correct: Liveness detection determines whether the face presented to the camera is a live person, preventing spoofing attacks using photos, videos, or masks.",
+			"\"Identifying which person in a database a face belongs to\" is not the best fit for this question. The correct answer is \"Verifying that the face in front of the camera is a real person and not a photo or mask\". That is face identification.",
+			"\"Detecting emotional expressions on a face\" is not the best fit for this question. The correct answer is \"Verifying that the face in front of the camera is a real person and not a photo or mask\". Emotion detection does not verify liveness."
+		],
+		"answerIndex": 1,
+		"explanation": "Liveness detection verifies that the face presented to the camera belongs to a real, physically present person, preventing spoofing with photos, videos, or masks.",
+		"promptDe": "Wofur wird die Liveness-Erkennung in Azure AI Face verwendet?",
+		"hintDe": "Denke daran, dass jemand ein Foto vorhalten konnte, um sich als andere Person auszugeben.",
+		"explanationDe": "Liveness-Erkennung verifiziert, dass das Gesicht vor der Kamera einer echten, physisch anwesenden Person gehort.",
+		"optionsDe": [
+			"Bestimmung von Alter und Geschlecht eines erkannten Gesichts",
+			"Verifizierung, dass das Gesicht vor der Kamera eine echte Person ist und kein Foto oder eine Maske",
+			"Identifizierung, welcher Person in einer Datenbank ein Gesicht gehort",
+			"Erkennung emotionaler Ausdrucke auf einem Gesicht"
+		],
+		"optionExplanationsDe": [
+			"\"Bestimmung von Alter und Geschlecht\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Verifizierung, dass das Gesicht vor der Kamera eine echte Person ist und kein Foto oder eine Maske\". Altersschatzung ist Gesichtsattribut-Analyse.",
+			"Richtig: Liveness-Erkennung bestimmt, ob das Gesicht einer lebenden Person gehort, und verhindert Spoofing-Angriffe.",
+			"\"Identifizierung, welcher Person ein Gesicht gehort\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Verifizierung, dass das Gesicht vor der Kamera eine echte Person ist und kein Foto oder eine Maske\". Das ist Gesichtsidentifizierung.",
+			"\"Erkennung emotionaler Ausdrucke\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Verifizierung, dass das Gesicht vor der Kamera eine echte Person ist und kein Foto oder eine Maske\". Emotionserkennung pruft keine Liveness."
+		],
+		"learnRef": {
+			"title": "Detect and analyze faces with Azure AI Face",
+			"url": "https://learn.microsoft.com/en-us/training/modules/detect-analyze-faces/"
+		},
+		"learnRefDe": {
+			"title": "Detect and analyze faces with Azure AI Face (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/detect-analyze-faces/"
+		}
+	},
+	{
+		"id": "q86",
+		"topic": "Computer Vision",
+		"prompt": "Which Azure AI Vision feature can extract printed and handwritten text from images?",
+		"hint": "Think about which capability reads characters from visual media like photos or scanned documents.",
+		"options": [
+			"Image captioning",
+			"Image tagging",
+			"OCR (Read API)",
+			"Smart cropping"
+		],
+		"optionExplanations": [
+			"\"Image captioning\" is not the best fit for this question. The correct answer is \"OCR (Read API)\". Image captioning describes the scene in natural language, it does not extract text characters.",
+			"\"Image tagging\" is not the best fit for this question. The correct answer is \"OCR (Read API)\". Image tagging returns keyword labels for visual content, not text extraction.",
+			"Correct: The OCR Read API in Azure AI Vision extracts both printed and handwritten text from images and documents.",
+			"\"Smart cropping\" is not the best fit for this question. The correct answer is \"OCR (Read API)\". Smart cropping generates thumbnails focused on areas of interest."
+		],
+		"answerIndex": 2,
+		"explanation": "The OCR Read API in Azure AI Vision can extract both printed and handwritten text from images, PDFs, and other documents.",
+		"promptDe": "Welche Azure AI Vision-Funktion kann gedruckten und handgeschriebenen Text aus Bildern extrahieren?",
+		"hintDe": "Uberlege, welche Fahigkeit Zeichen aus visuellen Medien wie Fotos oder gescannten Dokumenten liest.",
+		"explanationDe": "Die OCR Read API in Azure AI Vision kann sowohl gedruckten als auch handgeschriebenen Text aus Bildern und Dokumenten extrahieren.",
+		"optionsDe": [
+			"Bildbeschriftung",
+			"Bild-Tagging",
+			"OCR (Read API)",
+			"Smart Cropping"
+		],
+		"optionExplanationsDe": [
+			"\"Bildbeschriftung\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"OCR (Read API)\". Bildbeschriftung beschreibt die Szene in naturlicher Sprache.",
+			"\"Bild-Tagging\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"OCR (Read API)\". Bild-Tagging gibt Schlusselwort-Labels fur visuellen Inhalt zuruck.",
+			"Richtig: Die OCR Read API extrahiert sowohl gedruckten als auch handgeschriebenen Text aus Bildern und Dokumenten.",
+			"\"Smart Cropping\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"OCR (Read API)\". Smart Cropping erstellt Thumbnails."
+		],
+		"learnRef": {
+			"title": "Read text with Azure AI Vision",
+			"url": "https://learn.microsoft.com/en-us/training/modules/read-text-images-documents-with-computer-vision-service/"
+		},
+		"learnRefDe": {
+			"title": "Read text with Azure AI Vision (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/read-text-images-documents-with-computer-vision-service/"
+		}
+	},
+	{
+		"id": "q87",
+		"topic": "Computer Vision",
+		"prompt": "What is the difference between semantic segmentation and instance segmentation?",
+		"hint": "Both label pixels, but one distinguishes individual objects of the same class while the other does not.",
+		"options": [
+			"Semantic segmentation labels each pixel with a class; instance segmentation also separates individual objects of the same class",
+			"Instance segmentation labels pixels; semantic segmentation draws bounding boxes",
+			"They are identical techniques with different names",
+			"Semantic segmentation only works on video; instance segmentation only on images"
+		],
+		"optionExplanations": [
+			"Correct: Semantic segmentation assigns a class to each pixel. Instance segmentation goes further by distinguishing between separate objects of the same class.",
+			"\"Instance segmentation labels pixels; semantic segmentation draws bounding boxes\" is not the best fit for this question. The correct answer is \"Semantic segmentation labels each pixel with a class; instance segmentation also separates individual objects of the same class\". Both label pixels; bounding boxes are from object detection.",
+			"\"They are identical techniques with different names\" is not the best fit for this question. The correct answer is \"Semantic segmentation labels each pixel with a class; instance segmentation also separates individual objects of the same class\". They differ in how individual instances are handled.",
+			"\"Semantic segmentation only works on video; instance segmentation only on images\" is not the best fit for this question. The correct answer is \"Semantic segmentation labels each pixel with a class; instance segmentation also separates individual objects of the same class\". Both can work on images and video."
+		],
+		"answerIndex": 0,
+		"explanation": "Semantic segmentation assigns a class label to every pixel. Instance segmentation additionally distinguishes individual objects of the same class.",
+		"promptDe": "Was ist der Unterschied zwischen semantischer Segmentierung und Instanz-Segmentierung?",
+		"hintDe": "Beide labeln Pixel, aber eine unterscheidet einzelne Objekte derselben Klasse, die andere nicht.",
+		"explanationDe": "Semantische Segmentierung weist jedem Pixel ein Klassenlabel zu. Instanz-Segmentierung unterscheidet zusatzlich einzelne Objekte derselben Klasse.",
+		"optionsDe": [
+			"Semantische Segmentierung labelt jedes Pixel mit einer Klasse; Instanz-Segmentierung trennt auch einzelne Objekte derselben Klasse",
+			"Instanz-Segmentierung labelt Pixel; semantische Segmentierung zeichnet Begrenzungsrahmen",
+			"Es sind identische Techniken mit verschiedenen Namen",
+			"Semantische Segmentierung funktioniert nur bei Video; Instanz-Segmentierung nur bei Bildern"
+		],
+		"optionExplanationsDe": [
+			"Richtig: Semantische Segmentierung weist jedem Pixel eine Klasse zu. Instanz-Segmentierung unterscheidet zusatzlich einzelne Objekte derselben Klasse.",
+			"\"Instanz-Segmentierung labelt Pixel; semantische Segmentierung zeichnet Begrenzungsrahmen\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Semantische Segmentierung labelt jedes Pixel mit einer Klasse; Instanz-Segmentierung trennt auch einzelne Objekte derselben Klasse\". Begrenzungsrahmen stammen von der Objekterkennung.",
+			"\"Es sind identische Techniken\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Semantische Segmentierung labelt jedes Pixel mit einer Klasse; Instanz-Segmentierung trennt auch einzelne Objekte derselben Klasse\". Sie unterscheiden sich.",
+			"\"Semantische Segmentierung funktioniert nur bei Video\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Semantische Segmentierung labelt jedes Pixel mit einer Klasse; Instanz-Segmentierung trennt auch einzelne Objekte derselben Klasse\". Beide konnen auf Bildern und Video arbeiten."
+		],
+		"learnRef": {
+			"title": "Introduction to computer vision concepts",
+			"url": "https://learn.microsoft.com/en-us/training/modules/introduction-computer-vision/"
+		},
+		"learnRefDe": {
+			"title": "Introduction to computer vision concepts (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/introduction-computer-vision/"
+		}
+	},
+	{
+		"id": "q88",
+		"topic": "Computer Vision",
+		"prompt": "What does Custom Vision allow you to do?",
+		"hint": "Think about what happens when the pre-built models do not cover your specific use case.",
+		"options": [
+			"Train custom image classification or object detection models with your own labeled images",
+			"Only use pre-built Microsoft models without customization",
+			"Generate new images from text descriptions",
+			"Translate text between languages"
+		],
+		"optionExplanations": [
+			"Correct: Custom Vision lets you upload labeled images and train custom classifiers or object detectors for domain-specific scenarios.",
+			"\"Only use pre-built Microsoft models without customization\" is not the best fit for this question. The correct answer is \"Train custom image classification or object detection models with your own labeled images\". Custom Vision is specifically for training custom models.",
+			"\"Generate new images from text descriptions\" is not the best fit for this question. The correct answer is \"Train custom image classification or object detection models with your own labeled images\". Image generation from text is DALL-E.",
+			"\"Translate text between languages\" is not the best fit for this question. The correct answer is \"Train custom image classification or object detection models with your own labeled images\". Translation is Azure AI Translator."
+		],
+		"answerIndex": 0,
+		"explanation": "Custom Vision allows you to train custom image classification and object detection models using your own labeled images.",
+		"promptDe": "Was ermoglicht Custom Vision?",
+		"hintDe": "Uberlege, was passiert, wenn die vorgefertigten Modelle deinen spezifischen Anwendungsfall nicht abdecken.",
+		"explanationDe": "Custom Vision ermoglicht das Training eigener Bildklassifizierungs- und Objekterkennungsmodelle mit eigenen gelabelten Bildern.",
+		"optionsDe": [
+			"Eigene Bildklassifizierungs- oder Objekterkennungsmodelle mit eigenen gelabelten Bildern trainieren",
+			"Nur vorgefertigte Microsoft-Modelle ohne Anpassung verwenden",
+			"Neue Bilder aus Textbeschreibungen generieren",
+			"Text zwischen Sprachen ubersetzen"
+		],
+		"optionExplanationsDe": [
+			"Richtig: Custom Vision ermoglicht das Hochladen eigener gelabelter Bilder und das Training benutzerdefinierter Klassifikatoren oder Objektdetektoren.",
+			"\"Nur vorgefertigte Microsoft-Modelle\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Eigene Bildklassifizierungs- oder Objekterkennungsmodelle mit eigenen gelabelten Bildern trainieren\". Custom Vision ist fur eigene Modelle konzipiert.",
+			"\"Neue Bilder aus Textbeschreibungen generieren\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Eigene Bildklassifizierungs- oder Objekterkennungsmodelle mit eigenen gelabelten Bildern trainieren\". Bildgenerierung ist DALL-E.",
+			"\"Text zwischen Sprachen ubersetzen\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Eigene Bildklassifizierungs- oder Objekterkennungsmodelle mit eigenen gelabelten Bildern trainieren\". Ubersetzung ist Azure AI Translator."
+		],
+		"learnRef": {
+			"title": "Classify images with Custom Vision",
+			"url": "https://learn.microsoft.com/en-us/training/modules/classify-images/"
+		},
+		"learnRefDe": {
+			"title": "Classify images with Custom Vision (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/classify-images/"
+		}
+	},
+	{
+		"id": "q89",
+		"topic": "Computer Vision",
+		"prompt": "A retail company wants to automatically detect when shelves are empty. Which computer vision approach is most appropriate?",
+		"hint": "Think about which technique can identify specific objects or their absence in an image.",
+		"options": [
+			"Sentiment analysis",
+			"Speech recognition",
+			"Object detection with a custom model trained on shelf images",
+			"Language translation"
+		],
+		"optionExplanations": [
+			"\"Sentiment analysis\" is not the best fit for this question. The correct answer is \"Object detection with a custom model trained on shelf images\". Sentiment analysis evaluates text mood, not visual shelf monitoring.",
+			"\"Speech recognition\" is not the best fit for this question. The correct answer is \"Object detection with a custom model trained on shelf images\". Speech recognition converts audio to text.",
+			"Correct: Object detection with a custom model can be trained to recognize empty shelf regions, enabling automated inventory monitoring.",
+			"\"Language translation\" is not the best fit for this question. The correct answer is \"Object detection with a custom model trained on shelf images\". Language translation has nothing to do with shelf monitoring."
+		],
+		"answerIndex": 2,
+		"explanation": "Object detection with a custom model trained on shelf images can identify empty shelf areas and trigger alerts for restocking.",
+		"promptDe": "Ein Einzelhandelsunternehmen mochte automatisch erkennen, wenn Regale leer sind. Welcher Computer-Vision-Ansatz ist am besten geeignet?",
+		"hintDe": "Uberlege, welche Technik bestimmte Objekte oder deren Abwesenheit in einem Bild erkennen kann.",
+		"explanationDe": "Objekterkennung mit einem auf Regalbilder trainierten Modell kann leere Regalbereiche identifizieren und Nachfullwarnungen auslosen.",
+		"optionsDe": [
+			"Sentimentanalyse",
+			"Spracherkennung",
+			"Objekterkennung mit einem auf Regalbilder trainierten Modell",
+			"Sprachubersetzung"
+		],
+		"optionExplanationsDe": [
+			"\"Sentimentanalyse\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Objekterkennung mit einem auf Regalbilder trainierten Modell\". Sentimentanalyse bewertet Textstimmung.",
+			"\"Spracherkennung\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Objekterkennung mit einem auf Regalbilder trainierten Modell\". Spracherkennung wandelt Audio in Text um.",
+			"Richtig: Objekterkennung mit einem benutzerdefinierten Modell kann leere Regalbereiche erkennen und automatische Bestandsuberwachung ermoglichen.",
+			"\"Sprachubersetzung\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Objekterkennung mit einem auf Regalbilder trainierten Modell\". Sprachubersetzung hat nichts mit Regaluberwachung zu tun."
+		],
+		"learnRef": {
+			"title": "Detect objects in images",
+			"url": "https://learn.microsoft.com/en-us/training/modules/detect-objects-images/"
+		},
+		"learnRefDe": {
+			"title": "Detect objects in images (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/detect-objects-images/"
+		}
+	},
+	{
+		"id": "q90",
+		"type": "true-false",
+		"topic": "Computer Vision",
+		"prompt": "Statement: Azure AI Vision can detect and count people in a video feed using spatial analysis.",
+		"hint": "Consider the spatial analysis capability and what it monitors in video streams.",
+		"correctAnswer": "True",
+		"explanation": "Spatial analysis in Azure AI Vision can detect people in video feeds, count them, and track their movement through defined zones.",
+		"promptDe": "Aussage: Azure AI Vision kann mit raumlicher Analyse Personen in einem Videofeed erkennen und zahlen.",
+		"hintDe": "Denke an die Fahigkeit der raumlichen Analyse und was sie in Videostreams uberwacht.",
+		"explanationDe": "Raumliche Analyse in Azure AI Vision kann Personen in Videofeeds erkennen, zahlen und ihre Bewegung verfolgen.",
+		"correctAnswerDe": "Wahr",
+		"optionExplanations": {
+			"true": "Correct: Correct in this statement. Spatial analysis can detect people in video feeds, count them, and track their movement.",
+			"false": "\"false\" is not the best fit for this question. The correct answer is \"True\". Not correct in this statement. Spatial analysis can detect people in video feeds, count them, and track their movement."
+		},
+		"optionExplanationsDe": {
+			"wahr": "Richtig: Richtig in dieser Aussage. Raumliche Analyse kann Personen in Videofeeds erkennen, zahlen und ihre Bewegung verfolgen.",
+			"falsch": "\"falsch\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Wahr\". In dieser Aussage nicht korrekt. Raumliche Analyse kann Personen in Videofeeds erkennen, zahlen und ihre Bewegung verfolgen."
+		},
+		"learnRef": {
+			"title": "Analyze video with Azure AI Vision",
+			"url": "https://learn.microsoft.com/en-us/training/modules/analyze-video/"
+		},
+		"learnRefDe": {
+			"title": "Analyze video with Azure AI Vision (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/analyze-video/"
+		}
+	},
+	{
+		"id": "q91",
+		"type": "true-false",
+		"topic": "Computer Vision",
+		"prompt": "Statement: The OCR Read API in Azure AI Vision can only extract printed text, not handwritten text.",
+		"hint": "Think about whether modern OCR can handle different writing styles.",
+		"correctAnswer": "False",
+		"explanation": "The OCR Read API can extract both printed and handwritten text from images and documents.",
+		"promptDe": "Aussage: Die OCR Read API in Azure AI Vision kann nur gedruckten Text extrahieren, keinen handgeschriebenen.",
+		"hintDe": "Uberlege, ob moderne OCR verschiedene Schreibstile verarbeiten kann.",
+		"explanationDe": "Die OCR Read API kann sowohl gedruckten als auch handgeschriebenen Text extrahieren.",
+		"correctAnswerDe": "Falsch",
+		"optionExplanations": {
+			"true": "\"true\" is not the best fit for this question. The correct answer is \"False\". Not correct in this statement. The OCR Read API can extract both printed and handwritten text.",
+			"false": "Correct: Correct in this statement. The OCR Read API can extract both printed and handwritten text from images and documents."
+		},
+		"optionExplanationsDe": {
+			"wahr": "\"wahr\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Falsch\". In dieser Aussage nicht korrekt. Die OCR Read API kann sowohl gedruckten als auch handgeschriebenen Text extrahieren.",
+			"falsch": "Richtig: Richtig in dieser Aussage. Die OCR Read API kann sowohl gedruckten als auch handgeschriebenen Text extrahieren."
+		},
+		"learnRef": {
+			"title": "Read text with Azure AI Vision",
+			"url": "https://learn.microsoft.com/en-us/training/modules/read-text-images-documents-with-computer-vision-service/"
+		},
+		"learnRefDe": {
+			"title": "Read text with Azure AI Vision (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/read-text-images-documents-with-computer-vision-service/"
+		}
+	},
+	{
+		"id": "q92",
+		"topic": "Computer Vision",
+		"prompt": "A manufacturing company wants to identify defective parts on a production line using cameras. Which approach is most suitable?",
+		"hint": "Think about training a model to distinguish between good and defective parts based on images.",
+		"options": [
+			"Azure AI Translator",
+			"Custom Vision trained on images of good and defective parts",
+			"Azure AI Speech",
+			"Azure AI Search"
+		],
+		"optionExplanations": [
+			"\"Azure AI Translator\" is not the best fit for this question. The correct answer is \"Custom Vision trained on images of good and defective parts\". Translator handles language translation, not visual inspection.",
+			"Correct: Custom Vision can be trained with labeled images of good and defective parts to classify items on a production line.",
+			"\"Azure AI Speech\" is not the best fit for this question. The correct answer is \"Custom Vision trained on images of good and defective parts\". Speech handles audio, not visual quality inspection.",
+			"\"Azure AI Search\" is not the best fit for this question. The correct answer is \"Custom Vision trained on images of good and defective parts\". Search indexes documents, not production line images."
+		],
+		"answerIndex": 1,
+		"explanation": "Custom Vision can be trained with labeled images to perform automated visual quality inspection on a production line.",
+		"promptDe": "Ein Fertigungsunternehmen mochte fehlerhafte Teile an einer Produktionslinie per Kamera erkennen. Welcher Ansatz ist am besten geeignet?",
+		"hintDe": "Uberlege, ein Modell zu trainieren, das anhand von Bildern zwischen guten und fehlerhaften Teilen unterscheidet.",
+		"explanationDe": "Custom Vision kann mit gelabelten Bildern guter und fehlerhafter Teile trainiert werden fur automatische visuelle Qualitatsprufung.",
+		"optionsDe": [
+			"Azure AI Translator",
+			"Custom Vision trainiert mit Bildern von guten und fehlerhaften Teilen",
+			"Azure AI Speech",
+			"Azure AI Search"
+		],
+		"optionExplanationsDe": [
+			"\"Azure AI Translator\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Custom Vision trainiert mit Bildern von guten und fehlerhaften Teilen\". Translator ubersetzt Sprachen.",
+			"Richtig: Custom Vision kann mit gelabelten Bildern guter und fehlerhafter Teile trainiert werden, um Artikel automatisch zu klassifizieren.",
+			"\"Azure AI Speech\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Custom Vision trainiert mit Bildern von guten und fehlerhaften Teilen\". Speech verarbeitet Audio.",
+			"\"Azure AI Search\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Custom Vision trainiert mit Bildern von guten und fehlerhaften Teilen\". Search indexiert Dokumente."
+		],
+		"learnRef": {
+			"title": "Classify images with Custom Vision",
+			"url": "https://learn.microsoft.com/en-us/training/modules/classify-images/"
+		},
+		"learnRefDe": {
+			"title": "Classify images with Custom Vision (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/classify-images/"
+		}
+	},
+	{
+		"id": "q93",
+		"type": "true-false",
+		"topic": "Computer Vision",
+		"prompt": "Statement: Custom Vision requires thousands of training images to create a working model.",
+		"hint": "Consider how many images Custom Vision typically needs to get started.",
+		"correctAnswer": "False",
+		"explanation": "Custom Vision can train effective models with as few as a handful of images per class. It does not require thousands.",
+		"promptDe": "Aussage: Custom Vision benotigt tausende Trainingsbilder, um ein funktionierendes Modell zu erstellen.",
+		"hintDe": "Uberlege, wie viele Bilder Custom Vision normalerweise zum Start benotigt.",
+		"explanationDe": "Custom Vision kann mit wenigen Bildern pro Klasse effektive Modelle trainieren. Es werden keine tausende benotigt.",
+		"correctAnswerDe": "Falsch",
+		"optionExplanations": {
+			"true": "\"true\" is not the best fit for this question. The correct answer is \"False\". Not correct in this statement. Custom Vision can train effective models with relatively few images per class.",
+			"false": "Correct: Correct in this statement. Custom Vision can start with a small number of images per class and still produce useful models."
+		},
+		"optionExplanationsDe": {
+			"wahr": "\"wahr\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Falsch\". In dieser Aussage nicht korrekt. Custom Vision kann mit wenigen Bildern pro Klasse effektive Modelle trainieren.",
+			"falsch": "Richtig: Richtig in dieser Aussage. Custom Vision kann mit einer kleinen Anzahl von Bildern pro Klasse starten und nutzliche Modelle erstellen."
+		},
+		"learnRef": {
+			"title": "Classify images with Custom Vision",
+			"url": "https://learn.microsoft.com/en-us/training/modules/classify-images/"
+		},
+		"learnRefDe": {
+			"title": "Classify images with Custom Vision (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/classify-images/"
+		}
+	},
+	{
+		"id": "q94",
+		"topic": "Generative AI",
+		"prompt": "What is Azure AI Foundry?",
+		"hint": "Think about a unified platform for building, evaluating, and deploying AI solutions.",
+		"options": [
+			"A unified platform for building, testing, and deploying generative AI applications",
+			"A virtual machine service for hosting websites",
+			"A relational database management system",
+			"A network security monitoring tool"
+		],
+		"optionExplanations": [
+			"Correct: Azure AI Foundry (formerly Azure AI Studio) is a unified platform for building, evaluating, and deploying generative AI applications with prompt flow, model catalog, and safety tools.",
+			"\"A virtual machine service for hosting websites\" is not the best fit for this question. The correct answer is \"A unified platform for building, testing, and deploying generative AI applications\". Virtual machine hosting is Azure Virtual Machines.",
+			"\"A relational database management system\" is not the best fit for this question. The correct answer is \"A unified platform for building, testing, and deploying generative AI applications\". Relational databases are Azure SQL.",
+			"\"A network security monitoring tool\" is not the best fit for this question. The correct answer is \"A unified platform for building, testing, and deploying generative AI applications\". Network security monitoring is Azure Network Watcher."
+		],
+		"answerIndex": 0,
+		"explanation": "Azure AI Foundry is a unified platform for building, evaluating, and deploying generative AI applications, featuring prompt flow, model catalog, and safety tools.",
+		"promptDe": "Was ist Azure AI Foundry?",
+		"hintDe": "Denke an eine einheitliche Plattform zum Erstellen, Testen und Bereitstellen von KI-Losungen.",
+		"explanationDe": "Azure AI Foundry ist eine einheitliche Plattform zum Erstellen, Evaluieren und Bereitstellen generativer KI-Anwendungen mit Prompt Flow, Modellkatalog und Sicherheitstools.",
+		"optionsDe": [
+			"Eine einheitliche Plattform zum Erstellen, Testen und Bereitstellen generativer KI-Anwendungen",
+			"Ein Virtual-Machine-Dienst zum Hosten von Websites",
+			"Ein relationales Datenbankmanagementsystem",
+			"Ein Netzwerksicherheits-Uberwachungstool"
+		],
+		"optionExplanationsDe": [
+			"Richtig: Azure AI Foundry ist eine einheitliche Plattform zum Erstellen, Evaluieren und Bereitstellen generativer KI-Anwendungen.",
+			"\"Ein Virtual-Machine-Dienst\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Eine einheitliche Plattform zum Erstellen, Testen und Bereitstellen generativer KI-Anwendungen\". VM-Hosting ist Azure Virtual Machines.",
+			"\"Ein relationales Datenbankmanagementsystem\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Eine einheitliche Plattform zum Erstellen, Testen und Bereitstellen generativer KI-Anwendungen\". Relationale Datenbanken sind Azure SQL.",
+			"\"Ein Netzwerksicherheits-Uberwachungstool\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Eine einheitliche Plattform zum Erstellen, Testen und Bereitstellen generativer KI-Anwendungen\". Netzwerkuberwachung ist Azure Network Watcher."
+		],
+		"learnRef": {
+			"title": "Get started with Azure AI Foundry",
+			"url": "https://learn.microsoft.com/en-us/training/modules/get-started-ai-in-foundry/"
+		},
+		"learnRefDe": {
+			"title": "Get started with Azure AI Foundry (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/get-started-ai-in-foundry/"
+		}
+	},
+	{
+		"id": "q95",
+		"topic": "Generative AI",
+		"prompt": "What is prompt flow in Azure AI Foundry used for?",
+		"hint": "Think about visually chaining together prompts, tools, and logic into a workflow.",
+		"options": [
+			"Designing and orchestrating multi-step LLM workflows visually",
+			"Managing Azure virtual network configurations",
+			"Creating relational database schemas",
+			"Monitoring CPU usage on virtual machines"
+		],
+		"optionExplanations": [
+			"Correct: Prompt flow enables designing, testing, and deploying multi-step LLM-based workflows with a visual authoring experience.",
+			"\"Managing Azure virtual network configurations\" is not the best fit for this question. The correct answer is \"Designing and orchestrating multi-step LLM workflows visually\". Network configuration is done in Azure Networking.",
+			"\"Creating relational database schemas\" is not the best fit for this question. The correct answer is \"Designing and orchestrating multi-step LLM workflows visually\". Database schemas are managed in Azure SQL.",
+			"\"Monitoring CPU usage on virtual machines\" is not the best fit for this question. The correct answer is \"Designing and orchestrating multi-step LLM workflows visually\". CPU monitoring is Azure Monitor."
+		],
+		"answerIndex": 0,
+		"explanation": "Prompt flow in Azure AI Foundry allows you to visually design, test, and deploy multi-step workflows that chain LLM calls, tools, and logic together.",
+		"promptDe": "Wofur wird Prompt Flow in Azure AI Foundry verwendet?",
+		"hintDe": "Denke an das visuelle Verketten von Prompts, Tools und Logik in einem Workflow.",
+		"explanationDe": "Prompt Flow in Azure AI Foundry ermoglicht das visuelle Entwerfen, Testen und Bereitstellen mehrstufiger LLM-basierter Workflows.",
+		"optionsDe": [
+			"Visuelles Entwerfen und Orchestrieren mehrstufiger LLM-Workflows",
+			"Verwaltung von Azure-Virtual-Network-Konfigurationen",
+			"Erstellen relationaler Datenbank-Schemas",
+			"Uberwachung der CPU-Auslastung auf virtuellen Maschinen"
+		],
+		"optionExplanationsDe": [
+			"Richtig: Prompt Flow ermoglicht das Entwerfen, Testen und Bereitstellen mehrstufiger LLM-basierter Workflows mit einer visuellen Oberflache.",
+			"\"Verwaltung von Netzwerkkonfigurationen\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Visuelles Entwerfen und Orchestrieren mehrstufiger LLM-Workflows\".",
+			"\"Erstellen relationaler Datenbank-Schemas\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Visuelles Entwerfen und Orchestrieren mehrstufiger LLM-Workflows\".",
+			"\"Uberwachung der CPU-Auslastung\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Visuelles Entwerfen und Orchestrieren mehrstufiger LLM-Workflows\"."
+		],
+		"learnRef": {
+			"title": "Get started with Azure AI Foundry",
+			"url": "https://learn.microsoft.com/en-us/training/modules/get-started-ai-in-foundry/"
+		},
+		"learnRefDe": {
+			"title": "Get started with Azure AI Foundry (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/get-started-ai-in-foundry/"
+		}
+	},
+	{
+		"id": "q96",
+		"topic": "Generative AI",
+		"prompt": "Which capability does Azure AI Foundry provide for testing model quality before deployment?",
+		"hint": "Think about measuring how well a model performs across various metrics before going to production.",
+		"options": [
+			"Model evaluation with built-in metrics like groundedness and relevance",
+			"Automatic GPU scaling",
+			"DNS zone management",
+			"Virtual machine backup scheduling"
+		],
+		"optionExplanations": [
+			"Correct: Azure AI Foundry provides model evaluation tools that measure metrics like groundedness, relevance, coherence, and fluency.",
+			"\"Automatic GPU scaling\" is not the best fit for this question. The correct answer is \"Model evaluation with built-in metrics like groundedness and relevance\". GPU scaling is an infrastructure concern, not model quality testing.",
+			"\"DNS zone management\" is not the best fit for this question. The correct answer is \"Model evaluation with built-in metrics like groundedness and relevance\". DNS is unrelated to model evaluation.",
+			"\"Virtual machine backup scheduling\" is not the best fit for this question. The correct answer is \"Model evaluation with built-in metrics like groundedness and relevance\". VM backups are unrelated to model quality."
+		],
+		"answerIndex": 0,
+		"explanation": "Azure AI Foundry includes model evaluation tools that measure quality metrics such as groundedness, relevance, coherence, and fluency before deploying models.",
+		"promptDe": "Welche Fahigkeit bietet Azure AI Foundry zum Testen der Modellqualitat vor der Bereitstellung?",
+		"hintDe": "Denke an das Messen, wie gut ein Modell anhand verschiedener Metriken abschneidet, bevor es in Produktion geht.",
+		"explanationDe": "Azure AI Foundry bietet Modellevaluierungstools, die Qualitatsmetriken wie Groundedness, Relevanz, Koharenz und Flussigkeit messen.",
+		"optionsDe": [
+			"Modellevaluierung mit integrierten Metriken wie Groundedness und Relevanz",
+			"Automatische GPU-Skalierung",
+			"DNS-Zonenverwaltung",
+			"Backup-Planung fur virtuelle Maschinen"
+		],
+		"optionExplanationsDe": [
+			"Richtig: Azure AI Foundry bietet Modellevaluierungstools, die Metriken wie Groundedness, Relevanz, Koharenz und Flussigkeit messen.",
+			"\"Automatische GPU-Skalierung\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Modellevaluierung mit integrierten Metriken wie Groundedness und Relevanz\".",
+			"\"DNS-Zonenverwaltung\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Modellevaluierung mit integrierten Metriken wie Groundedness und Relevanz\".",
+			"\"Backup-Planung fur virtuelle Maschinen\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Modellevaluierung mit integrierten Metriken wie Groundedness und Relevanz\"."
+		],
+		"learnRef": {
+			"title": "Get started with Azure AI Foundry",
+			"url": "https://learn.microsoft.com/en-us/training/modules/get-started-ai-in-foundry/"
+		},
+		"learnRefDe": {
+			"title": "Get started with Azure AI Foundry (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/get-started-ai-in-foundry/"
+		}
+	},
+	{
+		"id": "q97",
+		"topic": "Generative AI",
+		"prompt": "How does content filtering work in Azure AI Foundry and Azure OpenAI Service?",
+		"hint": "Think about what happens to both the input prompts and the model outputs before they reach the user.",
+		"options": [
+			"It only filters user inputs, not model outputs",
+			"It filters both input prompts and model outputs for harmful content categories like violence, hate, and self-harm",
+			"It only compresses the text to reduce token count",
+			"It translates content to English before processing"
+		],
+		"optionExplanations": [
+			"\"It only filters user inputs, not model outputs\" is not the best fit for this question. The correct answer is \"It filters both input prompts and model outputs for harmful content categories like violence, hate, and self-harm\". Content filtering applies to both input and output.",
+			"Correct: Content filtering in Azure OpenAI scans both prompts and responses for categories including violence, hate, sexual content, and self-harm, blocking or flagging harmful content.",
+			"\"It only compresses the text to reduce token count\" is not the best fit for this question. The correct answer is \"It filters both input prompts and model outputs for harmful content categories like violence, hate, and self-harm\". Compression is unrelated to content safety.",
+			"\"It translates content to English before processing\" is not the best fit for this question. The correct answer is \"It filters both input prompts and model outputs for harmful content categories like violence, hate, and self-harm\". Translation is a separate service."
+		],
+		"answerIndex": 1,
+		"explanation": "Content filtering in Azure OpenAI and AI Foundry scans both user prompts and model responses for harmful content categories, helping ensure safe AI outputs.",
+		"promptDe": "Wie funktioniert die Inhaltsfilterung in Azure AI Foundry und Azure OpenAI Service?",
+		"hintDe": "Denke daran, was sowohl mit den Eingabe-Prompts als auch mit den Modellausgaben passiert, bevor sie den Nutzer erreichen.",
+		"explanationDe": "Inhaltsfilterung in Azure OpenAI und AI Foundry pruft sowohl Nutzer-Prompts als auch Modellantworten auf schadliche Inhaltskategorien.",
+		"optionsDe": [
+			"Es filtert nur Nutzereingaben, nicht Modellausgaben",
+			"Es filtert sowohl Eingabe-Prompts als auch Modellausgaben auf schadliche Inhaltskategorien wie Gewalt, Hass und Selbstverletzung",
+			"Es komprimiert nur den Text, um die Token-Anzahl zu reduzieren",
+			"Es ubersetzt Inhalte vor der Verarbeitung ins Englische"
+		],
+		"optionExplanationsDe": [
+			"\"Es filtert nur Nutzereingaben\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Es filtert sowohl Eingabe-Prompts als auch Modellausgaben auf schadliche Inhaltskategorien wie Gewalt, Hass und Selbstverletzung\". Inhaltsfilterung gilt fur Ein- und Ausgabe.",
+			"Richtig: Inhaltsfilterung pruft sowohl Prompts als auch Antworten auf Kategorien wie Gewalt, Hass, sexuelle Inhalte und Selbstverletzung.",
+			"\"Es komprimiert nur den Text\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Es filtert sowohl Eingabe-Prompts als auch Modellausgaben auf schadliche Inhaltskategorien wie Gewalt, Hass und Selbstverletzung\".",
+			"\"Es ubersetzt Inhalte vor der Verarbeitung\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Es filtert sowohl Eingabe-Prompts als auch Modellausgaben auf schadliche Inhaltskategorien wie Gewalt, Hass und Selbstverletzung\"."
+		],
+		"learnRef": {
+			"title": "Responsible generative AI",
+			"url": "https://learn.microsoft.com/en-us/training/modules/responsible-generative-ai/"
+		},
+		"learnRefDe": {
+			"title": "Responsible generative AI (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/responsible-generative-ai/"
+		}
+	},
+	{
+		"id": "q98",
+		"topic": "Generative AI",
+		"prompt": "Which models are available in Azure OpenAI Service?",
+		"hint": "Think about the family of models Microsoft offers through its partnership with OpenAI.",
+		"options": [
+			"GPT-4, GPT-4o, DALL-E, and Whisper",
+			"Only GPT-3 and nothing else",
+			"Only image models, no text models",
+			"Only speech models"
+		],
+		"optionExplanations": [
+			"Correct: Azure OpenAI Service offers GPT-4, GPT-4o, DALL-E for image generation, and Whisper for speech transcription, among other models.",
+			"\"Only GPT-3 and nothing else\" is not the best fit for this question. The correct answer is \"GPT-4, GPT-4o, DALL-E, and Whisper\". Azure OpenAI includes multiple model families beyond GPT-3.",
+			"\"Only image models, no text models\" is not the best fit for this question. The correct answer is \"GPT-4, GPT-4o, DALL-E, and Whisper\". Azure OpenAI includes both text and image models.",
+			"\"Only speech models\" is not the best fit for this question. The correct answer is \"GPT-4, GPT-4o, DALL-E, and Whisper\". Azure OpenAI includes text, image, and speech models."
+		],
+		"answerIndex": 0,
+		"explanation": "Azure OpenAI Service provides access to GPT-4, GPT-4o, DALL-E for images, Whisper for speech, and other models from OpenAI.",
+		"promptDe": "Welche Modelle sind in Azure OpenAI Service verfugbar?",
+		"hintDe": "Denke an die Modellfamilien, die Microsoft durch seine Partnerschaft mit OpenAI anbietet.",
+		"explanationDe": "Azure OpenAI Service bietet Zugang zu GPT-4, GPT-4o, DALL-E fur Bildgenerierung und Whisper fur Sprachtranskription.",
+		"optionsDe": [
+			"GPT-4, GPT-4o, DALL-E und Whisper",
+			"Nur GPT-3 und sonst nichts",
+			"Nur Bildmodelle, keine Textmodelle",
+			"Nur Sprachmodelle"
+		],
+		"optionExplanationsDe": [
+			"Richtig: Azure OpenAI Service bietet GPT-4, GPT-4o, DALL-E fur Bildgenerierung und Whisper fur Sprachtranskription an.",
+			"\"Nur GPT-3 und sonst nichts\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"GPT-4, GPT-4o, DALL-E und Whisper\". Azure OpenAI umfasst mehrere Modellfamilien.",
+			"\"Nur Bildmodelle\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"GPT-4, GPT-4o, DALL-E und Whisper\". Azure OpenAI umfasst sowohl Text- als auch Bildmodelle.",
+			"\"Nur Sprachmodelle\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"GPT-4, GPT-4o, DALL-E und Whisper\". Azure OpenAI umfasst Text-, Bild- und Sprachmodelle."
+		],
+		"learnRef": {
+			"title": "Get started with generative AI and agents in Microsoft Foundry",
+			"url": "https://learn.microsoft.com/en-us/training/modules/get-started-generative-ai-azure/"
+		},
+		"learnRefDe": {
+			"title": "Get started with generative AI and agents in Microsoft Foundry (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/get-started-generative-ai-azure/"
+		}
+	},
+	{
+		"id": "q99",
+		"topic": "Generative AI",
+		"prompt": "What makes a multimodal AI model different from a text-only model?",
+		"hint": "Think about how many types of input or output the model can handle.",
+		"options": [
+			"It can only process text input",
+			"It can process and generate multiple types of content such as text, images, and audio",
+			"It runs exclusively on mobile devices",
+			"It can only generate images, not text"
+		],
+		"optionExplanations": [
+			"\"It can only process text input\" is not the best fit for this question. The correct answer is \"It can process and generate multiple types of content such as text, images, and audio\". Text-only processing is a unimodal model.",
+			"Correct: Multimodal models like GPT-4o can accept and produce multiple content types including text, images, and audio in a single interaction.",
+			"\"It runs exclusively on mobile devices\" is not the best fit for this question. The correct answer is \"It can process and generate multiple types of content such as text, images, and audio\". Device platform is unrelated to modality.",
+			"\"It can only generate images, not text\" is not the best fit for this question. The correct answer is \"It can process and generate multiple types of content such as text, images, and audio\". Image-only generation would be a single-modal model."
+		],
+		"answerIndex": 1,
+		"explanation": "Multimodal models can process and generate multiple types of content (text, images, audio) in a single interaction, unlike text-only models.",
+		"promptDe": "Was unterscheidet ein multimodales KI-Modell von einem reinen Textmodell?",
+		"hintDe": "Denke daran, wie viele Arten von Eingaben oder Ausgaben das Modell verarbeiten kann.",
+		"explanationDe": "Multimodale Modelle konnen mehrere Inhaltstypen (Text, Bilder, Audio) in einer einzigen Interaktion verarbeiten und generieren.",
+		"optionsDe": [
+			"Es kann nur Texteingaben verarbeiten",
+			"Es kann mehrere Inhaltstypen wie Text, Bilder und Audio verarbeiten und generieren",
+			"Es lauft ausschliesslich auf Mobilgeraten",
+			"Es kann nur Bilder generieren, keinen Text"
+		],
+		"optionExplanationsDe": [
+			"\"Es kann nur Texteingaben verarbeiten\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Es kann mehrere Inhaltstypen wie Text, Bilder und Audio verarbeiten und generieren\". Nur-Text-Verarbeitung ist ein unimodales Modell.",
+			"Richtig: Multimodale Modelle wie GPT-4o konnen mehrere Inhaltstypen in einer einzigen Interaktion akzeptieren und produzieren.",
+			"\"Es lauft ausschliesslich auf Mobilgeraten\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Es kann mehrere Inhaltstypen wie Text, Bilder und Audio verarbeiten und generieren\".",
+			"\"Es kann nur Bilder generieren\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Es kann mehrere Inhaltstypen wie Text, Bilder und Audio verarbeiten und generieren\"."
+		],
+		"learnRef": {
+			"title": "Introduction to generative AI and agents",
+			"url": "https://learn.microsoft.com/en-us/training/modules/fundamentals-generative-ai/"
+		},
+		"learnRefDe": {
+			"title": "Introduction to generative AI and agents (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/fundamentals-generative-ai/"
+		}
+	},
+	{
+		"id": "q100",
+		"topic": "Generative AI",
+		"prompt": "Which of the following is NOT a typical generative AI scenario?",
+		"hint": "Think about what generative AI creates versus what it classifies.",
+		"options": [
+			"Code generation from natural language descriptions",
+			"Summarizing long documents into key points",
+			"Sorting physical packages by weight on a conveyor belt",
+			"Creating marketing copy from a product description"
+		],
+		"optionExplanations": [
+			"\"Code generation from natural language descriptions\" is not the best fit for this question. The correct answer is \"Sorting physical packages by weight on a conveyor belt\". Code generation is a common generative AI use case.",
+			"\"Summarizing long documents into key points\" is not the best fit for this question. The correct answer is \"Sorting physical packages by weight on a conveyor belt\". Summarization is a core generative AI capability.",
+			"Correct: Sorting physical packages by weight is a mechanical/industrial task that does not involve content generation and is not a generative AI scenario.",
+			"\"Creating marketing copy from a product description\" is not the best fit for this question. The correct answer is \"Sorting physical packages by weight on a conveyor belt\". Content creation is a typical generative AI use case."
+		],
+		"answerIndex": 2,
+		"explanation": "Sorting physical packages by weight is a mechanical task, not a generative AI scenario. Generative AI is about creating new content like text, code, or images.",
+		"promptDe": "Welches der folgenden ist KEIN typisches Generative-AI-Szenario?",
+		"hintDe": "Denke daran, was generative KI erstellt im Gegensatz zu dem, was sie klassifiziert.",
+		"explanationDe": "Das Sortieren physischer Pakete nach Gewicht ist eine mechanische Aufgabe, kein Generative-AI-Szenario. Generative KI erstellt neue Inhalte wie Text, Code oder Bilder.",
+		"optionsDe": [
+			"Codegenerierung aus naturlichsprachlichen Beschreibungen",
+			"Zusammenfassung langer Dokumente in Kernpunkte",
+			"Sortieren physischer Pakete nach Gewicht auf einem Forderband",
+			"Erstellen von Marketingtexten aus einer Produktbeschreibung"
+		],
+		"optionExplanationsDe": [
+			"\"Codegenerierung\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Sortieren physischer Pakete nach Gewicht auf einem Forderband\". Codegenerierung ist ein typischer Generative-AI-Anwendungsfall.",
+			"\"Zusammenfassung langer Dokumente\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Sortieren physischer Pakete nach Gewicht auf einem Forderband\". Zusammenfassung ist eine Kernfahigkeit generativer KI.",
+			"Richtig: Das Sortieren physischer Pakete nach Gewicht ist eine mechanische Aufgabe und kein Generative-AI-Szenario.",
+			"\"Erstellen von Marketingtexten\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Sortieren physischer Pakete nach Gewicht auf einem Forderband\". Inhaltserstellung ist ein typischer Generative-AI-Anwendungsfall."
+		],
+		"learnRef": {
+			"title": "Introduction to generative AI and agents",
+			"url": "https://learn.microsoft.com/en-us/training/modules/fundamentals-generative-ai/"
+		},
+		"learnRefDe": {
+			"title": "Introduction to generative AI and agents (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/fundamentals-generative-ai/"
+		}
+	},
+	{
+		"id": "q101",
+		"topic": "Generative AI",
+		"prompt": "What is a hallucination in the context of generative AI?",
+		"hint": "Think about when the model generates something that sounds plausible but is factually wrong.",
+		"options": [
+			"A model generating content that is factually incorrect or fabricated but presented as true",
+			"A hardware error causing visual artifacts on screen",
+			"A type of data augmentation technique",
+			"A method for improving model training speed"
+		],
+		"optionExplanations": [
+			"Correct: A hallucination occurs when a generative AI model produces content that sounds plausible but is factually incorrect, fabricated, or unsupported by the input data.",
+			"\"A hardware error causing visual artifacts on screen\" is not the best fit for this question. The correct answer is \"A model generating content that is factually incorrect or fabricated but presented as true\". Hardware errors are unrelated to AI hallucinations.",
+			"\"A type of data augmentation technique\" is not the best fit for this question. The correct answer is \"A model generating content that is factually incorrect or fabricated but presented as true\". Data augmentation is a training technique.",
+			"\"A method for improving model training speed\" is not the best fit for this question. The correct answer is \"A model generating content that is factually incorrect or fabricated but presented as true\". Training speed optimization is unrelated."
+		],
+		"answerIndex": 0,
+		"explanation": "A hallucination in generative AI is when the model produces plausible-sounding but factually incorrect or fabricated content. Grounding and RAG help mitigate this.",
+		"promptDe": "Was ist eine Halluzination im Kontext generativer KI?",
+		"hintDe": "Denke daran, wenn das Modell etwas erzeugt, das plausibel klingt, aber faktisch falsch ist.",
+		"explanationDe": "Eine Halluzination in generativer KI liegt vor, wenn das Modell plausibel klingende, aber faktisch falsche oder erfundene Inhalte produziert. Grounding und RAG helfen, dies zu reduzieren.",
+		"optionsDe": [
+			"Ein Modell, das faktisch falsche oder erfundene Inhalte generiert, die als wahr prasentiert werden",
+			"Ein Hardwarefehler, der visuelle Artefakte auf dem Bildschirm verursacht",
+			"Eine Art Datenaugmentierungstechnik",
+			"Eine Methode zur Verbesserung der Modelltrainingsgeschwindigkeit"
+		],
+		"optionExplanationsDe": [
+			"Richtig: Eine Halluzination tritt auf, wenn ein generatives KI-Modell plausibel klingende, aber faktisch falsche oder erfundene Inhalte produziert.",
+			"\"Ein Hardwarefehler\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Ein Modell, das faktisch falsche oder erfundene Inhalte generiert, die als wahr prasentiert werden\". Hardwarefehler sind nicht mit KI-Halluzinationen verwandt.",
+			"\"Eine Art Datenaugmentierungstechnik\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Ein Modell, das faktisch falsche oder erfundene Inhalte generiert, die als wahr prasentiert werden\".",
+			"\"Eine Methode zur Verbesserung der Trainingsgeschwindigkeit\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Ein Modell, das faktisch falsche oder erfundene Inhalte generiert, die als wahr prasentiert werden\"."
+		],
+		"learnRef": {
+			"title": "Responsible generative AI",
+			"url": "https://learn.microsoft.com/en-us/training/modules/responsible-generative-ai/"
+		},
+		"learnRefDe": {
+			"title": "Responsible generative AI (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/responsible-generative-ai/"
+		}
+	},
+	{
+		"id": "q102",
+		"topic": "Generative AI",
+		"prompt": "What does DALL-E do in Azure OpenAI Service?",
+		"hint": "Think about creating visual content from written descriptions.",
+		"options": [
+			"Transcribes audio recordings into text",
+			"Generates images from text descriptions",
+			"Translates text between languages",
+			"Detects faces in photographs"
+		],
+		"optionExplanations": [
+			"\"Transcribes audio recordings into text\" is not the best fit for this question. The correct answer is \"Generates images from text descriptions\". Audio transcription is done by Whisper, not DALL-E.",
+			"Correct: DALL-E generates images based on natural language text descriptions, enabling creative image generation from prompts.",
+			"\"Translates text between languages\" is not the best fit for this question. The correct answer is \"Generates images from text descriptions\". Translation is handled by Azure AI Translator.",
+			"\"Detects faces in photographs\" is not the best fit for this question. The correct answer is \"Generates images from text descriptions\". Face detection is done by Azure AI Face."
+		],
+		"answerIndex": 1,
+		"explanation": "DALL-E in Azure OpenAI Service generates images from natural language text descriptions, enabling creative visual content creation.",
+		"promptDe": "Was macht DALL-E in Azure OpenAI Service?",
+		"hintDe": "Denke an das Erstellen visueller Inhalte aus geschriebenen Beschreibungen.",
+		"explanationDe": "DALL-E in Azure OpenAI Service generiert Bilder aus naturlichsprachlichen Textbeschreibungen und ermoglicht kreative visuelle Inhaltserstellung.",
+		"optionsDe": [
+			"Transkribiert Audioaufnahmen in Text",
+			"Generiert Bilder aus Textbeschreibungen",
+			"Ubersetzt Text zwischen Sprachen",
+			"Erkennt Gesichter in Fotografien"
+		],
+		"optionExplanationsDe": [
+			"\"Transkribiert Audioaufnahmen in Text\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Generiert Bilder aus Textbeschreibungen\". Audiotranskription wird von Whisper durchgefuhrt.",
+			"Richtig: DALL-E generiert Bilder basierend auf naturlichsprachlichen Textbeschreibungen.",
+			"\"Ubersetzt Text zwischen Sprachen\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Generiert Bilder aus Textbeschreibungen\". Ubersetzung ist Azure AI Translator.",
+			"\"Erkennt Gesichter in Fotografien\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Generiert Bilder aus Textbeschreibungen\". Gesichtserkennung ist Azure AI Face."
+		],
+		"learnRef": {
+			"title": "Get started with generative AI and agents in Microsoft Foundry",
+			"url": "https://learn.microsoft.com/en-us/training/modules/get-started-generative-ai-azure/"
+		},
+		"learnRefDe": {
+			"title": "Get started with generative AI and agents in Microsoft Foundry (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/get-started-generative-ai-azure/"
+		}
+	},
+	{
+		"id": "q103",
+		"topic": "Generative AI",
+		"prompt": "How does Microsoft Copilot integrate with Microsoft 365 applications?",
+		"hint": "Think about an AI assistant embedded directly within the productivity tools you already use.",
+		"options": [
+			"It replaces Microsoft 365 entirely with a new application",
+			"It acts as an AI assistant within apps like Word, Excel, and Teams, using LLMs with access to your organizational data",
+			"It only works as a standalone web application",
+			"It only generates images, not text"
+		],
+		"optionExplanations": [
+			"\"It replaces Microsoft 365 entirely\" is not the best fit for this question. The correct answer is \"It acts as an AI assistant within apps like Word, Excel, and Teams, using LLMs with access to your organizational data\". Copilot enhances existing apps, it does not replace them.",
+			"Correct: Microsoft Copilot is embedded within Microsoft 365 apps and uses LLMs grounded in organizational data to assist with tasks like drafting, summarizing, and analyzing.",
+			"\"It only works as a standalone web application\" is not the best fit for this question. The correct answer is \"It acts as an AI assistant within apps like Word, Excel, and Teams, using LLMs with access to your organizational data\". Copilot is integrated into Microsoft 365 apps.",
+			"\"It only generates images, not text\" is not the best fit for this question. The correct answer is \"It acts as an AI assistant within apps like Word, Excel, and Teams, using LLMs with access to your organizational data\". Copilot primarily assists with text-based productivity tasks."
+		],
+		"answerIndex": 1,
+		"explanation": "Microsoft Copilot is embedded within Microsoft 365 apps like Word, Excel, and Teams, using LLMs grounded in organizational data to assist with productivity tasks.",
+		"promptDe": "Wie integriert sich Microsoft Copilot in Microsoft 365-Anwendungen?",
+		"hintDe": "Denke an einen KI-Assistenten, der direkt in die Produktivitatstools eingebettet ist, die du bereits nutzt.",
+		"explanationDe": "Microsoft Copilot ist in Microsoft 365-Apps wie Word, Excel und Teams eingebettet und nutzt LLMs mit Zugriff auf Organisationsdaten fur Produktivitatsaufgaben.",
+		"optionsDe": [
+			"Es ersetzt Microsoft 365 vollstandig durch eine neue Anwendung",
+			"Es fungiert als KI-Assistent in Apps wie Word, Excel und Teams und nutzt LLMs mit Zugriff auf Organisationsdaten",
+			"Es funktioniert nur als eigenstandige Webanwendung",
+			"Es generiert nur Bilder, keinen Text"
+		],
+		"optionExplanationsDe": [
+			"\"Es ersetzt Microsoft 365 vollstandig\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Es fungiert als KI-Assistent in Apps wie Word, Excel und Teams und nutzt LLMs mit Zugriff auf Organisationsdaten\". Copilot erweitert bestehende Apps.",
+			"Richtig: Microsoft Copilot ist in Microsoft 365-Apps eingebettet und nutzt LLMs mit Organisationsdaten fur Aufgaben wie Entwurf, Zusammenfassung und Analyse.",
+			"\"Es funktioniert nur als eigenstandige Webanwendung\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Es fungiert als KI-Assistent in Apps wie Word, Excel und Teams und nutzt LLMs mit Zugriff auf Organisationsdaten\". Copilot ist in Microsoft 365-Apps integriert.",
+			"\"Es generiert nur Bilder\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Es fungiert als KI-Assistent in Apps wie Word, Excel und Teams und nutzt LLMs mit Zugriff auf Organisationsdaten\"."
+		],
+		"learnRef": {
+			"title": "Introduction to generative AI and agents",
+			"url": "https://learn.microsoft.com/en-us/training/modules/fundamentals-generative-ai/"
+		},
+		"learnRefDe": {
+			"title": "Introduction to generative AI and agents (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/fundamentals-generative-ai/"
+		}
+	},
+	{
+		"id": "q104",
+		"topic": "Generative AI",
+		"prompt": "What is the key difference between fine-tuning and prompt engineering?",
+		"hint": "One modifies the model itself, the other only changes how you communicate with it.",
+		"options": [
+			"Fine-tuning changes the model weights with additional training data; prompt engineering crafts better instructions without changing the model",
+			"Prompt engineering requires retraining the model; fine-tuning does not",
+			"They are the same thing with different names",
+			"Fine-tuning only works with images; prompt engineering only works with text"
+		],
+		"optionExplanations": [
+			"Correct: Fine-tuning modifies the model weights by training on additional data, while prompt engineering improves results by crafting better prompts without changing the model itself.",
+			"\"Prompt engineering requires retraining the model; fine-tuning does not\" is not the best fit for this question. The correct answer is \"Fine-tuning changes the model weights with additional training data; prompt engineering crafts better instructions without changing the model\". This reverses the definitions.",
+			"\"They are the same thing with different names\" is not the best fit for this question. The correct answer is \"Fine-tuning changes the model weights with additional training data; prompt engineering crafts better instructions without changing the model\". They are fundamentally different approaches.",
+			"\"Fine-tuning only works with images; prompt engineering only works with text\" is not the best fit for this question. The correct answer is \"Fine-tuning changes the model weights with additional training data; prompt engineering crafts better instructions without changing the model\". Both can apply to various modalities."
+		],
+		"answerIndex": 0,
+		"explanation": "Fine-tuning modifies the model weights by training on domain-specific data. Prompt engineering improves results by crafting better prompts without changing the model.",
+		"promptDe": "Was ist der wesentliche Unterschied zwischen Fine-Tuning und Prompt Engineering?",
+		"hintDe": "Eines verandert das Modell selbst, das andere andert nur, wie man mit ihm kommuniziert.",
+		"explanationDe": "Fine-Tuning verandert die Modellgewichte durch Training mit zusatzlichen Daten. Prompt Engineering verbessert Ergebnisse durch bessere Prompts, ohne das Modell zu andern.",
+		"optionsDe": [
+			"Fine-Tuning andert die Modellgewichte mit zusatzlichen Trainingsdaten; Prompt Engineering erstellt bessere Anweisungen, ohne das Modell zu andern",
+			"Prompt Engineering erfordert Neutraining des Modells; Fine-Tuning nicht",
+			"Es ist dasselbe mit verschiedenen Namen",
+			"Fine-Tuning funktioniert nur mit Bildern; Prompt Engineering nur mit Text"
+		],
+		"optionExplanationsDe": [
+			"Richtig: Fine-Tuning modifiziert die Modellgewichte durch Training mit zusatzlichen Daten, wahrend Prompt Engineering Ergebnisse durch bessere Prompts verbessert, ohne das Modell zu andern.",
+			"\"Prompt Engineering erfordert Neutraining\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Fine-Tuning andert die Modellgewichte mit zusatzlichen Trainingsdaten; Prompt Engineering erstellt bessere Anweisungen, ohne das Modell zu andern\". Dies vertauscht die Definitionen.",
+			"\"Es ist dasselbe\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Fine-Tuning andert die Modellgewichte mit zusatzlichen Trainingsdaten; Prompt Engineering erstellt bessere Anweisungen, ohne das Modell zu andern\". Es sind grundlegend verschiedene Ansatze.",
+			"\"Fine-Tuning funktioniert nur mit Bildern\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Fine-Tuning andert die Modellgewichte mit zusatzlichen Trainingsdaten; Prompt Engineering erstellt bessere Anweisungen, ohne das Modell zu andern\"."
+		],
+		"learnRef": {
+			"title": "Introduction to generative AI and agents",
+			"url": "https://learn.microsoft.com/en-us/training/modules/fundamentals-generative-ai/"
+		},
+		"learnRefDe": {
+			"title": "Introduction to generative AI and agents (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/fundamentals-generative-ai/"
+		}
+	},
+	{
+		"id": "q105",
+		"type": "true-false",
+		"topic": "Generative AI",
+		"prompt": "Statement: Azure AI Foundry includes a model catalog that lets you browse and deploy models from Microsoft, OpenAI, and open-source providers.",
+		"hint": "Consider whether Azure AI Foundry is limited to Microsoft models or supports a broader selection.",
+		"correctAnswer": "True",
+		"explanation": "Azure AI Foundry features a model catalog with models from Microsoft, OpenAI, Meta, Hugging Face, and other providers.",
+		"promptDe": "Aussage: Azure AI Foundry enthalt einen Modellkatalog, mit dem man Modelle von Microsoft, OpenAI und Open-Source-Anbietern durchsuchen und bereitstellen kann.",
+		"hintDe": "Uberlege, ob Azure AI Foundry auf Microsoft-Modelle beschrankt ist oder eine breitere Auswahl unterstutzt.",
+		"explanationDe": "Azure AI Foundry bietet einen Modellkatalog mit Modellen von Microsoft, OpenAI, Meta, Hugging Face und anderen Anbietern.",
+		"correctAnswerDe": "Wahr",
+		"optionExplanations": {
+			"true": "Correct: Correct in this statement. Azure AI Foundry features a model catalog with models from multiple providers including Microsoft, OpenAI, and open-source.",
+			"false": "\"false\" is not the best fit for this question. The correct answer is \"True\". Not correct in this statement. Azure AI Foundry includes a model catalog with models from multiple providers."
+		},
+		"optionExplanationsDe": {
+			"wahr": "Richtig: Richtig in dieser Aussage. Azure AI Foundry bietet einen Modellkatalog mit Modellen von mehreren Anbietern einschliesslich Microsoft, OpenAI und Open-Source.",
+			"falsch": "\"falsch\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Wahr\". In dieser Aussage nicht korrekt. Azure AI Foundry enthalt einen Modellkatalog mit Modellen von mehreren Anbietern."
+		},
+		"learnRef": {
+			"title": "Get started with Azure AI Foundry",
+			"url": "https://learn.microsoft.com/en-us/training/modules/get-started-ai-in-foundry/"
+		},
+		"learnRefDe": {
+			"title": "Get started with Azure AI Foundry (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/get-started-ai-in-foundry/"
+		}
+	},
+	{
+		"id": "q106",
+		"type": "true-false",
+		"topic": "Generative AI",
+		"prompt": "Statement: Grounding techniques like RAG help reduce hallucinations by providing the model with relevant source data.",
+		"hint": "Think about what happens when a model has access to factual reference material when generating answers.",
+		"correctAnswer": "True",
+		"explanation": "RAG (Retrieval-Augmented Generation) retrieves relevant documents and includes them in the prompt, helping the model base its answers on factual data and reducing hallucinations.",
+		"promptDe": "Aussage: Grounding-Techniken wie RAG helfen, Halluzinationen zu reduzieren, indem sie dem Modell relevante Quelldaten bereitstellen.",
+		"hintDe": "Denke daran, was passiert, wenn ein Modell beim Generieren von Antworten Zugriff auf faktisches Referenzmaterial hat.",
+		"explanationDe": "RAG (Retrieval-Augmented Generation) ruft relevante Dokumente ab und fugt sie in den Prompt ein, sodass das Modell Antworten auf faktischen Daten basiert und Halluzinationen reduziert werden.",
+		"correctAnswerDe": "Wahr",
+		"optionExplanations": {
+			"true": "Correct: Correct in this statement. RAG retrieves relevant documents and includes them in the prompt, helping ground the model's answers in factual data.",
+			"false": "\"false\" is not the best fit for this question. The correct answer is \"True\". Not correct in this statement. RAG provides factual context that helps reduce hallucinations."
+		},
+		"optionExplanationsDe": {
+			"wahr": "Richtig: Richtig in dieser Aussage. RAG ruft relevante Dokumente ab und fugt sie in den Prompt ein, was hilft, die Antworten des Modells auf faktischen Daten zu grunden.",
+			"falsch": "\"falsch\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Wahr\". In dieser Aussage nicht korrekt. RAG liefert faktischen Kontext, der Halluzinationen reduziert."
+		},
+		"learnRef": {
+			"title": "Introduction to generative AI and agents",
+			"url": "https://learn.microsoft.com/en-us/training/modules/fundamentals-generative-ai/"
+		},
+		"learnRefDe": {
+			"title": "Introduction to generative AI and agents (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/fundamentals-generative-ai/"
+		}
+	},
+	{
+		"id": "q107",
+		"topic": "Generative AI",
+		"prompt": "Which model in Azure OpenAI Service is specifically designed for audio transcription?",
+		"hint": "Think about which OpenAI model converts spoken language into written text.",
+		"options": [
+			"GPT-4",
+			"DALL-E",
+			"Whisper",
+			"Ada"
+		],
+		"optionExplanations": [
+			"\"GPT-4\" is not the best fit for this question. The correct answer is \"Whisper\". GPT-4 is a text and multimodal model, not specifically designed for audio transcription.",
+			"\"DALL-E\" is not the best fit for this question. The correct answer is \"Whisper\". DALL-E generates images from text, it does not transcribe audio.",
+			"Correct: Whisper is OpenAI's speech recognition model available in Azure OpenAI Service, designed for accurate audio transcription.",
+			"\"Ada\" is not the best fit for this question. The correct answer is \"Whisper\". Ada is an embedding model, not an audio transcription model."
+		],
+		"answerIndex": 2,
+		"explanation": "Whisper is OpenAI's speech recognition model, available through Azure OpenAI Service, specifically designed for transcribing audio into text.",
+		"promptDe": "Welches Modell in Azure OpenAI Service ist speziell fur Audio-Transkription konzipiert?",
+		"hintDe": "Uberlege, welches OpenAI-Modell gesprochene Sprache in geschriebenen Text umwandelt.",
+		"explanationDe": "Whisper ist OpenAIs Spracherkennungsmodell, verfugbar uber Azure OpenAI Service, speziell fur die Transkription von Audio in Text konzipiert.",
+		"optionsDe": [
+			"GPT-4",
+			"DALL-E",
+			"Whisper",
+			"Ada"
+		],
+		"optionExplanationsDe": [
+			"\"GPT-4\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Whisper\". GPT-4 ist ein Text- und Multimodal-Modell, nicht speziell fur Audio-Transkription.",
+			"\"DALL-E\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Whisper\". DALL-E generiert Bilder aus Text.",
+			"Richtig: Whisper ist OpenAIs Spracherkennungsmodell, verfugbar in Azure OpenAI Service, fur genaue Audio-Transkription konzipiert.",
+			"\"Ada\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Whisper\". Ada ist ein Embedding-Modell."
+		],
+		"learnRef": {
+			"title": "Get started with generative AI and agents in Microsoft Foundry",
+			"url": "https://learn.microsoft.com/en-us/training/modules/get-started-generative-ai-azure/"
+		},
+		"learnRefDe": {
+			"title": "Get started with generative AI and agents in Microsoft Foundry (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/get-started-generative-ai-azure/"
+		}
+	},
+	{
+		"id": "q108",
+		"type": "true-false",
+		"topic": "Generative AI",
+		"prompt": "Statement: GPT-4o is a multimodal model that can accept both text and image inputs.",
+		"hint": "Consider what the 'o' in GPT-4o stands for and what capabilities it adds.",
+		"correctAnswer": "True",
+		"explanation": "GPT-4o (omni) is a multimodal model that can process text, images, and audio inputs, making it more versatile than text-only models.",
+		"promptDe": "Aussage: GPT-4o ist ein multimodales Modell, das sowohl Text- als auch Bildeingaben akzeptieren kann.",
+		"hintDe": "Uberlege, wofur das 'o' in GPT-4o steht und welche Fahigkeiten es hinzufugt.",
+		"explanationDe": "GPT-4o (omni) ist ein multimodales Modell, das Text-, Bild- und Audioeingaben verarbeiten kann.",
+		"correctAnswerDe": "Wahr",
+		"optionExplanations": {
+			"true": "Correct: Correct in this statement. GPT-4o is a multimodal model that can process text, images, and audio inputs.",
+			"false": "\"false\" is not the best fit for this question. The correct answer is \"True\". Not correct in this statement. GPT-4o is a multimodal model capable of processing multiple input types."
+		},
+		"optionExplanationsDe": {
+			"wahr": "Richtig: Richtig in dieser Aussage. GPT-4o ist ein multimodales Modell, das Text-, Bild- und Audioeingaben verarbeiten kann.",
+			"falsch": "\"falsch\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Wahr\". In dieser Aussage nicht korrekt. GPT-4o ist ein multimodales Modell, das mehrere Eingabetypen verarbeiten kann."
+		},
+		"learnRef": {
+			"title": "Get started with generative AI and agents in Microsoft Foundry",
+			"url": "https://learn.microsoft.com/en-us/training/modules/get-started-generative-ai-azure/"
+		},
+		"learnRefDe": {
+			"title": "Get started with generative AI and agents in Microsoft Foundry (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/get-started-generative-ai-azure/"
+		}
+	},
+	{
+		"id": "q109",
+		"topic": "NLP",
+		"prompt": "What can Azure AI Translator do besides translating text between languages?",
+		"hint": "Think about what information the service can determine about a text before translating it.",
+		"options": [
+			"Only translate from English to French",
+			"Detect the language of input text and translate entire documents while preserving formatting",
+			"Generate images from text",
+			"Train custom speech models"
+		],
+		"optionExplanations": [
+			"\"Only translate from English to French\" is not the best fit for this question. The correct answer is \"Detect the language of input text and translate entire documents while preserving formatting\". Azure AI Translator supports dozens of language pairs, not just English to French.",
+			"Correct: Azure AI Translator can detect the source language automatically and translate entire documents while preserving their original formatting and structure.",
+			"\"Generate images from text\" is not the best fit for this question. The correct answer is \"Detect the language of input text and translate entire documents while preserving formatting\". Image generation is done by DALL-E.",
+			"\"Train custom speech models\" is not the best fit for this question. The correct answer is \"Detect the language of input text and translate entire documents while preserving formatting\". Custom speech models are part of Azure AI Speech."
+		],
+		"answerIndex": 1,
+		"explanation": "Azure AI Translator can detect the source language, translate text and entire documents across dozens of language pairs, and preserve document formatting.",
+		"promptDe": "Was kann Azure AI Translator neben der Ubersetzung von Text zwischen Sprachen?",
+		"hintDe": "Uberlege, welche Informationen der Dienst uber einen Text ermitteln kann, bevor er ihn ubersetzt.",
+		"explanationDe": "Azure AI Translator kann die Quellsprache erkennen, Text und ganze Dokumente uber Dutzende von Sprachpaaren ubersetzen und die Dokumentformatierung beibehalten.",
+		"optionsDe": [
+			"Nur von Englisch nach Franzosisch ubersetzen",
+			"Die Sprache des Eingabetexts erkennen und ganze Dokumente unter Beibehaltung der Formatierung ubersetzen",
+			"Bilder aus Text generieren",
+			"Benutzerdefinierte Sprachmodelle trainieren"
+		],
+		"optionExplanationsDe": [
+			"\"Nur von Englisch nach Franzosisch\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Die Sprache des Eingabetexts erkennen und ganze Dokumente unter Beibehaltung der Formatierung ubersetzen\". Azure AI Translator unterstutzt Dutzende von Sprachpaaren.",
+			"Richtig: Azure AI Translator kann die Quellsprache automatisch erkennen und ganze Dokumente unter Beibehaltung der Formatierung ubersetzen.",
+			"\"Bilder aus Text generieren\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Die Sprache des Eingabetexts erkennen und ganze Dokumente unter Beibehaltung der Formatierung ubersetzen\". Bildgenerierung ist DALL-E.",
+			"\"Benutzerdefinierte Sprachmodelle trainieren\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Die Sprache des Eingabetexts erkennen und ganze Dokumente unter Beibehaltung der Formatierung ubersetzen\". Benutzerdefinierte Sprachmodelle sind Teil von Azure AI Speech."
+		],
+		"learnRef": {
+			"title": "Translate text and documents with Azure AI Translator",
+			"url": "https://learn.microsoft.com/en-us/training/modules/translate-text-with-translation-service/"
+		},
+		"learnRefDe": {
+			"title": "Translate text and documents with Azure AI Translator (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/translate-text-with-translation-service/"
+		}
+	},
+	{
+		"id": "q110",
+		"topic": "NLP",
+		"prompt": "What is Conversational Language Understanding (CLU) in Azure AI Language used for?",
+		"hint": "Think about extracting the user's intention and relevant details from a natural language sentence.",
+		"options": [
+			"Extracting intents and entities from natural language utterances to understand what a user wants",
+			"Generating images from spoken commands",
+			"Translating audio between languages in real time",
+			"Indexing documents for keyword search"
+		],
+		"optionExplanations": [
+			"Correct: CLU extracts intents (what the user wants to do) and entities (relevant details) from natural language utterances, enabling applications to understand user requests.",
+			"\"Generating images from spoken commands\" is not the best fit for this question. The correct answer is \"Extracting intents and entities from natural language utterances to understand what a user wants\". Image generation is not a CLU capability.",
+			"\"Translating audio between languages in real time\" is not the best fit for this question. The correct answer is \"Extracting intents and entities from natural language utterances to understand what a user wants\". Real-time audio translation is Azure AI Speech translation.",
+			"\"Indexing documents for keyword search\" is not the best fit for this question. The correct answer is \"Extracting intents and entities from natural language utterances to understand what a user wants\". Document indexing is Azure AI Search."
+		],
+		"answerIndex": 0,
+		"explanation": "CLU extracts intents (what the user wants) and entities (key details) from natural language, enabling applications to understand and respond to user requests.",
+		"promptDe": "Wofur wird Conversational Language Understanding (CLU) in Azure AI Language verwendet?",
+		"hintDe": "Denke an das Extrahieren der Absicht des Nutzers und relevanter Details aus einem naturlichsprachlichen Satz.",
+		"explanationDe": "CLU extrahiert Intents (was der Nutzer will) und Entitaten (wichtige Details) aus naturlicher Sprache, damit Anwendungen Nutzeranfragen verstehen konnen.",
+		"optionsDe": [
+			"Extrahieren von Intents und Entitaten aus naturlichsprachlichen Ausserungen, um zu verstehen, was ein Nutzer mochte",
+			"Generieren von Bildern aus gesprochenen Befehlen",
+			"Ubersetzen von Audio zwischen Sprachen in Echtzeit",
+			"Indexieren von Dokumenten fur Schlusselwortsuche"
+		],
+		"optionExplanationsDe": [
+			"Richtig: CLU extrahiert Intents und Entitaten aus naturlichsprachlichen Ausserungen, damit Anwendungen Nutzeranfragen verstehen konnen.",
+			"\"Generieren von Bildern aus gesprochenen Befehlen\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Extrahieren von Intents und Entitaten aus naturlichsprachlichen Ausserungen, um zu verstehen, was ein Nutzer mochte\".",
+			"\"Ubersetzen von Audio in Echtzeit\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Extrahieren von Intents und Entitaten aus naturlichsprachlichen Ausserungen, um zu verstehen, was ein Nutzer mochte\".",
+			"\"Indexieren von Dokumenten\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Extrahieren von Intents und Entitaten aus naturlichsprachlichen Ausserungen, um zu verstehen, was ein Nutzer mochte\"."
+		],
+		"learnRef": {
+			"title": "Build a conversational language understanding model",
+			"url": "https://learn.microsoft.com/en-us/training/modules/build-language-understanding-model/"
+		},
+		"learnRefDe": {
+			"title": "Build a conversational language understanding model (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/build-language-understanding-model/"
+		}
+	},
+	{
+		"id": "q111",
+		"topic": "NLP",
+		"prompt": "What is custom question answering in Azure AI Language?",
+		"hint": "Think about creating a knowledge base from your own documents that can answer user questions.",
+		"options": [
+			"A feature that lets you create question-answer knowledge bases from your documents, FAQs, and URLs",
+			"A service that generates random quiz questions",
+			"A tool for translating questions between languages",
+			"A feature that detects the emotional tone of questions"
+		],
+		"optionExplanations": [
+			"Correct: Custom question answering lets you build knowledge bases from documents, FAQs, and URLs that can then answer user questions in natural language.",
+			"\"A service that generates random quiz questions\" is not the best fit for this question. The correct answer is \"A feature that lets you create question-answer knowledge bases from your documents, FAQs, and URLs\". Custom QA answers real user questions from curated knowledge.",
+			"\"A tool for translating questions between languages\" is not the best fit for this question. The correct answer is \"A feature that lets you create question-answer knowledge bases from your documents, FAQs, and URLs\". Translation is Azure AI Translator.",
+			"\"A feature that detects the emotional tone of questions\" is not the best fit for this question. The correct answer is \"A feature that lets you create question-answer knowledge bases from your documents, FAQs, and URLs\". Emotion detection is sentiment analysis."
+		],
+		"answerIndex": 0,
+		"explanation": "Custom question answering in Azure AI Language lets you build knowledge bases from documents, FAQs, and URLs to answer user questions automatically.",
+		"promptDe": "Was ist benutzerdefiniertes Frage-Antwort in Azure AI Language?",
+		"hintDe": "Denke an das Erstellen einer Wissensdatenbank aus eigenen Dokumenten, die Nutzerfragen beantworten kann.",
+		"explanationDe": "Benutzerdefiniertes Frage-Antwort in Azure AI Language ermoglicht das Erstellen von Wissensdatenbanken aus Dokumenten, FAQs und URLs zur automatischen Beantwortung von Nutzerfragen.",
+		"optionsDe": [
+			"Eine Funktion zum Erstellen von Frage-Antwort-Wissensdatenbanken aus eigenen Dokumenten, FAQs und URLs",
+			"Ein Dienst, der zufallige Quizfragen generiert",
+			"Ein Tool zum Ubersetzen von Fragen zwischen Sprachen",
+			"Eine Funktion zur Erkennung des emotionalen Tons von Fragen"
+		],
+		"optionExplanationsDe": [
+			"Richtig: Benutzerdefiniertes Frage-Antwort ermoglicht das Erstellen von Wissensdatenbanken aus Dokumenten, FAQs und URLs zur Beantwortung von Nutzerfragen.",
+			"\"Ein Dienst, der zufallige Quizfragen generiert\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Eine Funktion zum Erstellen von Frage-Antwort-Wissensdatenbanken aus eigenen Dokumenten, FAQs und URLs\".",
+			"\"Ein Tool zum Ubersetzen von Fragen\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Eine Funktion zum Erstellen von Frage-Antwort-Wissensdatenbanken aus eigenen Dokumenten, FAQs und URLs\".",
+			"\"Eine Funktion zur Erkennung des emotionalen Tons\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Eine Funktion zum Erstellen von Frage-Antwort-Wissensdatenbanken aus eigenen Dokumenten, FAQs und URLs\"."
+		],
+		"learnRef": {
+			"title": "Create a question answering solution",
+			"url": "https://learn.microsoft.com/en-us/training/modules/create-question-answer-solution-ai-language/"
+		},
+		"learnRefDe": {
+			"title": "Create a question answering solution (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/create-question-answer-solution-ai-language/"
+		}
+	},
+	{
+		"id": "q112",
+		"topic": "NLP",
+		"prompt": "What is the difference between real-time and batch transcription in Azure AI Speech?",
+		"hint": "Think about processing audio as it happens versus processing pre-recorded audio files.",
+		"options": [
+			"Real-time transcription processes live audio streams; batch transcription processes pre-recorded audio files asynchronously",
+			"Batch transcription is always faster than real-time transcription",
+			"Real-time transcription only works with English; batch supports all languages",
+			"There is no difference; they produce identical results at the same speed"
+		],
+		"optionExplanations": [
+			"Correct: Real-time transcription processes audio as it is spoken, while batch transcription processes pre-recorded audio files asynchronously, ideal for large volumes of recordings.",
+			"\"Batch transcription is always faster than real-time transcription\" is not the best fit for this question. The correct answer is \"Real-time transcription processes live audio streams; batch transcription processes pre-recorded audio files asynchronously\". Batch processes large volumes but is not necessarily faster per file.",
+			"\"Real-time transcription only works with English\" is not the best fit for this question. The correct answer is \"Real-time transcription processes live audio streams; batch transcription processes pre-recorded audio files asynchronously\". Both support multiple languages.",
+			"\"There is no difference\" is not the best fit for this question. The correct answer is \"Real-time transcription processes live audio streams; batch transcription processes pre-recorded audio files asynchronously\". They serve different use cases."
+		],
+		"answerIndex": 0,
+		"explanation": "Real-time transcription processes live audio as it is spoken. Batch transcription processes pre-recorded audio files asynchronously, suitable for large volumes.",
+		"promptDe": "Was ist der Unterschied zwischen Echtzeit- und Batch-Transkription in Azure AI Speech?",
+		"hintDe": "Denke an die Verarbeitung von Audio wahrend es passiert versus die Verarbeitung voraufgezeichneter Audiodateien.",
+		"explanationDe": "Echtzeit-Transkription verarbeitet Live-Audio wahrend es gesprochen wird. Batch-Transkription verarbeitet voraufgezeichnete Audiodateien asynchron, geeignet fur grosse Mengen.",
+		"optionsDe": [
+			"Echtzeit-Transkription verarbeitet Live-Audiostreams; Batch-Transkription verarbeitet voraufgezeichnete Audiodateien asynchron",
+			"Batch-Transkription ist immer schneller als Echtzeit-Transkription",
+			"Echtzeit-Transkription funktioniert nur mit Englisch; Batch unterstutzt alle Sprachen",
+			"Es gibt keinen Unterschied; sie liefern identische Ergebnisse mit gleicher Geschwindigkeit"
+		],
+		"optionExplanationsDe": [
+			"Richtig: Echtzeit-Transkription verarbeitet Audio wahrend es gesprochen wird, wahrend Batch-Transkription voraufgezeichnete Dateien asynchron verarbeitet.",
+			"\"Batch ist immer schneller\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Echtzeit-Transkription verarbeitet Live-Audiostreams; Batch-Transkription verarbeitet voraufgezeichnete Audiodateien asynchron\".",
+			"\"Echtzeit funktioniert nur mit Englisch\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Echtzeit-Transkription verarbeitet Live-Audiostreams; Batch-Transkription verarbeitet voraufgezeichnete Audiodateien asynchron\". Beide unterstutzen mehrere Sprachen.",
+			"\"Es gibt keinen Unterschied\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Echtzeit-Transkription verarbeitet Live-Audiostreams; Batch-Transkription verarbeitet voraufgezeichnete Audiodateien asynchron\"."
+		],
+		"learnRef": {
+			"title": "Recognize and synthesize speech",
+			"url": "https://learn.microsoft.com/en-us/training/modules/recognize-synthesize-speech/"
+		},
+		"learnRefDe": {
+			"title": "Recognize and synthesize speech (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/recognize-synthesize-speech/"
+		}
+	},
+	{
+		"id": "q113",
+		"topic": "NLP",
+		"prompt": "What is Custom Neural Voice in Azure AI Speech?",
+		"hint": "Think about creating a unique, branded synthetic voice for your organization.",
+		"options": [
+			"A feature that creates a custom synthetic voice using your own audio recordings for text-to-speech",
+			"A service that only plays pre-recorded audio clips",
+			"A tool for translating spoken language between two people",
+			"A feature for detecting keywords in audio"
+		],
+		"optionExplanations": [
+			"Correct: Custom Neural Voice allows you to create a unique, branded synthetic voice by training a model on your own voice recordings for use in text-to-speech applications.",
+			"\"A service that only plays pre-recorded audio clips\" is not the best fit for this question. The correct answer is \"A feature that creates a custom synthetic voice using your own audio recordings for text-to-speech\". Custom Neural Voice generates new speech, it does not play recordings.",
+			"\"A tool for translating spoken language between two people\" is not the best fit for this question. The correct answer is \"A feature that creates a custom synthetic voice using your own audio recordings for text-to-speech\". Speech translation is a separate feature.",
+			"\"A feature for detecting keywords in audio\" is not the best fit for this question. The correct answer is \"A feature that creates a custom synthetic voice using your own audio recordings for text-to-speech\". Keyword detection is a different Speech capability."
+		],
+		"answerIndex": 0,
+		"explanation": "Custom Neural Voice in Azure AI Speech lets you create a unique synthetic voice by training on your own voice recordings, enabling branded text-to-speech experiences.",
+		"promptDe": "Was ist Custom Neural Voice in Azure AI Speech?",
+		"hintDe": "Denke an das Erstellen einer einzigartigen, markenbezogenen synthetischen Stimme fur deine Organisation.",
+		"explanationDe": "Custom Neural Voice in Azure AI Speech ermoglicht das Erstellen einer einzigartigen synthetischen Stimme durch Training mit eigenen Sprachaufnahmen fur Text-to-Speech-Anwendungen.",
+		"optionsDe": [
+			"Eine Funktion zur Erstellung einer benutzerdefinierten synthetischen Stimme mit eigenen Audioaufnahmen fur Text-to-Speech",
+			"Ein Dienst, der nur voraufgezeichnete Audioclips abspielt",
+			"Ein Tool zur Ubersetzung gesprochener Sprache zwischen zwei Personen",
+			"Eine Funktion zur Erkennung von Schlusselwortern in Audio"
+		],
+		"optionExplanationsDe": [
+			"Richtig: Custom Neural Voice ermoglicht das Erstellen einer einzigartigen synthetischen Stimme durch Training mit eigenen Sprachaufnahmen.",
+			"\"Ein Dienst, der nur Audioclips abspielt\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Eine Funktion zur Erstellung einer benutzerdefinierten synthetischen Stimme mit eigenen Audioaufnahmen fur Text-to-Speech\". Custom Neural Voice generiert neue Sprache.",
+			"\"Ein Tool zur Ubersetzung gesprochener Sprache\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Eine Funktion zur Erstellung einer benutzerdefinierten synthetischen Stimme mit eigenen Audioaufnahmen fur Text-to-Speech\".",
+			"\"Eine Funktion zur Erkennung von Schlusselwortern\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Eine Funktion zur Erstellung einer benutzerdefinierten synthetischen Stimme mit eigenen Audioaufnahmen fur Text-to-Speech\"."
+		],
+		"learnRef": {
+			"title": "Introduction to AI speech concepts",
+			"url": "https://learn.microsoft.com/en-us/training/modules/introduction-ai-speech/"
+		},
+		"learnRefDe": {
+			"title": "Introduction to AI speech concepts (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/introduction-ai-speech/"
+		}
+	},
+	{
+		"id": "q114",
+		"topic": "NLP",
+		"prompt": "Which Azure AI Language feature can automatically detect the language of a given text?",
+		"hint": "Think about which feature determines whether text is written in English, German, French, or another language.",
+		"options": [
+			"Named Entity Recognition",
+			"Language detection",
+			"Key Phrase Extraction",
+			"Text-to-Speech"
+		],
+		"optionExplanations": [
+			"\"Named Entity Recognition\" is not the best fit for this question. The correct answer is \"Language detection\". NER extracts entities like names and locations, it does not identify the language.",
+			"Correct: Language detection in Azure AI Language identifies the language of input text and returns a language code with a confidence score.",
+			"\"Key Phrase Extraction\" is not the best fit for this question. The correct answer is \"Language detection\". Key Phrase Extraction identifies central themes, not the language.",
+			"\"Text-to-Speech\" is not the best fit for this question. The correct answer is \"Language detection\". Text-to-Speech converts text to spoken audio, it does not detect the language of text."
+		],
+		"answerIndex": 1,
+		"explanation": "Language detection in Azure AI Language identifies the language of input text and returns a language code with a confidence score.",
+		"promptDe": "Welche Azure AI Language-Funktion kann automatisch die Sprache eines gegebenen Textes erkennen?",
+		"hintDe": "Uberlege, welche Funktion bestimmt, ob ein Text auf Englisch, Deutsch, Franzosisch oder einer anderen Sprache geschrieben ist.",
+		"explanationDe": "Spracherkennung in Azure AI Language identifiziert die Sprache des Eingabetexts und gibt einen Sprachcode mit Konfidenzwert zuruck.",
+		"optionsDe": [
+			"Named Entity Recognition",
+			"Spracherkennung",
+			"Key Phrase Extraction",
+			"Text-to-Speech"
+		],
+		"optionExplanationsDe": [
+			"\"Named Entity Recognition\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Spracherkennung\". NER extrahiert Entitaten wie Namen und Orte, identifiziert nicht die Sprache.",
+			"Richtig: Spracherkennung in Azure AI Language identifiziert die Sprache des Eingabetexts und gibt einen Sprachcode mit Konfidenzwert zuruck.",
+			"\"Key Phrase Extraction\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Spracherkennung\". Key Phrase Extraction identifiziert zentrale Themen, nicht die Sprache.",
+			"\"Text-to-Speech\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Spracherkennung\". Text-to-Speech wandelt Text in gesprochenes Audio um."
+		],
+		"learnRef": {
+			"title": "Analyze text with Azure AI Language",
+			"url": "https://learn.microsoft.com/en-us/training/modules/analyze-text-with-text-analytics-service/"
+		},
+		"learnRefDe": {
+			"title": "Analyze text with Azure AI Language (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/analyze-text-with-text-analytics-service/"
+		}
+	},
+	{
+		"id": "q115",
+		"topic": "NLP",
+		"prompt": "What is custom text classification in Azure AI Language?",
+		"hint": "Think about training a model to assign your own domain-specific categories to text documents.",
+		"options": [
+			"Training a model to categorize text into your own custom-defined classes",
+			"Automatically translating text into all available languages",
+			"Converting text to speech with a custom voice",
+			"Extracting tables from PDF documents"
+		],
+		"optionExplanations": [
+			"Correct: Custom text classification lets you define your own categories and train a model to automatically classify text documents into those categories.",
+			"\"Automatically translating text into all available languages\" is not the best fit for this question. The correct answer is \"Training a model to categorize text into your own custom-defined classes\". Translation is Azure AI Translator.",
+			"\"Converting text to speech with a custom voice\" is not the best fit for this question. The correct answer is \"Training a model to categorize text into your own custom-defined classes\". Custom voice is Azure AI Speech.",
+			"\"Extracting tables from PDF documents\" is not the best fit for this question. The correct answer is \"Training a model to categorize text into your own custom-defined classes\". Table extraction is Azure AI Document Intelligence."
+		],
+		"answerIndex": 0,
+		"explanation": "Custom text classification in Azure AI Language lets you define your own categories and train a model to automatically classify text documents.",
+		"promptDe": "Was ist benutzerdefinierte Textklassifizierung in Azure AI Language?",
+		"hintDe": "Denke an das Trainieren eines Modells, das deine eigenen domainspezifischen Kategorien auf Textdokumente anwendet.",
+		"explanationDe": "Benutzerdefinierte Textklassifizierung in Azure AI Language ermoglicht es, eigene Kategorien zu definieren und ein Modell zu trainieren, das Textdokumente automatisch klassifiziert.",
+		"optionsDe": [
+			"Trainieren eines Modells zur Kategorisierung von Text in eigene benutzerdefinierte Klassen",
+			"Automatisches Ubersetzen von Text in alle verfugbaren Sprachen",
+			"Umwandlung von Text in Sprache mit einer benutzerdefinierten Stimme",
+			"Extrahieren von Tabellen aus PDF-Dokumenten"
+		],
+		"optionExplanationsDe": [
+			"Richtig: Benutzerdefinierte Textklassifizierung ermoglicht es, eigene Kategorien zu definieren und ein Modell zur automatischen Klassifizierung von Textdokumenten zu trainieren.",
+			"\"Automatisches Ubersetzen\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Trainieren eines Modells zur Kategorisierung von Text in eigene benutzerdefinierte Klassen\". Ubersetzung ist Azure AI Translator.",
+			"\"Umwandlung von Text in Sprache\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Trainieren eines Modells zur Kategorisierung von Text in eigene benutzerdefinierte Klassen\". Benutzerdefinierte Stimme ist Azure AI Speech.",
+			"\"Extrahieren von Tabellen aus PDF\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Trainieren eines Modells zur Kategorisierung von Text in eigene benutzerdefinierte Klassen\". Tabellenextraktion ist Azure AI Document Intelligence."
+		],
+		"learnRef": {
+			"title": "Custom text classification with Azure AI Language",
+			"url": "https://learn.microsoft.com/en-us/training/modules/custom-text-classification/"
+		},
+		"learnRefDe": {
+			"title": "Custom text classification with Azure AI Language (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/custom-text-classification/"
+		}
+	},
+	{
+		"id": "q116",
+		"type": "true-false",
+		"topic": "NLP",
+		"prompt": "Statement: Azure AI Translator can translate entire documents while preserving their original formatting.",
+		"hint": "Consider whether the translation service handles full documents or only individual sentences.",
+		"correctAnswer": "True",
+		"explanation": "Azure AI Translator's document translation feature can translate entire documents in supported formats while preserving the original document structure and formatting.",
+		"promptDe": "Aussage: Azure AI Translator kann ganze Dokumente ubersetzen und dabei die ursprungliche Formatierung beibehalten.",
+		"hintDe": "Uberlege, ob der Ubersetzungsdienst ganze Dokumente oder nur einzelne Satze verarbeitet.",
+		"explanationDe": "Die Dokumentubersetzungsfunktion von Azure AI Translator kann ganze Dokumente in unterstutzten Formaten ubersetzen und die ursprungliche Dokumentstruktur und Formatierung beibehalten.",
+		"correctAnswerDe": "Wahr",
+		"optionExplanations": {
+			"true": "Correct: Correct in this statement. Azure AI Translator's document translation can translate entire documents while preserving formatting.",
+			"false": "\"false\" is not the best fit for this question. The correct answer is \"True\". Not correct in this statement. Azure AI Translator supports full document translation with format preservation."
+		},
+		"optionExplanationsDe": {
+			"wahr": "Richtig: Richtig in dieser Aussage. Die Dokumentubersetzung von Azure AI Translator kann ganze Dokumente unter Beibehaltung der Formatierung ubersetzen.",
+			"falsch": "\"falsch\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Wahr\". In dieser Aussage nicht korrekt. Azure AI Translator unterstutzt vollstandige Dokumentubersetzung mit Formatbeibehaltung."
+		},
+		"learnRef": {
+			"title": "Translate text and documents with Azure AI Translator",
+			"url": "https://learn.microsoft.com/en-us/training/modules/translate-text-with-translation-service/"
+		},
+		"learnRefDe": {
+			"title": "Translate text and documents with Azure AI Translator (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/translate-text-with-translation-service/"
+		}
+	},
+	{
+		"id": "q117",
+		"topic": "Machine Learning",
+		"prompt": "What is the difference between a compute instance and a compute cluster in Azure Machine Learning?",
+		"hint": "Think about a personal development workstation versus a scalable pool of machines for training jobs.",
+		"options": [
+			"A compute instance is a single VM for development; a compute cluster is a scalable pool of VMs for training jobs",
+			"A compute cluster is for development; a compute instance is for training",
+			"They are identical but with different pricing tiers",
+			"A compute instance can only run notebooks; a compute cluster can only run pipelines"
+		],
+		"optionExplanations": [
+			"Correct: A compute instance is a single managed VM for interactive development and notebooks, while a compute cluster is a scalable group of VMs for running training jobs.",
+			"\"A compute cluster is for development; a compute instance is for training\" is not the best fit for this question. The correct answer is \"A compute instance is a single VM for development; a compute cluster is a scalable pool of VMs for training jobs\". This reverses the definitions.",
+			"\"They are identical but with different pricing tiers\" is not the best fit for this question. The correct answer is \"A compute instance is a single VM for development; a compute cluster is a scalable pool of VMs for training jobs\". They serve different purposes.",
+			"\"A compute instance can only run notebooks; a compute cluster can only run pipelines\" is not the best fit for this question. The correct answer is \"A compute instance is a single VM for development; a compute cluster is a scalable pool of VMs for training jobs\". Both can run various workloads."
+		],
+		"answerIndex": 0,
+		"explanation": "A compute instance is a single managed VM for development and notebooks. A compute cluster is a scalable pool of VMs for running training jobs efficiently.",
+		"promptDe": "Was ist der Unterschied zwischen einer Compute-Instanz und einem Compute-Cluster in Azure Machine Learning?",
+		"hintDe": "Denke an eine personliche Entwicklungsworkstation versus einen skalierbaren Pool von Maschinen fur Trainingsjobs.",
+		"explanationDe": "Eine Compute-Instanz ist eine einzelne verwaltete VM fur Entwicklung und Notebooks. Ein Compute-Cluster ist ein skalierbarer Pool von VMs fur Trainingsjobs.",
+		"optionsDe": [
+			"Eine Compute-Instanz ist eine einzelne VM fur Entwicklung; ein Compute-Cluster ist ein skalierbarer Pool von VMs fur Trainingsjobs",
+			"Ein Compute-Cluster ist fur Entwicklung; eine Compute-Instanz ist fur Training",
+			"Sie sind identisch, aber mit verschiedenen Preisstufen",
+			"Eine Compute-Instanz kann nur Notebooks ausfuhren; ein Compute-Cluster nur Pipelines"
+		],
+		"optionExplanationsDe": [
+			"Richtig: Eine Compute-Instanz ist eine einzelne verwaltete VM fur interaktive Entwicklung, wahrend ein Compute-Cluster eine skalierbare Gruppe von VMs fur Trainingsjobs ist.",
+			"\"Cluster fur Entwicklung; Instanz fur Training\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Eine Compute-Instanz ist eine einzelne VM fur Entwicklung; ein Compute-Cluster ist ein skalierbarer Pool von VMs fur Trainingsjobs\". Dies vertauscht die Definitionen.",
+			"\"Sie sind identisch\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Eine Compute-Instanz ist eine einzelne VM fur Entwicklung; ein Compute-Cluster ist ein skalierbarer Pool von VMs fur Trainingsjobs\".",
+			"\"Instanz nur Notebooks; Cluster nur Pipelines\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Eine Compute-Instanz ist eine einzelne VM fur Entwicklung; ein Compute-Cluster ist ein skalierbarer Pool von VMs fur Trainingsjobs\"."
+		],
+		"learnRef": {
+			"title": "Get started with machine learning in Azure",
+			"url": "https://learn.microsoft.com/en-us/training/modules/design-machine-learning-model-training-solution/"
+		},
+		"learnRefDe": {
+			"title": "Einstieg in Machine Learning in Azure (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/design-machine-learning-model-training-solution/"
+		}
+	},
+	{
+		"id": "q118",
+		"topic": "Machine Learning",
+		"prompt": "What is the Azure ML model registry used for?",
+		"hint": "Think about a central place to track, version, and manage trained models.",
+		"options": [
+			"A centralized repository for registering, versioning, and managing trained models",
+			"A tool for creating virtual networks",
+			"A database for storing raw training data",
+			"A service for deploying web applications"
+		],
+		"optionExplanations": [
+			"Correct: The model registry is a centralized repository where you register, version, and manage trained ML models, making them available for deployment.",
+			"\"A tool for creating virtual networks\" is not the best fit for this question. The correct answer is \"A centralized repository for registering, versioning, and managing trained models\". Virtual networking is an Azure infrastructure service.",
+			"\"A database for storing raw training data\" is not the best fit for this question. The correct answer is \"A centralized repository for registering, versioning, and managing trained models\". Data storage is handled by data assets and datastores.",
+			"\"A service for deploying web applications\" is not the best fit for this question. The correct answer is \"A centralized repository for registering, versioning, and managing trained models\". Web app deployment is Azure App Service."
+		],
+		"answerIndex": 0,
+		"explanation": "The Azure ML model registry is a centralized repository for registering, versioning, and managing trained models, making them available for deployment.",
+		"promptDe": "Wofur wird die Azure ML-Modellregistrierung verwendet?",
+		"hintDe": "Denke an einen zentralen Ort zum Verfolgen, Versionieren und Verwalten trainierter Modelle.",
+		"explanationDe": "Die Azure ML-Modellregistrierung ist ein zentrales Repository zum Registrieren, Versionieren und Verwalten trainierter Modelle fur die Bereitstellung.",
+		"optionsDe": [
+			"Ein zentrales Repository zum Registrieren, Versionieren und Verwalten trainierter Modelle",
+			"Ein Tool zum Erstellen virtueller Netzwerke",
+			"Eine Datenbank zum Speichern roher Trainingsdaten",
+			"Ein Dienst zum Bereitstellen von Webanwendungen"
+		],
+		"optionExplanationsDe": [
+			"Richtig: Die Modellregistrierung ist ein zentrales Repository zum Registrieren, Versionieren und Verwalten trainierter ML-Modelle.",
+			"\"Ein Tool zum Erstellen virtueller Netzwerke\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Ein zentrales Repository zum Registrieren, Versionieren und Verwalten trainierter Modelle\".",
+			"\"Eine Datenbank zum Speichern roher Trainingsdaten\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Ein zentrales Repository zum Registrieren, Versionieren und Verwalten trainierter Modelle\".",
+			"\"Ein Dienst zum Bereitstellen von Webanwendungen\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Ein zentrales Repository zum Registrieren, Versionieren und Verwalten trainierter Modelle\"."
+		],
+		"learnRef": {
+			"title": "Get started with machine learning in Azure",
+			"url": "https://learn.microsoft.com/en-us/training/modules/design-machine-learning-model-training-solution/"
+		},
+		"learnRefDe": {
+			"title": "Einstieg in Machine Learning in Azure (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/design-machine-learning-model-training-solution/"
+		}
+	},
+	{
+		"id": "q119",
+		"topic": "Machine Learning",
+		"prompt": "What is the difference between real-time and batch endpoints in Azure Machine Learning?",
+		"hint": "Think about instant responses for individual requests versus processing many requests at once.",
+		"options": [
+			"Real-time endpoints return predictions immediately for individual requests; batch endpoints process large datasets asynchronously",
+			"Batch endpoints are faster than real-time endpoints",
+			"Real-time endpoints only support image data; batch endpoints only support text data",
+			"There is no difference; they are interchangeable"
+		],
+		"optionExplanations": [
+			"Correct: Real-time endpoints serve predictions instantly for each request, while batch endpoints process large datasets asynchronously and return results when complete.",
+			"\"Batch endpoints are faster than real-time endpoints\" is not the best fit for this question. The correct answer is \"Real-time endpoints return predictions immediately for individual requests; batch endpoints process large datasets asynchronously\". Real-time is faster per request; batch handles volume.",
+			"\"Real-time only supports image data; batch only supports text\" is not the best fit for this question. The correct answer is \"Real-time endpoints return predictions immediately for individual requests; batch endpoints process large datasets asynchronously\". Both support various data types.",
+			"\"There is no difference\" is not the best fit for this question. The correct answer is \"Real-time endpoints return predictions immediately for individual requests; batch endpoints process large datasets asynchronously\". They serve different use cases."
+		],
+		"answerIndex": 0,
+		"explanation": "Real-time endpoints return predictions immediately for each request. Batch endpoints process large datasets asynchronously, returning results when all processing is complete.",
+		"promptDe": "Was ist der Unterschied zwischen Echtzeit- und Batch-Endpunkten in Azure Machine Learning?",
+		"hintDe": "Denke an sofortige Antworten fur einzelne Anfragen versus das Verarbeiten vieler Anfragen auf einmal.",
+		"explanationDe": "Echtzeit-Endpunkte geben Vorhersagen sofort fur jede Anfrage zuruck. Batch-Endpunkte verarbeiten grosse Datensatze asynchron und geben Ergebnisse zuruck, wenn alles fertig ist.",
+		"optionsDe": [
+			"Echtzeit-Endpunkte geben Vorhersagen sofort fur einzelne Anfragen zuruck; Batch-Endpunkte verarbeiten grosse Datensatze asynchron",
+			"Batch-Endpunkte sind schneller als Echtzeit-Endpunkte",
+			"Echtzeit-Endpunkte unterstutzen nur Bilddaten; Batch-Endpunkte nur Textdaten",
+			"Es gibt keinen Unterschied; sie sind austauschbar"
+		],
+		"optionExplanationsDe": [
+			"Richtig: Echtzeit-Endpunkte liefern Vorhersagen sofort pro Anfrage, wahrend Batch-Endpunkte grosse Datensatze asynchron verarbeiten.",
+			"\"Batch ist schneller\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Echtzeit-Endpunkte geben Vorhersagen sofort fur einzelne Anfragen zuruck; Batch-Endpunkte verarbeiten grosse Datensatze asynchron\".",
+			"\"Echtzeit nur Bilddaten; Batch nur Text\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Echtzeit-Endpunkte geben Vorhersagen sofort fur einzelne Anfragen zuruck; Batch-Endpunkte verarbeiten grosse Datensatze asynchron\".",
+			"\"Es gibt keinen Unterschied\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Echtzeit-Endpunkte geben Vorhersagen sofort fur einzelne Anfragen zuruck; Batch-Endpunkte verarbeiten grosse Datensatze asynchron\"."
+		],
+		"learnRef": {
+			"title": "Get started with machine learning in Azure",
+			"url": "https://learn.microsoft.com/en-us/training/modules/design-machine-learning-model-training-solution/"
+		},
+		"learnRefDe": {
+			"title": "Einstieg in Machine Learning in Azure (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/design-machine-learning-model-training-solution/"
+		}
+	},
+	{
+		"id": "q120",
+		"topic": "Machine Learning",
+		"prompt": "What is an ML pipeline in Azure Machine Learning?",
+		"hint": "Think about automating the sequence of steps from data preparation to model training and evaluation.",
+		"options": [
+			"A sequence of automated steps for data processing, model training, and evaluation that can be scheduled and rerun",
+			"A network cable connecting Azure data centers",
+			"A single API call that deploys a model",
+			"A tool for monitoring website traffic"
+		],
+		"optionExplanations": [
+			"Correct: An ML pipeline is a sequence of automated, reusable steps such as data preparation, training, and evaluation that can be scheduled and rerun.",
+			"\"A network cable connecting Azure data centers\" is not the best fit for this question. The correct answer is \"A sequence of automated steps for data processing, model training, and evaluation that can be scheduled and rerun\". Network cables are infrastructure.",
+			"\"A single API call that deploys a model\" is not the best fit for this question. The correct answer is \"A sequence of automated steps for data processing, model training, and evaluation that can be scheduled and rerun\". Model deployment is done via endpoints.",
+			"\"A tool for monitoring website traffic\" is not the best fit for this question. The correct answer is \"A sequence of automated steps for data processing, model training, and evaluation that can be scheduled and rerun\". Traffic monitoring is Azure Monitor."
+		],
+		"answerIndex": 0,
+		"explanation": "An ML pipeline is a sequence of automated, reusable steps for data processing, model training, and evaluation that can be scheduled and rerun for reproducibility.",
+		"promptDe": "Was ist eine ML-Pipeline in Azure Machine Learning?",
+		"hintDe": "Denke an die Automatisierung der Schrittfolge von Datenaufbereitung uber Modelltraining bis zur Evaluierung.",
+		"explanationDe": "Eine ML-Pipeline ist eine Folge automatisierter, wiederverwendbarer Schritte fur Datenverarbeitung, Modelltraining und Evaluierung, die geplant und erneut ausgefuhrt werden konnen.",
+		"optionsDe": [
+			"Eine Folge automatisierter Schritte fur Datenverarbeitung, Modelltraining und Evaluierung, die geplant und erneut ausgefuhrt werden konnen",
+			"Ein Netzwerkkabel, das Azure-Rechenzentren verbindet",
+			"Ein einzelner API-Aufruf, der ein Modell bereitstellt",
+			"Ein Tool zur Uberwachung von Website-Traffic"
+		],
+		"optionExplanationsDe": [
+			"Richtig: Eine ML-Pipeline ist eine Folge automatisierter, wiederverwendbarer Schritte fur Datenverarbeitung, Training und Evaluierung.",
+			"\"Ein Netzwerkkabel\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Eine Folge automatisierter Schritte fur Datenverarbeitung, Modelltraining und Evaluierung, die geplant und erneut ausgefuhrt werden konnen\".",
+			"\"Ein einzelner API-Aufruf\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Eine Folge automatisierter Schritte fur Datenverarbeitung, Modelltraining und Evaluierung, die geplant und erneut ausgefuhrt werden konnen\".",
+			"\"Ein Tool zur Uberwachung von Website-Traffic\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Eine Folge automatisierter Schritte fur Datenverarbeitung, Modelltraining und Evaluierung, die geplant und erneut ausgefuhrt werden konnen\"."
+		],
+		"learnRef": {
+			"title": "Get started with machine learning in Azure",
+			"url": "https://learn.microsoft.com/en-us/training/modules/design-machine-learning-model-training-solution/"
+		},
+		"learnRefDe": {
+			"title": "Einstieg in Machine Learning in Azure (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/design-machine-learning-model-training-solution/"
+		}
+	},
+	{
+		"id": "q121",
+		"topic": "Machine Learning",
+		"prompt": "What does the Responsible AI dashboard in Azure Machine Learning help you do?",
+		"hint": "Think about understanding model behavior, identifying errors, and checking for fairness issues.",
+		"options": [
+			"Analyze model errors, evaluate fairness, and understand model explanations in a single view",
+			"Automatically retrain models on new data",
+			"Generate synthetic training data",
+			"Deploy models to mobile devices"
+		],
+		"optionExplanations": [
+			"Correct: The Responsible AI dashboard provides tools for error analysis, fairness assessment, model interpretability, and causal analysis in a unified interface.",
+			"\"Automatically retrain models on new data\" is not the best fit for this question. The correct answer is \"Analyze model errors, evaluate fairness, and understand model explanations in a single view\". Automatic retraining is a separate pipeline feature.",
+			"\"Generate synthetic training data\" is not the best fit for this question. The correct answer is \"Analyze model errors, evaluate fairness, and understand model explanations in a single view\". Data generation is not the purpose of the RAI dashboard.",
+			"\"Deploy models to mobile devices\" is not the best fit for this question. The correct answer is \"Analyze model errors, evaluate fairness, and understand model explanations in a single view\". Mobile deployment is a separate concern."
+		],
+		"answerIndex": 0,
+		"explanation": "The Responsible AI dashboard provides error analysis, fairness assessment, model interpretability, and causal analysis in a unified interface.",
+		"promptDe": "Was hilft Ihnen das Responsible AI Dashboard in Azure Machine Learning?",
+		"hintDe": "Denke an das Verstehen des Modellverhaltens, das Identifizieren von Fehlern und das Prufen auf Fairness-Probleme.",
+		"explanationDe": "Das Responsible AI Dashboard bietet Fehleranalyse, Fairness-Bewertung, Modellinterpretierbarkeit und Kausalanalyse in einer einheitlichen Oberflache.",
+		"optionsDe": [
+			"Modellfehler analysieren, Fairness bewerten und Modellerklarungen in einer einzelnen Ansicht verstehen",
+			"Modelle automatisch mit neuen Daten neu trainieren",
+			"Synthetische Trainingsdaten generieren",
+			"Modelle auf Mobilgeraten bereitstellen"
+		],
+		"optionExplanationsDe": [
+			"Richtig: Das Responsible AI Dashboard bietet Fehleranalyse, Fairness-Bewertung, Modellinterpretierbarkeit und Kausalanalyse in einer einheitlichen Oberflache.",
+			"\"Modelle automatisch neu trainieren\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Modellfehler analysieren, Fairness bewerten und Modellerklarungen in einer einzelnen Ansicht verstehen\".",
+			"\"Synthetische Trainingsdaten generieren\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Modellfehler analysieren, Fairness bewerten und Modellerklarungen in einer einzelnen Ansicht verstehen\".",
+			"\"Modelle auf Mobilgeraten bereitstellen\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Modellfehler analysieren, Fairness bewerten und Modellerklarungen in einer einzelnen Ansicht verstehen\"."
+		],
+		"learnRef": {
+			"title": "Get started with machine learning in Azure",
+			"url": "https://learn.microsoft.com/en-us/training/modules/design-machine-learning-model-training-solution/"
+		},
+		"learnRefDe": {
+			"title": "Einstieg in Machine Learning in Azure (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/design-machine-learning-model-training-solution/"
+		}
+	},
+	{
+		"id": "q122",
+		"topic": "Machine Learning",
+		"prompt": "What is data labeling in Azure Machine Learning used for?",
+		"hint": "Think about the process of annotating raw data with labels so it can be used for supervised learning.",
+		"options": [
+			"Annotating data with labels such as classes or bounding boxes to prepare it for supervised training",
+			"Encrypting data at rest in Azure storage",
+			"Compressing datasets to reduce storage costs",
+			"Converting data between different file formats"
+		],
+		"optionExplanations": [
+			"Correct: Data labeling in Azure ML provides tools for annotating images, text, and other data with labels like classes or bounding boxes for supervised learning.",
+			"\"Encrypting data at rest in Azure storage\" is not the best fit for this question. The correct answer is \"Annotating data with labels such as classes or bounding boxes to prepare it for supervised training\". Encryption is a security feature.",
+			"\"Compressing datasets to reduce storage costs\" is not the best fit for this question. The correct answer is \"Annotating data with labels such as classes or bounding boxes to prepare it for supervised training\". Data compression is not data labeling.",
+			"\"Converting data between different file formats\" is not the best fit for this question. The correct answer is \"Annotating data with labels such as classes or bounding boxes to prepare it for supervised training\". Format conversion is data processing."
+		],
+		"answerIndex": 0,
+		"explanation": "Data labeling in Azure ML provides tools for annotating images, text, and other data with labels like classes or bounding boxes, preparing data for supervised training.",
+		"promptDe": "Wofur wird Data Labeling in Azure Machine Learning verwendet?",
+		"hintDe": "Denke an den Prozess des Annotierens von Rohdaten mit Labels, damit sie fur uberwachtes Lernen verwendet werden konnen.",
+		"explanationDe": "Data Labeling in Azure ML bietet Tools zum Annotieren von Bildern, Text und anderen Daten mit Labels wie Klassen oder Begrenzungsrahmen fur uberwachtes Training.",
+		"optionsDe": [
+			"Annotieren von Daten mit Labels wie Klassen oder Begrenzungsrahmen zur Vorbereitung fur uberwachtes Training",
+			"Verschlusseln von Daten im Ruhezustand in Azure Storage",
+			"Komprimieren von Datensatzen zur Reduzierung der Speicherkosten",
+			"Konvertieren von Daten zwischen verschiedenen Dateiformaten"
+		],
+		"optionExplanationsDe": [
+			"Richtig: Data Labeling in Azure ML bietet Tools zum Annotieren von Daten mit Labels wie Klassen oder Begrenzungsrahmen fur uberwachtes Lernen.",
+			"\"Verschlusseln von Daten\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Annotieren von Daten mit Labels wie Klassen oder Begrenzungsrahmen zur Vorbereitung fur uberwachtes Training\".",
+			"\"Komprimieren von Datensatzen\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Annotieren von Daten mit Labels wie Klassen oder Begrenzungsrahmen zur Vorbereitung fur uberwachtes Training\".",
+			"\"Konvertieren von Daten\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Annotieren von Daten mit Labels wie Klassen oder Begrenzungsrahmen zur Vorbereitung fur uberwachtes Training\"."
+		],
+		"learnRef": {
+			"title": "Get started with machine learning in Azure",
+			"url": "https://learn.microsoft.com/en-us/training/modules/design-machine-learning-model-training-solution/"
+		},
+		"learnRefDe": {
+			"title": "Einstieg in Machine Learning in Azure (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/design-machine-learning-model-training-solution/"
+		}
+	},
+	{
+		"id": "q123",
+		"type": "true-false",
+		"topic": "Machine Learning",
+		"prompt": "Statement: Azure Machine Learning Designer allows you to build ML pipelines using a drag-and-drop interface without writing code.",
+		"hint": "Consider whether there is a no-code visual tool for building ML workflows in Azure ML.",
+		"correctAnswer": "True",
+		"explanation": "Azure Machine Learning Designer provides a drag-and-drop canvas for building ML pipelines visually, making it accessible to users without coding experience.",
+		"promptDe": "Aussage: Azure Machine Learning Designer ermoglicht das Erstellen von ML-Pipelines mit einer Drag-and-Drop-Oberflache ohne Code zu schreiben.",
+		"hintDe": "Uberlege, ob es ein No-Code-Visualtool zum Erstellen von ML-Workflows in Azure ML gibt.",
+		"explanationDe": "Azure Machine Learning Designer bietet eine Drag-and-Drop-Leinwand zum visuellen Erstellen von ML-Pipelines, zuganglich fur Nutzer ohne Programmiererfahrung.",
+		"correctAnswerDe": "Wahr",
+		"optionExplanations": {
+			"true": "Correct: Correct in this statement. Azure Machine Learning Designer provides a drag-and-drop canvas for building ML pipelines visually without writing code.",
+			"false": "\"false\" is not the best fit for this question. The correct answer is \"True\". Not correct in this statement. Azure Machine Learning Designer provides a visual, no-code pipeline builder."
+		},
+		"optionExplanationsDe": {
+			"wahr": "Richtig: Richtig in dieser Aussage. Azure Machine Learning Designer bietet eine Drag-and-Drop-Leinwand zum visuellen Erstellen von ML-Pipelines ohne Code.",
+			"falsch": "\"falsch\" passt fur diese Frage nicht am besten. Die richtige Antwort ist \"Wahr\". In dieser Aussage nicht korrekt. Azure Machine Learning Designer bietet einen visuellen, codelosen Pipeline-Builder."
+		},
+		"learnRef": {
+			"title": "Get started with machine learning in Azure",
+			"url": "https://learn.microsoft.com/en-us/training/modules/design-machine-learning-model-training-solution/"
+		},
+		"learnRefDe": {
+			"title": "Einstieg in Machine Learning in Azure (Microsoft Learn)",
+			"url": "https://learn.microsoft.com/en-us/training/modules/design-machine-learning-model-training-solution/"
+		}
 	}
 ];

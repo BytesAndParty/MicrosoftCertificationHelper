@@ -50,6 +50,11 @@ export const glossaryTerms = [
 		"definitionDe": "Dienst für Speech-to-Text, Text-to-Speech und Sprachübersetzung."
 	},
 	{
+		"term": "Azure AI Translator",
+		"definition": "Azure service for real-time text translation, language detection, and document translation across 100+ languages.",
+		"definitionDe": "Azure-Dienst für Echtzeit-Textübersetzung, Spracherkennung und Dokumentübersetzung in über 100 Sprachen."
+	},
+	{
 		"term": "Azure AI Vision",
 		"definition": "Azure service for image analysis, OCR, face detection, and image captioning.",
 		"definitionDe": "Azure-Dienst für Bildanalyse, OCR, Gesichtserkennung und Bildunterschriften."
@@ -85,14 +90,39 @@ export const glossaryTerms = [
 		"definitionDe": "Unüberwachte Technik, die Datenpunkte ohne vordefinierte Labels nach Ähnlichkeit gruppiert."
 	},
 	{
+		"term": "Compute Cluster",
+		"definition": "Scalable multi-node compute in Azure ML for training workloads that auto-scales from zero.",
+		"definitionDe": "Skalierbare Multi-Node-Rechenressource in Azure ML für Trainingsworkloads mit automatischer Skalierung ab null."
+	},
+	{
+		"term": "Compute Instance",
+		"definition": "Single-node development VM in Azure ML for notebooks, experimentation, and lightweight training.",
+		"definitionDe": "Einzelknoten-Entwicklungs-VM in Azure ML für Notebooks, Experimente und leichtgewichtiges Training."
+	},
+	{
 		"term": "Computer Vision",
 		"definition": "AI field for image and video understanding.",
 		"definitionDe": "KI-Bereich für Bild- und Videoverständnis."
 	},
 	{
+		"term": "Conversational Language Understanding (CLU)",
+		"definition": "Azure AI Language feature for building custom intent recognition and entity extraction models for conversational applications. Successor to LUIS.",
+		"definitionDe": "Azure AI Language-Funktion zum Erstellen benutzerdefinierter Intent-Erkennung und Entitätsextraktion für Konversationsanwendungen. Nachfolger von LUIS."
+	},
+	{
 		"term": "Copilot",
 		"definition": "Microsoft AI assistant based on LLMs, embedded in products like Office and Windows.",
 		"definitionDe": "Microsofts KI-Assistent basierend auf LLMs, eingebettet in Produkte wie Office und Windows."
+	},
+	{
+		"term": "Custom Question Answering",
+		"definition": "Azure AI Language feature that creates FAQ-style knowledge bases from documents, URLs, or manual entries.",
+		"definitionDe": "Azure AI Language-Funktion, die FAQ-artige Wissensdatenbanken aus Dokumenten, URLs oder manuellen Einträgen erstellt."
+	},
+	{
+		"term": "DALL-E",
+		"definition": "OpenAI image generation model available in Azure OpenAI Service that creates images from text descriptions.",
+		"definitionDe": "OpenAI-Bildgenerierungsmodell, verfügbar in Azure OpenAI Service, das Bilder aus Textbeschreibungen erstellt."
 	},
 	{
 		"term": "Deep Learning",
@@ -123,6 +153,11 @@ export const glossaryTerms = [
 		"term": "Generative AI",
 		"definition": "Models that generate new content such as text, images, or code.",
 		"definitionDe": "Modelle erzeugen neue Inhalte wie Text, Bilder oder Code."
+	},
+	{
+		"term": "GPT-4o",
+		"definition": "Multimodal OpenAI model that processes text, images, and audio in a single model, available through Azure OpenAI Service.",
+		"definitionDe": "Multimodales OpenAI-Modell, das Text, Bilder und Audio in einem einzigen Modell verarbeitet, verfügbar über Azure OpenAI Service."
 	},
 	{
 		"term": "Grounding",
@@ -175,6 +210,11 @@ export const glossaryTerms = [
 		"definitionDe": "Neuronales Netz, trainiert auf riesigen Textdatensätzen zum Verstehen und Generieren von Sprache."
 	},
 	{
+		"term": "Liveness Detection",
+		"definition": "Azure AI Face feature that verifies a real person is present (not a photo, video, or mask) during identity verification.",
+		"definitionDe": "Azure AI Face-Funktion, die überprüft, ob eine echte Person anwesend ist (kein Foto, Video oder Maske) bei der Identitätsprüfung."
+	},
+	{
 		"term": "Machine Learning",
 		"definition": "Models learn patterns from data and make predictions.",
 		"definitionDe": "Modelle lernen Muster aus Daten und treffen Vorhersagen."
@@ -188,6 +228,11 @@ export const glossaryTerms = [
 		"term": "Model Drift",
 		"definition": "Shift in data patterns that can degrade model performance over time.",
 		"definitionDe": "Verschiebung von Datenmustern, die Modellleistung über Zeit verschlechtern kann."
+	},
+	{
+		"term": "Model Registry",
+		"definition": "Central repository in Azure ML for versioning, tracking, and managing trained models throughout their lifecycle.",
+		"definitionDe": "Zentrales Repository in Azure ML zur Versionierung, Nachverfolgung und Verwaltung trainierter Modelle über ihren gesamten Lebenszyklus."
 	},
 	{
 		"term": "NLP",
@@ -230,6 +275,11 @@ export const glossaryTerms = [
 		"definitionDe": "Entwerfen und Optimieren von Prompts für bessere, relevantere KI-Antworten."
 	},
 	{
+		"term": "Prompt Flow",
+		"definition": "Visual authoring tool in Azure AI Foundry for building, testing, and deploying LLM-powered workflows.",
+		"definitionDe": "Visuelles Entwicklungstool in Azure AI Foundry zum Erstellen, Testen und Bereitstellen von LLM-gestützten Workflows."
+	},
+	{
 		"term": "RAG",
 		"definition": "Retrieval-Augmented Generation: combining LLM responses with external sources.",
 		"definitionDe": "Retrieval-Augmented Generation verbindet LLM-Antworten mit externen Quellen."
@@ -268,6 +318,11 @@ export const glossaryTerms = [
 		"term": "Skillset",
 		"definition": "AI enrichments in Azure AI Search applied during indexing.",
 		"definitionDe": "KI-Anreicherungen in Azure AI Search, die beim Indexieren angewendet werden."
+	},
+	{
+		"term": "Spatial Analysis",
+		"definition": "Azure AI Vision capability that analyzes people movement and presence in physical spaces using video feeds.",
+		"definitionDe": "Azure AI Vision-Funktion, die Personenbewegungen und Präsenz in physischen Räumen mittels Videofeeds analysiert."
 	},
 	{
 		"term": "Speech Recognition",
@@ -318,5 +373,10 @@ export const glossaryTerms = [
 		"term": "Validation Dataset",
 		"definition": "Dataset for evaluating model performance on unseen data (generalization).",
 		"definitionDe": "Datensatz zum Prüfen der Modellleistung auf ungesehenen Daten (Generalisierung)."
+	},
+	{
+		"term": "Whisper",
+		"definition": "OpenAI speech recognition model available in Azure OpenAI Service for accurate speech-to-text transcription.",
+		"definitionDe": "OpenAI-Spracherkennungsmodell, verfügbar in Azure OpenAI Service für präzise Speech-to-Text-Transkription."
 	}
 ];

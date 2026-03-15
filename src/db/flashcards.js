@@ -270,5 +270,125 @@ export const flashcards = [
 		"back": "Predicting the next token from prior context; this is the core training objective behind many LLMs.",
 		"frontDe": "Was ist Language Modeling?",
 		"backDe": "Vorhersage des nachsten Tokens aus vorherigem Kontext; das ist das Kern-Trainingsziel vieler LLMs."
+	},
+	{
+		"id": "f35",
+		"topic": "Computer Vision",
+		"front": "Image captioning and tagging in Azure AI Vision",
+		"back": "Azure AI Vision can generate natural-language captions describing an image and return a set of relevant content tags with confidence scores.",
+		"frontDe": "Bildbeschreibung und Tagging in Azure AI Vision",
+		"backDe": "Azure AI Vision kann naturlichsprachige Bildunterschriften generieren und relevante Inhaltstags mit Konfidenzwerten zuruckgeben."
+	},
+	{
+		"id": "f36",
+		"topic": "Computer Vision",
+		"front": "Face verification vs. face identification",
+		"back": "Verification checks if two faces belong to the same person (1:1). Identification matches a face against a group of known persons (1:many).",
+		"frontDe": "Gesichtsverifizierung vs. Gesichtsidentifikation",
+		"backDe": "Verifizierung pruft, ob zwei Gesichter derselben Person gehoren (1:1). Identifikation gleicht ein Gesicht mit einer Gruppe bekannter Personen ab (1:viele)."
+	},
+	{
+		"id": "f37",
+		"topic": "Computer Vision",
+		"front": "What is liveness detection in Azure AI Face?",
+		"back": "Liveness detection verifies that the input is a live person, not a photo, video, or mask, to prevent spoofing attacks.",
+		"frontDe": "Was ist Liveness Detection in Azure AI Face?",
+		"backDe": "Liveness Detection pruft, ob die Eingabe eine echte Person ist und kein Foto, Video oder eine Maske, um Spoofing-Angriffe zu verhindern."
+	},
+	{
+		"id": "f38",
+		"topic": "NLP",
+		"front": "What does the Azure AI Translator service provide?",
+		"back": "Real-time text translation across 100+ languages, plus document translation and custom terminology via custom models.",
+		"frontDe": "Was bietet der Azure AI Translator Dienst?",
+		"backDe": "Echtzeit-Textubersetzung in uber 100 Sprachen, Dokumentenubersetzung und benutzerdefinierte Terminologie uber Custom-Modelle."
+	},
+	{
+		"id": "f39",
+		"topic": "NLP",
+		"front": "What is Conversational Language Understanding (CLU)?",
+		"back": "A service for building custom natural-language models that extract intents and entities from user utterances in conversational apps.",
+		"frontDe": "Was ist Conversational Language Understanding (CLU)?",
+		"backDe": "Ein Dienst zum Erstellen benutzerdefinierter Sprachmodelle, die Absichten und Entitaten aus Benutzeraussagen in Konversations-Apps extrahieren."
+	},
+	{
+		"id": "f40",
+		"topic": "NLP",
+		"front": "What is custom question answering?",
+		"back": "A feature of Azure AI Language that lets you build a knowledge base from FAQs, documents, or manual entries and respond to user questions with matched answers.",
+		"frontDe": "Was ist Custom Question Answering?",
+		"backDe": "Ein Feature von Azure AI Language, mit dem man eine Wissensdatenbank aus FAQs, Dokumenten oder manuellen Eintragen erstellt und Benutzerfragen mit passenden Antworten beantwortet."
+	},
+	{
+		"id": "f41",
+		"topic": "Machine Learning",
+		"front": "Azure ML compute types: instance vs. cluster vs. serverless",
+		"back": "Compute instance is a single managed VM for development. Compute cluster auto-scales multiple VMs for training jobs. Serverless compute is on-demand with no infrastructure management.",
+		"frontDe": "Azure ML Compute-Typen: Instanz vs. Cluster vs. Serverless",
+		"backDe": "Compute-Instanz ist eine einzelne verwaltete VM fur Entwicklung. Compute-Cluster skaliert mehrere VMs fur Trainingsjobs. Serverless-Compute ist bedarfsgesteuert ohne Infrastrukturverwaltung."
+	},
+	{
+		"id": "f42",
+		"topic": "Machine Learning",
+		"front": "What is the Azure ML model registry?",
+		"back": "A central repository to version, track, and manage trained models before deploying them to endpoints.",
+		"frontDe": "Was ist die Azure ML Model Registry?",
+		"backDe": "Ein zentrales Repository zum Versionieren, Nachverfolgen und Verwalten trainierter Modelle vor der Bereitstellung an Endpunkten."
+	},
+	{
+		"id": "f43",
+		"topic": "GenAI",
+		"front": "What is prompt flow in Azure AI Foundry?",
+		"back": "A visual development tool to build, test, and deploy LLM-based workflows by chaining prompts, tools, and code together.",
+		"frontDe": "Was ist Prompt Flow in Azure AI Foundry?",
+		"backDe": "Ein visuelles Entwicklungstool zum Erstellen, Testen und Bereitstellen LLM-basierter Workflows durch Verkettung von Prompts, Tools und Code."
+	},
+	{
+		"id": "f44",
+		"topic": "GenAI",
+		"front": "What are multimodal models like GPT-4o?",
+		"back": "Models that can process and generate across multiple modalities (text, images, audio) within a single model, enabling richer interactions.",
+		"frontDe": "Was sind multimodale Modelle wie GPT-4o?",
+		"backDe": "Modelle, die mehrere Modalitaten (Text, Bilder, Audio) in einem einzigen Modell verarbeiten und generieren konnen, was reichhaltigere Interaktionen ermoglicht."
+	},
+	{
+		"id": "f45",
+		"topic": "GenAI",
+		"front": "What is DALL-E?",
+		"back": "An AI model that generates or edits images from text prompts. Available via Azure OpenAI Service.",
+		"frontDe": "Was ist DALL-E?",
+		"backDe": "Ein KI-Modell, das Bilder aus Textbeschreibungen generiert oder bearbeitet. Verfugbar uber Azure OpenAI Service."
+	},
+	{
+		"id": "f46",
+		"topic": "GenAI",
+		"front": "Fine-tuning vs. prompt engineering",
+		"back": "Prompt engineering adapts model behavior through instructions without changing weights. Fine-tuning retrains the model on domain data to update its weights.",
+		"frontDe": "Fine-Tuning vs. Prompt Engineering",
+		"backDe": "Prompt Engineering passt das Modellverhalten durch Anweisungen an, ohne Gewichte zu andern. Fine-Tuning trainiert das Modell mit Domanendaten und aktualisiert die Gewichte."
+	},
+	{
+		"id": "f47",
+		"topic": "Machine Learning",
+		"front": "Real-time vs. batch endpoints in Azure ML",
+		"back": "Real-time endpoints return predictions instantly via REST API. Batch endpoints process large datasets asynchronously and store results.",
+		"frontDe": "Echtzeit- vs. Batch-Endpunkte in Azure ML",
+		"backDe": "Echtzeit-Endpunkte liefern Vorhersagen sofort uber REST API. Batch-Endpunkte verarbeiten grosse Datensatze asynchron und speichern die Ergebnisse."
+	},
+	{
+		"id": "f48",
+		"topic": "NLP",
+		"front": "What is custom neural voice?",
+		"back": "A feature of Azure AI Speech that lets you create a unique, brand-specific synthetic voice using recorded speech samples and responsible AI approval.",
+		"frontDe": "Was ist Custom Neural Voice?",
+		"backDe": "Ein Feature von Azure AI Speech, mit dem man eine einzigartige, markenspezifische synthetische Stimme aus Sprachaufnahmen erstellt, mit Responsible AI Genehmigung."
+	},
+	{
+		"id": "f49",
+		"topic": "Responsible AI",
+		"front": "Content filtering for generative AI in Azure",
+		"back": "Azure OpenAI Service includes built-in content filters that detect and block harmful inputs and outputs across categories like hate, violence, self-harm, and sexual content.",
+		"frontDe": "Inhaltsfilterung fur generative KI in Azure",
+		"backDe": "Azure OpenAI Service enthalt integrierte Inhaltsfilter, die schadliche Ein- und Ausgaben in Kategorien wie Hass, Gewalt, Selbstverletzung und sexuelle Inhalte erkennen und blockieren."
 	}
 ];
