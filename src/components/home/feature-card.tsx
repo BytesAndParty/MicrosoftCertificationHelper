@@ -1,4 +1,5 @@
 import type { ComponentType, CSSProperties, SVGProps } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { BackgroundGradient } from '@/components/ui/background-gradient';
@@ -25,6 +26,14 @@ export function FeatureCard({
 	isHighlighted,
 	index,
 }: FeatureCardProps) {
+	const [showArrow, setShowArrow] = useState(false);
+
+	useEffect(() => {
+		if (!isHighlighted) return;
+		const timer = setTimeout(() => setShowArrow(true), 2000);
+		return () => clearTimeout(timer);
+	}, [isHighlighted]);
+
 	const cardContent = (
 		<>
 			<div className="flex h-14 w-14 items-center justify-center rounded-lg bg-accent-dim transition-transform duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:scale-110">
@@ -46,18 +55,18 @@ export function FeatureCard({
 			</div>
 			<span className="mt-5 flex items-center gap-1 text-sm text-accent">
 				{progress > 0 ? 'Continue learning' : 'Start learning'}
-				{isHighlighted ? (
+				{isHighlighted && showArrow ? (
 					<motion.span
 						initial={{ opacity: 0, x: -4 }}
 						animate={{ opacity: 1, x: 0 }}
-						transition={{ duration: 0.3, delay: 2 }}
+						transition={{ duration: 0.3 }}
 						className="inline-flex"
 					>
 						<ArrowRight className="h-3 w-3" />
 					</motion.span>
-				) : (
+				) : !isHighlighted ? (
 					<ArrowRight className="h-3 w-3 -translate-x-1 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100" />
-				)}
+				) : null}
 			</span>
 		</>
 	);
