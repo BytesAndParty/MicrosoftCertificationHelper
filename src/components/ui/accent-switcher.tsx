@@ -1,24 +1,9 @@
 /**
- * AccentSwitcher - Reusable Theme Mode & Accent Color Picker
+ * AccentSwitcher - Theme Mode & Accent Color Picker
  *
- * A shadcn-style component providing:
- *   1. Light/Dark mode toggle (Sun/Moon icon)
- *   2. Accent color picker dropdown (configurable palettes)
- *
- * Dependencies: lucide-react, @radix-ui/react-dropdown-menu,
- *               shadcn Button + DropdownMenu, cn() utility
- *
- * Usage:
- *   <AccentSwitcher
- *     palettes={{
- *       amber:     { label: 'Amber',     oklch: 'oklch(0.555 0.146 49)' },
- *       emerald:   { label: 'Emerald',   oklch: 'oklch(0.511 0.086 186.4)' },
- *     }}
- *     defaultPalette="amber"
- *     themeStorageKey="my_theme_pref"
- *     onThemeChange={(mode) => { ... }}
- *     onAccentChange={(key) => { ... }}
- *   />
+ * Persists both theme mode and accent to localStorage.
+ * Works with the inline FOUC-prevention script in index.html
+ * that reads the same keys before React mounts.
  */
 
 import { useState, useEffect, useCallback } from 'react';
@@ -34,10 +19,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 
-/* -------------------------------------------------------------------------- */
-/*  Types                                                                     */
-/* -------------------------------------------------------------------------- */
-
 export interface PaletteConfig {
 	label: string;
 	oklch: string;
@@ -46,106 +27,77 @@ export interface PaletteConfig {
 export type ThemeMode = 'light' | 'dark';
 
 export interface AccentSwitcherProps {
-	/** Map of palette key -> config. Keys are used as `data-accent` attribute values. */
 	palettes: Record<string, PaletteConfig>;
-	/** Initial/default palette key (must exist in `palettes`). */
 	defaultPalette?: string;
-	/** Currently active palette key (controlled mode). Falls back to defaultPalette. */
-	activePalette?: string;
-	/** localStorage key for persisting theme mode. */
-	themeStorageKey?: string;
-	/** HTML attribute name set on <html> for the accent. Default: "data-accent". */
-	accentAttribute?: string;
-	/** HTML attribute name set on <html> for theme mode. Default: "data-theme". */
-	themeAttribute?: string;
-	/** Whether to also toggle the "dark" CSS class on <html>. Default: true. */
-	toggleDarkClass?: boolean;
-	/** Label for the dropdown header. */
-	dropdownLabel?: string;
-	/** Callback when theme mode changes. */
-	onThemeChange?: (mode: ThemeMode) => void;
-	/** Callback when accent palette changes. */
-	onAccentChange?: (key: string) => void;
 	className?: string;
+	onThemeChange?: (mode: ThemeMode) => void;
+	onAccentChange?: (key: string) => void;
 }
 
-/* -------------------------------------------------------------------------- */
-/*  Helpers                                                                   */
-/* -------------------------------------------------------------------------- */
+const THEME_KEY = 'theme_pref';
+const ACCENT_KEY = 'accent_pref';
 
-function readTheme(key: string): ThemeMode {
+function readStoredTheme(): ThemeMode {
 	try {
-		const stored = localStorage.getItem(key);
+		const stored = localStorage.getItem(THEME_KEY);
 		if (stored === 'dark' || stored === 'light') return stored;
-	} catch {
-		// localStorage may be unavailable
-	}
+	} catch {}
 	return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 
-/* -------------------------------------------------------------------------- */
-/*  Component                                                                 */
-/* -------------------------------------------------------------------------- */
+function readStoredAccent(fallback: string): string {
+	try {
+		const stored = localStorage.getItem(ACCENT_KEY);
+		if (stored) return stored;
+	} catch {}
+	return fallback;
+}
 
 export function AccentSwitcher({
 	palettes,
 	defaultPalette,
-	activePalette,
-	themeStorageKey = 'theme_pref',
-	accentAttribute = 'data-accent',
-	themeAttribute = 'data-theme',
-	toggleDarkClass = true,
-	dropdownLabel = 'Accent color',
+	className,
 	onThemeChange,
 	onAccentChange,
-	className,
 }: AccentSwitcherProps) {
 	const paletteKeys = Object.keys(palettes);
-	const firstKey = paletteKeys[0] ?? '';
-	const fallback = defaultPalette && palettes[defaultPalette] ? defaultPalette : firstKey;
-	const currentAccent = activePalette && palettes[activePalette] ? activePalette : fallback;
+	const fallbackKey = defaultPalette && palettes[defaultPalette] ? defaultPalette : (paletteKeys[0] ?? '');
 
-	const [theme, setTheme] = useState<ThemeMode>(() => readTheme(themeStorageKey));
+	const [theme, setTheme] = useState<ThemeMode>(() => readStoredTheme());
+	const [accent, setAccent] = useState<string>(() => readStoredAccent(fallbackKey));
 
 	// Apply theme to DOM
-	const applyTheme = useCallback(
-		(mode: ThemeMode) => {
-			document.documentElement.setAttribute(themeAttribute, mode);
-			if (toggleDarkClass) document.documentElement.classList.toggle('dark', mode === 'dark');
-			try {
-				localStorage.setItem(themeStorageKey, mode);
-			} catch {
-				// localStorage may be unavailable
-			}
-		},
-		[themeAttribute, themeStorageKey, toggleDarkClass],
-	);
+	const applyTheme = useCallback((mode: ThemeMode) => {
+		document.documentElement.setAttribute('data-theme', mode);
+		document.documentElement.classList.toggle('dark', mode === 'dark');
+		try { localStorage.setItem(THEME_KEY, mode); } catch {}
+	}, []);
 
-	// Apply initial theme to DOM on mount
+	// Apply accent to DOM
+	const applyAccent = useCallback((key: string) => {
+		document.documentElement.setAttribute('data-accent', key);
+		try { localStorage.setItem(ACCENT_KEY, key); } catch {}
+	}, []);
+
+	// Sync DOM on mount (in case inline script didn't run or values changed)
 	useEffect(() => {
 		applyTheme(theme);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+		applyAccent(accent);
+	}, []); // eslint-disable-line react-hooks/exhaustive-deps
 
 	// System preference listener
 	useEffect(() => {
 		const mq = window.matchMedia('(prefers-color-scheme: dark)');
 		const onChange = (e: MediaQueryListEvent) => {
-			try {
-				if (localStorage.getItem(themeStorageKey)) return;
-			} catch {
-				// localStorage may be unavailable
-			}
+			try { if (localStorage.getItem(THEME_KEY)) return; } catch {}
 			const next: ThemeMode = e.matches ? 'dark' : 'light';
 			setTheme(next);
 			applyTheme(next);
 			onThemeChange?.(next);
 		};
 		mq.addEventListener('change', onChange);
-		return () => {
-			mq.removeEventListener('change', onChange);
-		};
-	}, [themeStorageKey, applyTheme, onThemeChange]);
+		return () => mq.removeEventListener('change', onChange);
+	}, [applyTheme, onThemeChange]);
 
 	const toggleTheme = useCallback(() => {
 		setTheme((prev) => {
@@ -158,17 +110,17 @@ export function AccentSwitcher({
 
 	const selectAccent = useCallback(
 		(key: string) => {
-			document.documentElement.setAttribute(accentAttribute, key);
+			setAccent(key);
+			applyAccent(key);
 			onAccentChange?.(key);
 		},
-		[accentAttribute, onAccentChange],
+		[applyAccent, onAccentChange],
 	);
 
 	const isDark = theme === 'dark';
 
 	return (
 		<div className={cn('flex items-center gap-1', className)}>
-			{/* Theme mode toggle */}
 			<Button
 				variant="ghost"
 				size="icon"
@@ -192,15 +144,14 @@ export function AccentSwitcher({
 				/>
 			</Button>
 
-			{/* Accent palette picker */}
 			<DropdownMenu>
 				<DropdownMenuTrigger asChild>
-					<Button variant="ghost" size="icon" aria-label={dropdownLabel}>
+					<Button variant="ghost" size="icon" aria-label="Accent color">
 						<Palette className="h-[1.125rem] w-[1.125rem]" />
 					</Button>
 				</DropdownMenuTrigger>
 				<DropdownMenuContent align="end" className="w-44">
-					<DropdownMenuLabel>{dropdownLabel}</DropdownMenuLabel>
+					<DropdownMenuLabel>Accent color</DropdownMenuLabel>
 					<DropdownMenuSeparator />
 					{paletteKeys.map((key) => {
 						const palette = palettes[key];
@@ -209,9 +160,7 @@ export function AccentSwitcher({
 						return (
 							<DropdownMenuItem
 								key={key}
-								onClick={() => {
-									selectAccent(key);
-								}}
+								onClick={() => selectAccent(key)}
 								className="flex cursor-pointer items-center gap-3"
 							>
 								<span
@@ -219,7 +168,7 @@ export function AccentSwitcher({
 									style={{ backgroundColor: oklch }}
 								/>
 								<span>{label}</span>
-								{currentAccent === key && (
+								{accent === key && (
 									<span className="ml-auto text-xs opacity-70">&#10003;</span>
 								)}
 							</DropdownMenuItem>
