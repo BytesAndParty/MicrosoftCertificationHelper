@@ -166,7 +166,7 @@ function RootLayout() {
 
 	return (
 		<div className="min-h-screen bg-surface text-text">
-			<header className="sticky top-0 z-40 border-b border-border bg-surface/95 backdrop-blur supports-[backdrop-filter]:bg-surface/60">
+			<header className="sticky top-0 z-40 border-b border-border bg-surface/95 backdrop-blur supports-backdrop-filter:bg-surface/60">
 				<nav className="grid h-14 grid-cols-[auto_1fr_auto] items-center gap-6 px-6">
 					<Link to="/" className="text-lg font-semibold tracking-tight">
 						AI-900
@@ -204,7 +204,7 @@ function RootLayout() {
 				</nav>
 			</header>
 
-			<main className="px-6 py-8">
+			<main>
 				<Outlet />
 			</main>
 
