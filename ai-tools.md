@@ -96,11 +96,11 @@ Specialist personas spawned via the Agent tool for focused work.
 
 Not yet installed. Context management server for enhanced project awareness.
 
-Location: `~/Development/AI-Workflow/OpenViking/`
+Location: `~/Development/__AI-Workflow__/OpenViking/`
 Requires: cmake + Rust toolchain
 
 ```bash
-cd ~/Development/AI-Workflow/OpenViking
+cd ~/Development/__AI-Workflow__/OpenViking
 python3 -m venv .venv && source .venv/bin/activate
 pip install -e .
 openviking-server  # starts HTTP context server
