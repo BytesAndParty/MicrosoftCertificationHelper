@@ -26,3 +26,6 @@ pnpm-debug.log*
 # test results
 test-results/
 playwright-report/
+
+# TypeScript build info
+tsconfig.tsbuildinfo
