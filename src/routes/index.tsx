@@ -3,6 +3,7 @@ import { ArrowRight, BookOpen, Brain, FileText, Map } from 'lucide-react';
 import type { ComponentType, SVGProps } from 'react';
 import { GlowCard } from '@/components/ui/glow-card';
 import { H1, H3, Muted, Label } from '@/components/ui/typography';
+import { quizPattern, flashcardsPattern, glossaryPattern, roadmapPattern } from '@/lib/patterns';
 
 interface FeatureCard {
 	label: string;
@@ -10,6 +11,7 @@ interface FeatureCard {
 	icon: ComponentType<SVGProps<SVGSVGElement>>;
 	count: string;
 	progress: number;
+	pattern: string;
 }
 
 const features: FeatureCard[] = [
@@ -19,6 +21,7 @@ const features: FeatureCard[] = [
 		icon: Brain,
 		count: '78 Questions',
 		progress: 0,
+		pattern: quizPattern,
 	},
 	{
 		label: 'Flashcards',
@@ -26,6 +29,7 @@ const features: FeatureCard[] = [
 		icon: BookOpen,
 		count: '34 Cards',
 		progress: 0,
+		pattern: flashcardsPattern,
 	},
 	{
 		label: 'Glossary',
@@ -33,6 +37,7 @@ const features: FeatureCard[] = [
 		icon: FileText,
 		count: '65 Terms',
 		progress: 0,
+		pattern: glossaryPattern,
 	},
 	{
 		label: 'Roadmap',
@@ -40,6 +45,7 @@ const features: FeatureCard[] = [
 		icon: Map,
 		count: '7 Stages',
 		progress: 0,
+		pattern: roadmapPattern,
 	},
 ];
 
@@ -58,10 +64,11 @@ function HomePage() {
 			</section>
 
 			<section className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-				{features.map(({ label, description, icon: Icon, count, progress }) => (
+				{features.map(({ label, description, icon: Icon, count, progress, pattern }) => (
 					<GlowCard
 						key={label}
-						className="flex flex-col items-center rounded-lg bg-surface-alt px-6 py-10"
+						className="group flex flex-col items-center rounded-lg bg-surface-alt px-6 py-10"
+						style={{ backgroundImage: pattern }}
 					>
 
 						<div className="flex h-14 w-14 items-center justify-center rounded-lg bg-accent-dim">
@@ -81,7 +88,8 @@ function HomePage() {
 						</div>
 
 						<span className="mt-5 flex items-center gap-1 text-sm text-accent">
-							Start learning <ArrowRight className="h-3 w-3" />
+							{progress > 0 ? 'Continue learning' : 'Start learning'}
+							<ArrowRight className="h-3 w-3 -translate-x-1 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100" />
 						</span>
 					</GlowCard>
 				))}
