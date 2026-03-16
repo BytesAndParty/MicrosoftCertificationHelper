@@ -1,4 +1,6 @@
-export const flashcards = [
+import type { Flashcard } from '@/types/db';
+
+export const flashcards: Flashcard[] = [
 	{
 		"id": "f1",
 		"topic": "ML",

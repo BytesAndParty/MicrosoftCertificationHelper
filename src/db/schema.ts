@@ -1,40 +1,69 @@
 import Dexie, { type Table } from 'dexie';
-import { QuizQuestion } from '@/types/quiz';
+import type { QuizQuestion } from '@/types/quiz';
+import type { Flashcard, GlossaryTerm, RoadmapTheme } from '@/types/db';
 
 /**
  * AppDatabase - Browser-based IndexedDB for Microsoft AI-900 Helper
  */
 export class AppDatabase extends Dexie {
-  /** Questions table - searchable by topic, type, etc. */
   questions!: Table<QuizQuestion>;
+  flashcards!: Table<Flashcard>;
+  glossaryTerms!: Table<GlossaryTerm>;
+  roadmapThemes!: Table<RoadmapTheme>;
 
   constructor() {
     super('AI900HelperDB');
     
-    // We define our schema. ++id means auto-incrementing primary key.
-    // Indexing 'topic' and 'type' allows fast filtering for specific quiz modes.
     this.version(1).stores({
       questions: 'id, topic, type'
     });
+
+    this.version(2).stores({
+      questions: 'id, topic, type',
+      flashcards: 'id, topic',
+      glossaryTerms: 'term',
+      roadmapThemes: 'id',
+    });
   }
 
-  /**
-   * Seeds the database with initial question data if it's empty.
-   */
-  async seedIfEmpty(initialQuestions: QuizQuestion[]) {
-    const count = await this.questions.count();
-    if (count === 0) {
-      console.info('Database empty, seeding initial quiz questions...');
+  async seedIfEmpty(
+    initialQuestions: QuizQuestion[],
+    initialFlashcards: Flashcard[],
+    initialGlossaryTerms: GlossaryTerm[],
+    initialRoadmapThemes: RoadmapTheme[],
+  ) {
+    const qCount = await this.questions.count();
+    if (qCount === 0) {
+      console.info('Seeding quiz questions...');
       await this.questions.bulkAdd(initialQuestions);
-      console.info(`Successfully seeded ${initialQuestions.length} questions.`);
+    }
+
+    const fCount = await this.flashcards.count();
+    if (fCount === 0) {
+      console.info('Seeding flashcards...');
+      await this.flashcards.bulkAdd(initialFlashcards);
+    }
+
+    const gCount = await this.glossaryTerms.count();
+    if (gCount === 0) {
+      console.info('Seeding glossary terms...');
+      await this.glossaryTerms.bulkAdd(initialGlossaryTerms);
+    }
+
+    const rCount = await this.roadmapThemes.count();
+    if (rCount === 0) {
+      console.info('Seeding roadmap themes...');
+      await this.roadmapThemes.bulkAdd(initialRoadmapThemes);
     }
   }
 
-  /**
-   * Resets the database by clearing all tables.
-   */
   async resetDatabase() {
-    await this.questions.clear();
+    await Promise.all([
+      this.questions.clear(),
+      this.flashcards.clear(),
+      this.glossaryTerms.clear(),
+      this.roadmapThemes.clear(),
+    ]);
     console.info('Database cleared.');
   }
 }

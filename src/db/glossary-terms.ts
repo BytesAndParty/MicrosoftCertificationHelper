@@ -1,4 +1,6 @@
-export const glossaryTerms = [
+import type { GlossaryTerm } from '@/types/db';
+
+export const glossaryTerms: GlossaryTerm[] = [
 	{
 		"term": "Accountability",
 		"definition": "People remain responsible for AI systems and their outcomes.",

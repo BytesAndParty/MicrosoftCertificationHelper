@@ -1,7 +1,7 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { BookOpen, Brain, FileText, Map } from 'lucide-react';
 import type { ComponentType, SVGProps } from 'react';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { FeatureCard } from '@/components/home/feature-card';
 import { StudyJourneySection } from '@/components/home/study-journey-section';
@@ -10,10 +10,8 @@ import { H1, Muted } from '@/components/ui/typography';
 import { useIsDark } from '@/lib/use-is-dark';
 import { quizPattern, flashcardsPattern, glossaryPattern, roadmapPattern } from '@/lib/patterns';
 import type { PatternDef } from '@/lib/patterns';
-import { quizQuestions } from '@/db/quiz-questions';
-import { flashcards } from '@/db/flashcards';
-import { glossaryTerms } from '@/db/glossary-terms';
-import { roadmapThemes } from '@/db/roadmap-themes';
+import { db } from '@/db/schema';
+import { QuizModal } from '@/components/quiz/quiz-modal';
 
 interface Feature {
 	label: string;
@@ -24,40 +22,42 @@ interface Feature {
 	pattern: PatternDef;
 }
 
-const features: Feature[] = [
-	{
-		label: 'Quiz',
-		description: 'Practice questions with explanations',
-		icon: Brain,
-		count: `${quizQuestions.length} Questions`,
-		progress: 0,
-		pattern: quizPattern,
-	},
-	{
-		label: 'Flashcards',
-		description: 'Spaced repetition review',
-		icon: BookOpen,
-		count: `${flashcards.length} Cards`,
-		progress: 0,
-		pattern: flashcardsPattern,
-	},
-	{
-		label: 'Glossary',
-		description: 'Searchable AI-900 terms',
-		icon: FileText,
-		count: `${glossaryTerms.length} Terms`,
-		progress: 0,
-		pattern: glossaryPattern,
-	},
-	{
-		label: 'Roadmap',
-		description: 'Structured learning path',
-		icon: Map,
-		count: `${roadmapThemes.length} Stages`,
-		progress: 0,
-		pattern: roadmapPattern,
-	},
-];
+function buildFeatures(counts: { questions: number; flashcards: number; glossary: number; roadmap: number }): Feature[] {
+	return [
+		{
+			label: 'Quiz',
+			description: 'Practice questions with explanations',
+			icon: Brain,
+			count: `${counts.questions} Questions`,
+			progress: 0,
+			pattern: quizPattern,
+		},
+		{
+			label: 'Flashcards',
+			description: 'Spaced repetition review',
+			icon: BookOpen,
+			count: `${counts.flashcards} Cards`,
+			progress: 0,
+			pattern: flashcardsPattern,
+		},
+		{
+			label: 'Glossary',
+			description: 'Searchable AI-900 terms',
+			icon: FileText,
+			count: `${counts.glossary} Terms`,
+			progress: 0,
+			pattern: glossaryPattern,
+		},
+		{
+			label: 'Roadmap',
+			description: 'Structured learning path',
+			icon: Map,
+			count: `${counts.roadmap} Stages`,
+			progress: 0,
+			pattern: roadmapPattern,
+		},
+	];
+}
 
 /**
  * Determines which card(s) to highlight with the active glow.
@@ -89,12 +89,36 @@ function getHighlightedIndices(cards: Feature[]): Set<number> {
 }
 
 export const Route = createFileRoute('/')({
+	validateSearch: (search: Record<string, unknown>) => ({
+		modal: (search.modal as 'quiz' | undefined) ?? undefined,
+	}),
 	component: HomePage,
 });
 
 function HomePage() {
 	const isDark = useIsDark();
-	const highlighted = useMemo(() => getHighlightedIndices(features), []);
+	const [features, setFeatures] = useState<Feature[]>(() =>
+		buildFeatures({ questions: 0, flashcards: 0, glossary: 0, roadmap: 0 }),
+	);
+
+	useEffect(() => {
+		let cancelled = false;
+		Promise.all([
+			db.questions.count(),
+			db.flashcards.count(),
+			db.glossaryTerms.count(),
+			db.roadmapThemes.count(),
+		]).then(([questions, flashcards, glossary, roadmap]) => {
+			if (!cancelled) setFeatures(buildFeatures({ questions, flashcards, glossary, roadmap }));
+		});
+		return () => { cancelled = true; };
+	}, []);
+
+	const highlighted = useMemo(() => getHighlightedIndices(features), [features]);
+	const { modal } = Route.useSearch();
+	const navigate = useNavigate({ from: '/' });
+	const openQuiz = () => navigate({ search: { modal: 'quiz' } });
+	const closeQuiz = () => navigate({ search: {} });
 
 	return (
 		<>
@@ -125,6 +149,7 @@ function HomePage() {
 							}}
 							isHighlighted={highlighted.has(i)}
 							index={i}
+							onClick={feature.label === 'Quiz' ? openQuiz : undefined}
 						/>
 					))}
 				</section>
@@ -132,6 +157,8 @@ function HomePage() {
 
 			<StudyJourneySection />
 			<SiteFooter />
+
+			{modal === 'quiz' && <QuizModal onClose={closeQuiz} />}
 		</>
 	);
 }

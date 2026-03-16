@@ -13,6 +13,7 @@ interface FeatureCardProps {
 	patternStyle: CSSProperties;
 	isHighlighted: boolean;
 	index: number;
+	onClick?: () => void;
 }
 
 export function FeatureCard({
@@ -24,6 +25,7 @@ export function FeatureCard({
 	patternStyle,
 	isHighlighted,
 	index,
+	onClick,
 }: FeatureCardProps) {
 	const cardContent = (
 		<>
@@ -68,19 +70,20 @@ export function FeatureCard({
 				ease: [0.25, 1, 0.5, 1],
 			}}
 			className={isHighlighted ? 'group z-10' : undefined}
+			onClick={onClick}
 		>
 			{isHighlighted ? (
 				<BackgroundGradient
 					active
 					containerClassName="h-full"
-					className="flex h-full flex-col items-center overflow-hidden rounded-lg bg-surface-alt px-6 py-10"
+					className={`flex h-full flex-col items-center overflow-hidden rounded-lg bg-surface-alt px-6 py-10${onClick ? ' cursor-pointer' : ''}`}
 					style={patternStyle}
 				>
 					{cardContent}
 				</BackgroundGradient>
 			) : (
 				<div
-					className="group flex h-full flex-col items-center overflow-hidden rounded-lg border border-border bg-surface-alt px-6 py-10"
+					className={`group flex h-full flex-col items-center overflow-hidden rounded-lg border border-border bg-surface-alt px-6 py-10${onClick ? ' cursor-pointer' : ''}`}
 					style={patternStyle}
 				>
 					{cardContent}

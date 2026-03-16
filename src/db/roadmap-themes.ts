@@ -1,4 +1,6 @@
-export const roadmapThemes = [
+import type { RoadmapTheme } from '@/types/db';
+
+export const roadmapThemes: RoadmapTheme[] = [
 	{
 		"id": "scope",
 		"title": "1. Scope and learning strategy",
