@@ -11,6 +11,7 @@ import { useIsDark } from '@/lib/use-is-dark';
 import { quizPattern, flashcardsPattern, glossaryPattern, roadmapPattern } from '@/lib/patterns';
 import type { PatternDef } from '@/lib/patterns';
 import { db } from '@/db/schema';
+import { useQuizStore } from '@/store/quiz-store';
 import { QuizModal } from '@/components/quiz/quiz-modal';
 
 interface Feature {
@@ -22,14 +23,17 @@ interface Feature {
 	pattern: PatternDef;
 }
 
-function buildFeatures(counts: { questions: number; flashcards: number; glossary: number; roadmap: number }): Feature[] {
+function buildFeatures(
+	counts: { questions: number; flashcards: number; glossary: number; roadmap: number },
+	quizProgress: number,
+): Feature[] {
 	return [
 		{
 			label: 'Quiz',
 			description: 'Practice questions with explanations',
 			icon: Brain,
 			count: `${counts.questions} Questions`,
-			progress: 0,
+			progress: quizProgress,
 			pattern: quizPattern,
 		},
 		{
@@ -97,8 +101,10 @@ export const Route = createFileRoute('/')({
 
 function HomePage() {
 	const isDark = useIsDark();
+	const quizAnswers = useQuizStore((s) => s.answers);
+
 	const [features, setFeatures] = useState<Feature[]>(() =>
-		buildFeatures({ questions: 0, flashcards: 0, glossary: 0, roadmap: 0 }),
+		buildFeatures({ questions: 0, flashcards: 0, glossary: 0, roadmap: 0 }, 0),
 	);
 
 	useEffect(() => {
@@ -109,16 +115,19 @@ function HomePage() {
 			db.glossaryTerms.count(),
 			db.roadmapThemes.count(),
 		]).then(([questions, flashcards, glossary, roadmap]) => {
-			if (!cancelled) setFeatures(buildFeatures({ questions, flashcards, glossary, roadmap }));
+			if (cancelled) return;
+			const correctCount = Object.values(quizAnswers).filter((r) => r.correct).length;
+			const quizProgress = questions > 0 ? Math.round((correctCount / questions) * 100) : 0;
+			setFeatures(buildFeatures({ questions, flashcards, glossary, roadmap }, quizProgress));
 		});
 		return () => { cancelled = true; };
-	}, []);
+	}, [quizAnswers]);
 
 	const highlighted = useMemo(() => getHighlightedIndices(features), [features]);
 	const { modal } = Route.useSearch();
 	const navigate = useNavigate({ from: '/' });
 	const openQuiz = () => navigate({ search: { modal: 'quiz' } });
-	const closeQuiz = () => navigate({ search: {} });
+	const closeQuiz = () => navigate({ search: { modal: undefined } });
 
 	return (
 		<>

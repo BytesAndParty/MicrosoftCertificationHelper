@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { db } from '@/db/schema';
-import { QuizQuestion, QuizOption } from '@/types/quiz';
+import type { QuizQuestion, QuizOption } from '@/types/quiz';
 import { shuffle } from '@/lib/utils';
 
 /* ------------------------------------------------------------------ */

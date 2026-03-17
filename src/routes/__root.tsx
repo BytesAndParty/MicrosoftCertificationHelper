@@ -131,12 +131,12 @@ function RootLayout() {
 			global: [
 				{ key: '?', label: 'Show shortcuts', action: toggleShortcuts, mod: { shift: true }, highlight: true },
 				{ key: 'Escape', label: 'Close overlay', action: closeShortcuts },
-				{ key: 'q', label: 'Go to Quiz', action: () => navigate({ to: '/' }) },
-				{ key: 'f', label: 'Go to Flashcards', action: () => navigate({ to: '/' }) },
-				{ key: 'g', label: 'Go to Glossary', action: () => navigate({ to: '/' }) },
-				{ key: 'r', label: 'Go to Roadmap', action: () => navigate({ to: '/' }) },
-				{ key: 'e', label: 'Start Exam', action: () => navigate({ to: '/' }) },
-				{ key: 'h', label: 'Go Home', action: () => navigate({ to: '/' }) },
+				{ key: 'q', label: 'Go to Quiz', action: () => navigate({ to: '/', search: { modal: undefined } }) },
+				{ key: 'f', label: 'Go to Flashcards', action: () => navigate({ to: '/', search: { modal: undefined } }) },
+				{ key: 'g', label: 'Go to Glossary', action: () => navigate({ to: '/', search: { modal: undefined } }) },
+				{ key: 'r', label: 'Go to Roadmap', action: () => navigate({ to: '/', search: { modal: undefined } }) },
+				{ key: 'e', label: 'Start Exam', action: () => navigate({ to: '/', search: { modal: undefined } }) },
+				{ key: 'h', label: 'Go Home', action: () => navigate({ to: '/', search: { modal: undefined } }) },
 			],
 			quiz: [
 				{ key: '1-4', label: 'Select answer', action: () => {} },
@@ -168,7 +168,7 @@ function RootLayout() {
 		<div className="min-h-screen bg-surface text-text">
 			<header className="sticky top-0 z-40 border-b border-border bg-surface/95 backdrop-blur supports-backdrop-filter:bg-surface/60">
 				<nav className="grid h-14 grid-cols-[auto_1fr_auto] items-center gap-6 px-6">
-					<Link to="/" className="text-lg font-semibold tracking-tight">
+					<Link to="/" search={{ modal: undefined }} className="text-lg font-semibold tracking-tight">
 						AI-900
 					</Link>
 
@@ -186,7 +186,7 @@ function RootLayout() {
 						<Button
 							variant="ghost"
 							size="icon"
-							onClick={() => navigate({ to: '/' })}
+							onClick={() => navigate({ to: '/', search: { modal: undefined } })}
 							aria-label="Progress stats"
 						>
 							<BarChart3 className="h-4.5 w-4.5" />

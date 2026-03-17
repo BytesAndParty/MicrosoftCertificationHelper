@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { X, Lightbulb, ExternalLink, ChevronRight, Brain } from 'lucide-react';
+import { X, Lightbulb, ExternalLink, ChevronRight, Brain, Trophy, RotateCcw } from 'lucide-react';
 import { useClickAway } from '@uidotdev/usehooks';
 import { db } from '@/db/schema';
 import type { QuizQuestion, QuizOption } from '@/types/quiz';
+import { useQuizStore } from '@/store/quiz-store';
 import { OptionButton } from '@/components/quiz/option-button';
 import { Button } from '@/components/ui/button';
 import { Muted } from '@/components/ui/typography';
@@ -32,6 +33,11 @@ export function QuizModal({ onClose }: QuizModalProps) {
 	const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 	const [isRevealed, setIsRevealed] = useState(false);
 	const [showHint, setShowHint] = useState(false);
+	const [showSummary, setShowSummary] = useState(false);
+
+	// Session tracking for results
+	const [sessionCorrect, setSessionCorrect] = useState(0);
+	const [sessionTotal, setSessionTotal] = useState(0);
 
 	const ref = useClickAway<HTMLDivElement>(onClose);
 
@@ -67,9 +73,31 @@ export function QuizModal({ onClose }: QuizModalProps) {
 	);
 
 	const handleCheck = useCallback(() => {
-		if (selectedIds.size === 0) return;
+		if (selectedIds.size === 0 || !question) return;
+
+		const correctOpts = displayedOptions.filter((o) => o.isCorrect);
+		const isCorrect =
+			correctOpts.length === selectedIds.size &&
+			correctOpts.every((o) => selectedIds.has(o.id));
+
+		// Persist to Zustand store
+		useQuizStore.setState((prev) => ({
+			answers: {
+				...prev.answers,
+				[question.id]: {
+					selectedOptionIds: [...selectedIds],
+					correct: isCorrect,
+					timestamp: Date.now(),
+				},
+			},
+		}));
+
+		// Track session stats
+		setSessionTotal((t) => t + 1);
+		if (isCorrect) setSessionCorrect((c) => c + 1);
+
 		setIsRevealed(true);
-	}, [selectedIds.size]);
+	}, [selectedIds, question, displayedOptions]);
 
 	const handleNext = useCallback(() => {
 		setCurrentIndex((i) => i + 1);
@@ -101,8 +129,9 @@ export function QuizModal({ onClose }: QuizModalProps) {
 
 			if (e.key === 'Enter' || e.key === ' ') {
 				e.preventDefault();
+				if (showSummary) { onClose(); return; }
 				if (!isRevealed && selectedIds.size > 0) handleCheck();
-				else if (isRevealed) isLast ? onClose() : handleNext();
+				else if (isRevealed) isLast ? setShowSummary(true) : handleNext();
 				return;
 			}
 
@@ -163,7 +192,49 @@ export function QuizModal({ onClose }: QuizModalProps) {
 				</div>
 
 				{/* Content */}
-				{!question ? (
+				{showSummary ? (
+					<div className="flex flex-1 flex-col items-center justify-center space-y-6 px-8 py-16">
+						<div className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-accent bg-accent/10">
+							{sessionTotal > 0 && Math.round((sessionCorrect / sessionTotal) * 100) >= 80 ? (
+								<Trophy className="h-8 w-8 text-accent" />
+							) : (
+								<span className="font-tech text-2xl font-bold text-accent">
+									{sessionTotal > 0 ? Math.round((sessionCorrect / sessionTotal) * 100) : 0}%
+								</span>
+							)}
+						</div>
+						<div className="text-center">
+							<p className="text-lg font-semibold">
+								{sessionTotal > 0 && Math.round((sessionCorrect / sessionTotal) * 100) >= 80
+									? 'Great job!'
+									: sessionTotal > 0 && Math.round((sessionCorrect / sessionTotal) * 100) >= 50
+										? 'Good effort'
+										: 'Keep practicing'}
+							</p>
+							<Muted className="mt-1">
+								{sessionCorrect} of {sessionTotal} correct
+							</Muted>
+						</div>
+						<div className="flex gap-3 pt-2">
+							<Button variant="outline" size="sm" onClick={onClose}>
+								Close
+							</Button>
+							<Button
+								size="sm"
+								onClick={() => {
+									setShowSummary(false);
+									setCurrentIndex(0);
+									setSessionCorrect(0);
+									setSessionTotal(0);
+									db.questions.toArray().then((qs) => setQuestions(shuffle([...qs])));
+								}}
+							>
+								<RotateCcw className="h-3.5 w-3.5" />
+								Try again
+							</Button>
+						</div>
+					</div>
+				) : !question ? (
 					<div className="flex flex-1 items-center justify-center py-20">
 						<Muted>Loading questions…</Muted>
 					</div>
@@ -293,7 +364,7 @@ export function QuizModal({ onClose }: QuizModalProps) {
 							) : (
 								<Button
 									size="sm"
-									onClick={isLast ? onClose : handleNext}
+									onClick={isLast ? () => setShowSummary(true) : handleNext}
 									className="gap-1.5 bg-accent text-accent-fg hover:bg-accent/90"
 								>
 									{isLast ? 'Finish' : 'Next question'}
