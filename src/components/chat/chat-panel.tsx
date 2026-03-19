@@ -28,9 +28,23 @@ Your role:
 
 Be encouraging but accurate. If you're unsure about something, say so.`;
 
+const INITIAL_MESSAGE: ChatMessage = {
+	role: 'assistant',
+	content: `Hey! I'm your **AI-900 Study Buddy**.
+
+Need help with a question? You can:
+
+- Ask me to **explain** a concept or answer
+- Say *"Why is this correct?"* or *"Why not option B?"*
+- Request a **summary** of the topic
+- Just ask anything AI-900 related
+
+I'm here to help!`,
+};
+
 export function ChatPanel({ questionContext }: ChatPanelProps) {
 	const { apiKey, apiEndpoint } = useSettingsStore();
-	const [messages, setMessages] = useState<ChatMessage[]>([]);
+	const [messages, setMessages] = useState<ChatMessage[]>([INITIAL_MESSAGE]);
 	const [isStreaming, setIsStreaming] = useState(false);
 	const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -55,9 +69,11 @@ export function ChatPanel({ questionContext }: ChatPanelProps) {
 				? `${SYSTEM_PROMPT}\n\nCurrent quiz context:\n${questionContext}`
 				: SYSTEM_PROMPT;
 
+			// Exclude the static welcome message from API history
+			const history = messages.filter((m) => m !== INITIAL_MESSAGE);
 			const apiMessages = [
 				{ role: 'system', content: systemContent },
-				...messages.map((m) => ({ role: m.role, content: m.content })),
+				...history.map((m) => ({ role: m.role, content: m.content })),
 				{ role: 'user', content },
 			];
 
