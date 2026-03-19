@@ -1,31 +1,28 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useRef } from 'react';
 
 /* -------------------------------------------------------------------------- */
 /*  Types                                                                     */
 /* -------------------------------------------------------------------------- */
 
 export interface Shortcut {
-	/** Key to match (lowercase). Use "Space", "Escape", "1", "a", etc. */
+	/** Key to match (lowercase). Use "Space", "Escape", "1", "a", etc. Range "1-4" supported. */
 	key: string;
 	/** Human-readable label for the help overlay */
 	label: string;
-	/** Callback when the shortcut fires */
-	action: () => void;
+	/** Callback when the shortcut fires. Receives the normalized key that was pressed. */
+	action: (key: string) => void;
 	/** Require modifier keys */
 	mod?: { ctrl?: boolean; shift?: boolean; alt?: boolean; meta?: boolean };
-	/** Highlight this shortcut in accent color */
+	/** Highlight this shortcut in accent color (overlay) */
 	highlight?: boolean;
+	/** If false, shortcut is display-only (shown in overlay but not wired up) */
+	active?: boolean;
 }
-
-export type ShortcutScope = 'global' | 'quiz' | 'flashcards' | 'glossary' | 'exam';
-
-export type ShortcutMap = Partial<Record<ShortcutScope, Shortcut[]>>;
 
 /* -------------------------------------------------------------------------- */
 /*  Helpers                                                                   */
 /* -------------------------------------------------------------------------- */
 
-/** Returns true if the event target is an input, textarea, or contenteditable */
 function isEditableTarget(e: KeyboardEvent): boolean {
 	const tag = (e.target as HTMLElement)?.tagName;
 	if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return true;
@@ -33,16 +30,15 @@ function isEditableTarget(e: KeyboardEvent): boolean {
 	return false;
 }
 
-/** Normalize KeyboardEvent.key to our shortcut key format */
 function normalizeKey(e: KeyboardEvent): string {
 	if (e.key === ' ') return 'Space';
 	if (e.key === '?') return '?';
+	if (e.key === 'ß') return 'ß';
 	return e.key.toLowerCase();
 }
 
 function modsMatch(e: KeyboardEvent, mod?: Shortcut['mod']): boolean {
 	if (!mod) {
-		// No modifier required — make sure none are pressed (except Shift for "?" etc.)
 		return !e.ctrlKey && !e.altKey && !e.metaKey;
 	}
 	return (
@@ -53,85 +49,198 @@ function modsMatch(e: KeyboardEvent, mod?: Shortcut['mod']): boolean {
 	);
 }
 
-/* -------------------------------------------------------------------------- */
-/*  Hook                                                                      */
-/* -------------------------------------------------------------------------- */
+function matchesShortcut(key: string, e: KeyboardEvent, shortcut: Shortcut): boolean {
+	if (shortcut.active === false) return false;
 
-/**
- * Registers keyboard shortcuts for the given scopes.
- * Global shortcuts always fire. Scope shortcuts only fire when that scope is active.
- *
- * @param shortcuts - The full shortcut map
- * @param activeScope - The currently active scope (determined by route)
- */
-export function useHotkeys(shortcuts: ShortcutMap, activeScope?: ShortcutScope) {
-	const handler = useCallback(
-		(e: KeyboardEvent) => {
-			if (isEditableTarget(e)) return;
-
-			const key = normalizeKey(e);
-
-			// Merge global + active scope shortcuts
-			const active: Shortcut[] = [
-				...(shortcuts.global ?? []),
-				...(activeScope && activeScope !== 'global' ? (shortcuts[activeScope] ?? []) : []),
-			];
-
-			for (const shortcut of active) {
-				// Support range keys like "1-4" for quiz options
-				if (shortcut.key.includes('-') && /^\d-\d$/.test(shortcut.key)) {
-					const [start, end] = shortcut.key.split('-');
-					if (start && end) {
-						const keyNum = parseInt(key, 10);
-						const startNum = parseInt(start, 10);
-						const endNum = parseInt(end, 10);
-						if (!isNaN(keyNum) && keyNum >= startNum && keyNum <= endNum && modsMatch(e, shortcut.mod)) {
-							e.preventDefault();
-							shortcut.action();
-							return;
-						}
-					}
-					continue;
-				}
-
-				if (key === shortcut.key.toLowerCase() && modsMatch(e, shortcut.mod)) {
-					e.preventDefault();
-					shortcut.action();
-					return;
-				}
+	// Range keys like "1-4"
+	if (shortcut.key.includes('-') && /^\d-\d$/.test(shortcut.key)) {
+		const [start, end] = shortcut.key.split('-');
+		if (start && end) {
+			const keyNum = parseInt(key, 10);
+			const startNum = parseInt(start, 10);
+			const endNum = parseInt(end, 10);
+			if (!isNaN(keyNum) && keyNum >= startNum && keyNum <= endNum && modsMatch(e, shortcut.mod)) {
+				return true;
 			}
-		},
-		[shortcuts, activeScope],
-	);
-
-	useEffect(() => {
-		window.addEventListener('keydown', handler);
-		return () => window.removeEventListener('keydown', handler);
-	}, [handler]);
-}
-
-/**
- * Get all shortcuts relevant to the current scope (global + scope-specific).
- * Useful for rendering a help overlay.
- */
-export function getActiveShortcuts(
-	shortcuts: ShortcutMap,
-	activeScope?: ShortcutScope,
-): { scope: string; shortcuts: Shortcut[] }[] {
-	const groups: { scope: string; shortcuts: Shortcut[] }[] = [];
-
-	const globalShortcuts = shortcuts.global;
-	if (globalShortcuts?.length) {
-		groups.push({ scope: 'Global', shortcuts: globalShortcuts });
+		}
+		return false;
 	}
 
-	if (activeScope && activeScope !== 'global') {
-		const scopeShortcuts = shortcuts[activeScope];
-		if (scopeShortcuts?.length) {
-			const label = activeScope.charAt(0).toUpperCase() + activeScope.slice(1);
-			groups.push({ scope: label, shortcuts: scopeShortcuts });
+	return key === shortcut.key.toLowerCase() && modsMatch(e, shortcut.mod);
+}
+
+/* -------------------------------------------------------------------------- */
+/*  HotkeyManager — singleton, stack-based scope system                       */
+/* -------------------------------------------------------------------------- */
+
+type ShortcutRef = { current: Shortcut[] };
+
+class HotkeyManager {
+	private scopeStack: string[] = [];
+	private bindings = new Map<string, ShortcutRef>();
+	private listeners = new Set<() => void>();
+
+	constructor() {
+		window.addEventListener('keydown', this.handleKeyDown);
+	}
+
+	destroy() {
+		window.removeEventListener('keydown', this.handleKeyDown);
+	}
+
+	/* ---- Scope management ---- */
+
+	pushScope(scope: string) {
+		this.scopeStack.push(scope);
+		this.notify();
+	}
+
+	popScope(scope: string) {
+		for (let i = this.scopeStack.length - 1; i >= 0; i--) {
+			if (this.scopeStack[i] === scope) {
+				this.scopeStack.splice(i, 1);
+				this.notify();
+				return;
+			}
 		}
 	}
 
-	return groups;
+	/** Active scopes in priority order: top of stack → bottom → global */
+	get activeScopes(): string[] {
+		const seen = new Set<string>();
+		const result: string[] = [];
+		for (let i = this.scopeStack.length - 1; i >= 0; i--) {
+			const s = this.scopeStack[i]!;
+			if (!seen.has(s)) {
+				seen.add(s);
+				result.push(s);
+			}
+		}
+		if (!seen.has('global')) result.push('global');
+		return result;
+	}
+
+	/* ---- Registration ---- */
+
+	register(scope: string, ref: ShortcutRef) {
+		this.bindings.set(scope, ref);
+		this.notify();
+	}
+
+	unregister(scope: string) {
+		this.bindings.delete(scope);
+		this.notify();
+	}
+
+	/* ---- Display (for overlay) ---- */
+
+	getDisplayGroups(): { scope: string; shortcuts: Shortcut[] }[] {
+		const groups: { scope: string; shortcuts: Shortcut[] }[] = [];
+
+		// Global first
+		const globalRef = this.bindings.get('global');
+		if (globalRef?.current.length) {
+			groups.push({ scope: 'Global', shortcuts: globalRef.current });
+		}
+
+		// Then active scopes (top-down, skip global)
+		for (const s of this.activeScopes) {
+			if (s === 'global') continue;
+			const ref = this.bindings.get(s);
+			if (ref?.current.length) {
+				const label = s.charAt(0).toUpperCase() + s.slice(1).replace(/-/g, ' ');
+				groups.push({ scope: label, shortcuts: ref.current });
+			}
+		}
+
+		return groups;
+	}
+
+	/* ---- Subscription (for reactive overlay) ---- */
+
+	subscribe(listener: () => void): () => void {
+		this.listeners.add(listener);
+		return () => this.listeners.delete(listener);
+	}
+
+	private notify() {
+		this.listeners.forEach((l) => l());
+	}
+
+	/* ---- Key handler ---- */
+
+	private handleKeyDown = (e: KeyboardEvent) => {
+		if (isEditableTarget(e)) return;
+		const key = normalizeKey(e);
+
+		for (const scope of this.activeScopes) {
+			const ref = this.bindings.get(scope);
+			if (!ref) continue;
+
+			for (const shortcut of ref.current) {
+				if (matchesShortcut(key, e, shortcut)) {
+					e.preventDefault();
+					shortcut.action(key);
+					return;
+				}
+			}
+		}
+	};
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Singleton                                                                 */
+/* -------------------------------------------------------------------------- */
+
+let manager: HotkeyManager | null = null;
+
+export function getHotkeyManager(): HotkeyManager {
+	if (!manager) manager = new HotkeyManager();
+	return manager;
+}
+
+/* -------------------------------------------------------------------------- */
+/*  React hooks                                                               */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Register keyboard shortcuts for a scope.
+ * Shortcuts are always read from a ref — no stale closures.
+ *
+ * @param scope   - Scope name ("global", "quiz", "quiz-modal", etc.)
+ * @param shortcuts - Array of shortcuts (can depend on component state)
+ * @param options.push - If true, pushes this scope onto the stack on mount (for modals/overlays)
+ */
+export function useHotkeys(
+	scope: string,
+	shortcuts: Shortcut[],
+	options?: { push?: boolean },
+) {
+	const mgr = getHotkeyManager();
+	const ref = useRef<Shortcut[]>(shortcuts);
+	ref.current = shortcuts;
+
+	const push = options?.push ?? false;
+
+	useEffect(() => {
+		mgr.register(scope, ref);
+		if (push) mgr.pushScope(scope);
+		return () => {
+			mgr.unregister(scope);
+			if (push) mgr.popScope(scope);
+		};
+	}, [mgr, scope, push]);
+}
+
+/**
+ * Push a scope onto the stack without registering shortcuts.
+ * Useful for route-level scope activation (e.g. "quiz" scope when on /quiz).
+ */
+export function useHotkeyScope(scope: string | undefined) {
+	const mgr = getHotkeyManager();
+	useEffect(() => {
+		if (!scope) return;
+		mgr.pushScope(scope);
+		return () => mgr.popScope(scope);
+	}, [mgr, scope]);
 }
