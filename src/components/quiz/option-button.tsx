@@ -7,9 +7,11 @@ interface OptionButtonProps {
 	label: string;
 	explanation?: string;
 	isSelected: boolean;
+	isFocused: boolean;
 	isRevealed: boolean;
 	isCorrect: boolean;
 	onSelect: () => void;
+	onDoubleClick?: () => void;
 }
 
 export function OptionButton({
@@ -17,9 +19,11 @@ export function OptionButton({
 	label,
 	explanation,
 	isSelected,
+	isFocused,
 	isRevealed,
 	isCorrect,
 	onSelect,
+	onDoubleClick,
 }: OptionButtonProps) {
 	const showCorrectMark = isRevealed && isCorrect;
 	const showWrongMark = isRevealed && isSelected && !isCorrect;
@@ -28,12 +32,14 @@ export function OptionButton({
 		<button
 			type="button"
 			onClick={onSelect}
+			onDoubleClick={onDoubleClick}
 			disabled={isRevealed}
 			className={cn(
 				'group/opt flex w-full items-start gap-3 rounded-lg border px-4 py-3 text-left transition-all duration-200',
 				!isRevealed && 'hover:border-accent hover:bg-accent/5 cursor-pointer',
 				!isRevealed && isSelected && 'border-accent bg-accent/10',
 				!isRevealed && !isSelected && 'border-border bg-surface-alt',
+				!isRevealed && isFocused && 'ring-2 ring-accent/50 border-accent/60',
 				isRevealed && isCorrect && 'border-emerald-500/60 bg-emerald-500/10',
 				isRevealed && showWrongMark && 'border-red-500/60 bg-red-500/10',
 				isRevealed && !isCorrect && !isSelected && 'border-border/50 bg-surface-alt/50 opacity-60',
