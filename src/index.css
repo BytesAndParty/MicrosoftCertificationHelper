@@ -5,14 +5,14 @@
  * Neutral surfaces, clear accent for interactive elements.
  */
 @theme {
-	--color-surface: oklch(0.985 0 0);
-	--color-surface-alt: oklch(0.965 0 0);
+	--color-surface: oklch(0.985 0.006 80);
+	--color-surface-alt: oklch(0.965 0.008 80);
 	--color-border: oklch(0.87 0 0);
 	--color-text: oklch(0.05 0 0);
 	--color-text-muted: oklch(0.3 0 0);
-	--color-accent: oklch(0.555 0.146 49);
+	--color-accent: oklch(0.64 0.16 49);
 	--color-accent-fg: oklch(0.98 0 0);
-	--color-accent-dim: oklch(0.555 0.146 49 / 0.25);
+	--color-accent-dim: oklch(0.64 0.16 49 / 0.25);
 
 	--font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
 	--font-tech: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
@@ -20,25 +20,26 @@
 }
 
 /* Accent palette overrides — driven by data-accent on <html> */
+/* Light mode: brighter, more vibrant accents */
 [data-accent='amber'] {
-	--color-accent: oklch(0.555 0.146 49);
+	--color-accent: oklch(0.64 0.16 49);
 	--color-accent-fg: oklch(0.98 0 0);
-	--color-accent-dim: oklch(0.555 0.146 49 / 0.25);
+	--color-accent-dim: oklch(0.64 0.16 49 / 0.25);
 }
 [data-accent='emerald'] {
-	--color-accent: oklch(0.511 0.086 186.4);
+	--color-accent: oklch(0.60 0.11 186.4);
 	--color-accent-fg: oklch(0.98 0 0);
-	--color-accent-dim: oklch(0.511 0.086 186.4 / 0.25);
+	--color-accent-dim: oklch(0.60 0.11 186.4 / 0.25);
 }
 [data-accent='cobalt'] {
-	--color-accent: oklch(0.488 0.095 264);
+	--color-accent: oklch(0.57 0.13 264);
 	--color-accent-fg: oklch(0.98 0 0);
-	--color-accent-dim: oklch(0.488 0.095 264 / 0.25);
+	--color-accent-dim: oklch(0.57 0.13 264 / 0.25);
 }
 [data-accent='raspberry'] {
-	--color-accent: oklch(0.488 0.146 349);
+	--color-accent: oklch(0.57 0.17 349);
 	--color-accent-fg: oklch(0.98 0 0);
-	--color-accent-dim: oklch(0.488 0.146 349 / 0.25);
+	--color-accent-dim: oklch(0.57 0.17 349 / 0.25);
 }
 
 /* Dark mode overrides */
@@ -48,6 +49,23 @@
 	--color-border: oklch(0.3 0 0);
 	--color-text: oklch(0.93 0 0);
 	--color-text-muted: oklch(0.6 0 0);
+}
+/* Dark mode: deeper, more muted accents */
+.dark[data-accent='amber'] {
+	--color-accent: oklch(0.555 0.146 49);
+	--color-accent-dim: oklch(0.555 0.146 49 / 0.25);
+}
+.dark[data-accent='emerald'] {
+	--color-accent: oklch(0.511 0.086 186.4);
+	--color-accent-dim: oklch(0.511 0.086 186.4 / 0.25);
+}
+.dark[data-accent='cobalt'] {
+	--color-accent: oklch(0.488 0.095 264);
+	--color-accent-dim: oklch(0.488 0.095 264 / 0.25);
+}
+.dark[data-accent='raspberry'] {
+	--color-accent: oklch(0.488 0.146 349);
+	--color-accent-dim: oklch(0.488 0.146 349 / 0.25);
 }
 
 @layer base {
@@ -103,4 +121,32 @@
 .glow-card > * {
 	position: relative;
 	z-index: 1;
+}
+
+/* ------------------------------------------------------------------ */
+/*  View Transitions                                                    */
+/* ------------------------------------------------------------------ */
+
+::view-transition-old(root) {
+	animation: vt-fade-out 250ms cubic-bezier(0.25, 1, 0.5, 1) both;
+}
+::view-transition-new(root) {
+	animation: vt-fade-in 250ms cubic-bezier(0.25, 1, 0.5, 1) both;
+}
+
+@keyframes vt-fade-out {
+	from { opacity: 1; transform: scale(1); }
+	to { opacity: 0; transform: scale(0.98); }
+}
+@keyframes vt-fade-in {
+	from { opacity: 0; transform: scale(1.02); }
+	to { opacity: 1; transform: scale(1); }
+}
+
+/* Shared element: quiz card → quiz page header */
+.vt-quiz-hero {
+	view-transition-name: quiz-hero;
+}
+.vt-settings-hero {
+	view-transition-name: settings-hero;
 }
