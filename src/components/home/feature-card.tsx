@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { BackgroundGradient } from '@/components/ui/background-gradient';
 import { H3, Muted, Label } from '@/components/ui/typography';
+import { cn } from '@/lib/utils';
 
 interface FeatureCardProps {
 	label: string;
@@ -14,6 +15,8 @@ interface FeatureCardProps {
 	isHighlighted: boolean;
 	index: number;
 	onClick?: () => void;
+	/** Extra class for the icon wrapper (e.g. view-transition-name) */
+	iconClassName?: string;
 }
 
 export function FeatureCard({
@@ -26,10 +29,11 @@ export function FeatureCard({
 	isHighlighted,
 	index,
 	onClick,
+	iconClassName,
 }: FeatureCardProps) {
 	const cardContent = (
 		<>
-			<div className="flex h-14 w-14 items-center justify-center rounded-lg bg-accent-dim transition-transform duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:scale-110">
+			<div className={cn("flex h-14 w-14 items-center justify-center rounded-lg bg-accent-dim transition-transform duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:scale-110", iconClassName)}>
 				<Icon className="h-7 w-7 text-accent" />
 			</div>
 			<H3 className="mt-6 text-2xl">{label}</H3>
@@ -59,15 +63,19 @@ export function FeatureCard({
 			animate={{
 				opacity: 1,
 				y: 0,
-				scale: isHighlighted ? 1.05 : 1,
-			}}
-			whileHover={{
-				scale: isHighlighted ? 1.08 : 1.03,
+				scale: isHighlighted ? [1.10, 1.14, 1.10] : 1,
 			}}
 			transition={{
 				duration: 0.4,
 				delay: index * 0.1,
 				ease: [0.25, 1, 0.5, 1],
+				...(isHighlighted && {
+					scale: {
+						duration: 2.4,
+						repeat: Infinity,
+						ease: 'easeInOut',
+					},
+				}),
 			}}
 			className={isHighlighted ? 'group z-10' : undefined}
 			onClick={onClick}
