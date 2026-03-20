@@ -12,6 +12,7 @@ import {
 	RotateCcw,
 	Home,
 	MessageSquare,
+	Heart,
 } from 'lucide-react';
 import { db } from '@/db/schema';
 import type { QuizQuestion, QuizOption } from '@/types/quiz';
@@ -252,6 +253,8 @@ function QuizPage() {
 
 	const progress = questions.length > 0 ? Math.round((currentIndex / questions.length) * 100) : 0;
 
+	const isFavorite = useQuizStore((s) => question ? s.favorites.has(question.id) : false);
+
 	// Context for the AI chat
 	const questionContext = question ? buildQuestionContext(question, displayedOptions) : undefined;
 
@@ -367,7 +370,7 @@ function QuizPage() {
 								{question.prompt}
 							</motion.p>
 
-							{/* Hint + Discuss with AI */}
+							{/* Hint + Favorite + Discuss with AI */}
 							<div className="flex items-center gap-4">
 								<button
 									type="button"
@@ -383,8 +386,21 @@ function QuizPage() {
 								<span className="text-border">|</span>
 								<button
 									type="button"
+									onClick={() => useQuizStore.getState().toggleFavorite(question.id)}
+									className={cn(
+										'flex items-center gap-1.5 text-sm transition-colors',
+										isFavorite
+											? 'text-red-500 hover:text-red-400'
+											: 'text-text-muted hover:text-red-500',
+									)}
+								>
+									<Heart className={cn('h-3.5 w-3.5', isFavorite && 'fill-current')} />
+									{isFavorite ? 'Saved' : 'Save'}
+								</button>
+								<span className="text-border">|</span>
+								<button
+									type="button"
 									onClick={() => {
-										// Click the floating chat FAB
 										const fab = document.querySelector<HTMLButtonElement>('.floating-chat-fab');
 										if (fab) fab.click();
 									}}
