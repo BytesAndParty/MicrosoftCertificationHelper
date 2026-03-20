@@ -173,10 +173,10 @@ export function QuizModal({ onClose }: QuizModalProps) {
 	const progress = questions.length > 0 ? Math.round((currentIndex / questions.length) * 100) : 0;
 
 	return (
-		<div className="fixed inset-0 z-50 flex items-center justify-center bg-surface/80 p-6 backdrop-blur-sm">
+		<div className="fixed inset-0 z-50 flex items-center justify-center bg-surface/80 p-6 backdrop-blur-sm transition-opacity duration-300 starting:opacity-0">
 			<div
 				ref={ref}
-				className="flex max-h-[92vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-border bg-surface-alt shadow-2xl"
+				className="flex max-h-[92vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-border bg-surface-alt shadow-2xl transition-[opacity,transform] duration-300 starting:scale-95 starting:opacity-0"
 			>
 				{/* Header */}
 				<div className="flex shrink-0 items-center justify-between border-b border-border px-8 py-5">
