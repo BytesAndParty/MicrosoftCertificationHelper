@@ -87,9 +87,42 @@ function QuizPage() {
 		};
 	}, []);
 
+	// Restore existing session or start a new one
 	useEffect(() => {
-		db.questions.toArray().then((qs) => setQuestions(shuffle([...qs])));
+		const saved = useQuizStore.getState().session;
+		db.questions.toArray().then((allQs) => {
+			if (saved && saved.questionIds.length > 0) {
+				// Rebuild question array in the saved order
+				const byId = new Map(allQs.map((q) => [q.id, q]));
+				const restored = saved.questionIds.flatMap((id) => {
+					const q = byId.get(id);
+					return q ? [q] : [];
+				});
+				if (restored.length > 0) {
+					setQuestions(restored);
+					setCurrentIndex(saved.index);
+					setSessionCorrect(saved.correct);
+					setSessionTotal(saved.total);
+					return;
+				}
+			}
+			// No valid session — start fresh
+			setQuestions(shuffle([...allQs]));
+		});
 	}, []);
+
+	// Persist session snapshot on every meaningful change
+	useEffect(() => {
+		if (questions.length === 0) return;
+		useQuizStore.setState({
+			session: {
+				questionIds: questions.map((q) => q.id),
+				index: currentIndex,
+				correct: sessionCorrect,
+				total: sessionTotal,
+			},
+		});
+	}, [questions, currentIndex, sessionCorrect, sessionTotal]);
 
 	const question = questions[currentIndex];
 
@@ -182,7 +215,11 @@ function QuizPage() {
 	}, []);
 
 	const [showLeaveDialog, setShowLeaveDialog] = useState(false);
-	const confirmLeave = useCallback(() => navigate({ to: '/' }), [navigate]);
+	const confirmLeave = useCallback(() => {
+		// Clear persisted session when leaving from summary (quiz completed)
+		if (showSummary) useQuizStore.setState({ session: null });
+		navigate({ to: '/' });
+	}, [navigate, showSummary]);
 	const requestLeave = useCallback(() => {
 		// If on summary screen or no answers given yet, leave immediately
 		if (showSummary || sessionTotal === 0) { confirmLeave(); return; }
@@ -234,13 +271,37 @@ function QuizPage() {
 			action: () => {
 				if (!isRevealed && focusedIndex >= 0) {
 					const opt = displayedOptions[focusedIndex];
-					if (opt) handleSelect(opt.id);
+					if (!opt) return;
+					// Single-choice / true-false: select + confirm in one go
+					if (question?.type !== 'multi-choice') {
+						handleSelectAndCheck(opt.id);
+					} else {
+						handleSelect(opt.id);
+					}
 					return;
 				}
 				handleCheckOrNext();
 			},
 		},
-		{ key: 'Enter', label: 'Check / Next', action: () => handleCheckOrNext() },
+		{
+			key: 'Enter',
+			label: 'Check / Next',
+			action: () => {
+				// If focused on an option and nothing selected yet, select + confirm
+				if (!isRevealed && focusedIndex >= 0 && selectedIds.size === 0) {
+					const opt = displayedOptions[focusedIndex];
+					if (opt) {
+						if (question?.type !== 'multi-choice') {
+							handleSelectAndCheck(opt.id);
+						} else {
+							handleSelect(opt.id);
+						}
+						return;
+					}
+				}
+				handleCheckOrNext();
+			},
+		},
 		{ key: 'Escape', label: 'Go home', action: () => requestLeave() },
 	], [displayedOptions, isRevealed, focusedIndex, handleSelect, handleCheckOrNext, requestLeave]);
 
@@ -343,6 +404,7 @@ function QuizPage() {
 								size="sm"
 								className="gap-1"
 								onClick={() => {
+									useQuizStore.setState({ session: null });
 									setShowSummary(false);
 									setCurrentIndex(0);
 									setSessionCorrect(0);

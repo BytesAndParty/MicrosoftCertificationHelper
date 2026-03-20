@@ -26,6 +26,17 @@ interface SessionQuestion {
 
 type QuizMode = 'all' | 'topic' | 'incorrect';
 
+/** Lightweight session snapshot — persisted so the quiz survives navigation/reload */
+interface SessionSnapshot {
+	/** Ordered question IDs for the current session */
+	questionIds: string[];
+	/** Current position in the session */
+	index: number;
+	/** Session score tracking */
+	correct: number;
+	total: number;
+}
+
 interface QuizState {
 	/* --- Session (not persisted) --- */
 	mode: QuizMode | null;
@@ -40,6 +51,8 @@ interface QuizState {
 	answers: Record<string, AnswerRecord>;
 	/** Set of bookmarked question IDs */
 	favorites: Set<string>;
+	/** Persisted session so quiz survives navigation/reload */
+	session: SessionSnapshot | null;
 
 	/* --- Derived helpers --- */
 	currentQuestion: () => Promise<QuizQuestion | null>;
@@ -99,6 +112,7 @@ export const useQuizStore = create<QuizState>()(
 			/* Persistent */
 			answers: {},
 			favorites: new Set<string>(),
+			session: null,
 
 			/* Derived */
 			currentQuestion: async () => {
@@ -255,7 +269,7 @@ export const useQuizStore = create<QuizState>()(
 		}),
 		{
 			name: 'quiz-progress',
-			partialize: (state) => ({ answers: state.answers, favorites: state.favorites }),
+			partialize: (state) => ({ answers: state.answers, favorites: state.favorites, session: state.session }),
 			storage: {
 				getItem: (name) => {
 					const raw = localStorage.getItem(name);
