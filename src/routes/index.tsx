@@ -129,7 +129,7 @@ function HomePage() {
 			<div className="relative min-h-[calc(100vh-3.5rem)] overflow-hidden">
 				<ShaderBackground className="absolute inset-0 h-full w-full" />
 
-				<div className="relative z-10 flex min-h-[calc(100vh-3.5rem)] flex-col space-y-10 px-10 py-10">
+				<div className="relative z-10 flex min-h-[calc(100vh-3.5rem)] flex-col space-y-8 px-4 py-8 sm:space-y-10 sm:px-6 md:px-10 md:py-10">
 					<motion.section
 						initial={{ opacity: 0, y: 12 }}
 						animate={{ opacity: 1, y: 0 }}
@@ -141,7 +141,7 @@ function HomePage() {
 						</Muted>
 					</motion.section>
 
-					<section className="grid gap-12 sm:grid-cols-2 lg:grid-cols-4">
+					<section className="grid gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-4 lg:gap-12">
 						{features.map((feature, i) => (
 							<FeatureCard
 								key={feature.label}
@@ -166,7 +166,6 @@ function HomePage() {
 
 			<StudyJourneySection />
 			<SiteFooter />
-
 		</>
 	);
 }

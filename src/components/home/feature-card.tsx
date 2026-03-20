@@ -84,14 +84,14 @@ export function FeatureCard({
 				<BackgroundGradient
 					active
 					containerClassName="h-full"
-					className={`flex h-full flex-col items-center overflow-hidden rounded-lg bg-surface-alt px-6 py-10${onClick ? ' cursor-pointer' : ''}`}
+					className={`flex h-full flex-col items-center overflow-hidden rounded-lg bg-surface-alt px-4 py-8 sm:px-6 sm:py-10${onClick ? ' cursor-pointer' : ''}`}
 					style={patternStyle}
 				>
 					{cardContent}
 				</BackgroundGradient>
 			) : (
 				<div
-					className={`group flex h-full flex-col items-center overflow-hidden rounded-lg border border-border bg-surface-alt px-6 py-10${onClick ? ' cursor-pointer' : ''}`}
+					className={`group flex h-full flex-col items-center overflow-hidden rounded-lg border border-border bg-surface-alt px-4 py-8 sm:px-6 sm:py-10${onClick ? ' cursor-pointer' : ''}`}
 					style={patternStyle}
 				>
 					{cardContent}
