@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
 import { X, Lightbulb, ExternalLink, ChevronRight, Brain, Trophy, RotateCcw } from 'lucide-react';
 import { useClickAway } from '@uidotdev/usehooks';
 import { db } from '@/db/schema';
@@ -271,7 +270,7 @@ export function QuizModal({ onClose }: QuizModalProps) {
 							{/* Prompt */}
 							<p className="text-xl font-medium leading-relaxed">{question.prompt}</p>
 
-							{/* Hint */}
+							{/* Hint — CSS grid trick for height:auto animation */}
 							<div>
 								<button
 									type="button"
@@ -284,19 +283,18 @@ export function QuizModal({ onClose }: QuizModalProps) {
 										P
 									</kbd>
 								</button>
-								<AnimatePresence>
-									{showHint && (
-										<motion.p
-											key="hint"
-											initial={{ opacity: 0, height: 0, marginTop: 0 }}
-											animate={{ opacity: 1, height: 'auto', marginTop: 12 }}
-											exit={{ opacity: 0, height: 0, marginTop: 0 }}
-											className="border-l-2 border-accent pl-4 text-sm leading-relaxed text-text-muted"
-										>
-											{question.hint}
-										</motion.p>
+								<div
+									className={cn(
+										'grid transition-[grid-template-rows,opacity] duration-300 ease-out',
+										showHint ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0',
 									)}
-								</AnimatePresence>
+								>
+									<div className="overflow-hidden">
+										<p className="mt-3 border-l-2 border-accent pl-4 text-sm leading-relaxed text-text-muted">
+											{question.hint}
+										</p>
+									</div>
+								</div>
 							</div>
 
 							{/* Options */}
@@ -316,46 +314,40 @@ export function QuizModal({ onClose }: QuizModalProps) {
 								))}
 							</div>
 
-							{/* Explanation */}
-							<AnimatePresence>
-								{isRevealed && (
-									<motion.div
-										key="explanation"
-										initial={{ opacity: 0, y: 10 }}
-										animate={{ opacity: 1, y: 0 }}
-										transition={{ duration: 0.25 }}
+							{/* Explanation — @starting-style entry via Tailwind starting: variant */}
+							{isRevealed && (
+								<div
+									className={cn(
+										'space-y-3 rounded-xl border p-5 transition-[opacity,transform] duration-250 starting:translate-y-2.5 starting:opacity-0',
+										isCorrectAnswer
+											? 'border-emerald-500/40 bg-emerald-500/5'
+											: 'border-red-500/40 bg-red-500/5',
+									)}
+								>
+									<p
 										className={cn(
-											'space-y-3 rounded-xl border p-5',
+											'text-sm font-semibold',
 											isCorrectAnswer
-												? 'border-emerald-500/40 bg-emerald-500/5'
-												: 'border-red-500/40 bg-red-500/5',
+												? 'text-emerald-600 dark:text-emerald-400'
+												: 'text-red-600 dark:text-red-400',
 										)}
 									>
-										<p
-											className={cn(
-												'text-sm font-semibold',
-												isCorrectAnswer
-													? 'text-emerald-600 dark:text-emerald-400'
-													: 'text-red-600 dark:text-red-400',
-											)}
-										>
-											{isCorrectAnswer ? '✓ Correct!' : '✗ Not quite'}
-										</p>
-										<p className="text-sm leading-relaxed text-text-muted">
-											{question.explanation}
-										</p>
-										<a
-											href={question.learnRef.url}
-											target="_blank"
-											rel="noopener noreferrer"
-											className="inline-flex items-center gap-1.5 text-xs text-accent hover:underline"
-										>
-											{question.learnRef.title}
-											<ExternalLink className="h-3 w-3" />
-										</a>
-									</motion.div>
-								)}
-							</AnimatePresence>
+										{isCorrectAnswer ? '✓ Correct!' : '✗ Not quite'}
+									</p>
+									<p className="text-sm leading-relaxed text-text-muted">
+										{question.explanation}
+									</p>
+									<a
+										href={question.learnRef.url}
+										target="_blank"
+										rel="noopener noreferrer"
+										className="inline-flex items-center gap-1.5 text-xs text-accent hover:underline"
+									>
+										{question.learnRef.title}
+										<ExternalLink className="h-3 w-3" />
+									</a>
+								</div>
+							)}
 						</div>
 
 						{/* Footer */}

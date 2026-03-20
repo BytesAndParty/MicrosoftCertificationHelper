@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { MessageSquare, AlertCircle } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
-import { AnimatePresence, motion } from 'framer-motion';
 import { useSettingsStore } from '@/store/settings-store';
 import { ChatBubble } from '@/components/chat/chat-bubble';
 import { ChatInput } from '@/components/chat/chat-input';
@@ -191,22 +190,21 @@ export function ChatPanel({ questionContext }: ChatPanelProps) {
 						</Muted>
 					</div>
 				) : (
-					<AnimatePresence initial={false}>
+					<div className="space-y-4">
 						{messages.map((msg, i) => (
-							<motion.div
+							<div
 								key={i}
-								initial={{ opacity: 0, y: 8 }}
-								animate={{ opacity: 1, y: 0 }}
-								transition={{ duration: 0.2 }}
+								className="transition-[opacity,transform] duration-200 starting:translate-y-2 starting:opacity-0"
+								style={{ contentVisibility: 'auto', containIntrinsicSize: 'auto 60px' }}
 							>
 								<ChatBubble
 									role={msg.role}
 									content={msg.content}
 									isStreaming={isStreaming && i === messages.length - 1 && msg.role === 'assistant'}
 								/>
-							</motion.div>
+							</div>
 						))}
-					</AnimatePresence>
+					</div>
 				)}
 			</div>
 
