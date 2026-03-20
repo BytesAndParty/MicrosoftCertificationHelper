@@ -21,6 +21,7 @@ import { Button } from '@/components/ui/button';
 import { Muted } from '@/components/ui/typography';
 import { cn, shuffle } from '@/lib/utils';
 import { FloatingChat } from '@/components/chat/floating-chat';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 
 export const Route = createFileRoute('/quiz')({
 	component: QuizPage,
@@ -179,14 +180,20 @@ function QuizPage() {
 		window.scrollTo({ top: 0, behavior: 'smooth' });
 	}, []);
 
-	const goHome = useCallback(() => navigate({ to: '/' }), [navigate]);
+	const [showLeaveDialog, setShowLeaveDialog] = useState(false);
+	const confirmLeave = useCallback(() => navigate({ to: '/' }), [navigate]);
+	const requestLeave = useCallback(() => {
+		// If on summary screen or no answers given yet, leave immediately
+		if (showSummary || sessionTotal === 0) { confirmLeave(); return; }
+		setShowLeaveDialog(true);
+	}, [showSummary, sessionTotal, confirmLeave]);
 	const isLast = currentIndex >= questions.length - 1;
 
 	const handleCheckOrNext = useCallback(() => {
-		if (showSummary) { goHome(); return; }
+		if (showSummary) { requestLeave(); return; }
 		if (!isRevealed && selectedIds.size > 0) handleCheck();
 		else if (isRevealed) isLast ? setShowSummary(true) : handleNext();
-	}, [showSummary, goHome, isRevealed, selectedIds.size, handleCheck, isLast, handleNext]);
+	}, [showSummary, requestLeave, isRevealed, selectedIds.size, handleCheck, isLast, handleNext]);
 
 	// Keyboard shortcuts — registered under 'quiz' scope (pushed by useHotkeyScope in root)
 	const quizShortcuts = useMemo<Shortcut[]>(() => [
@@ -233,8 +240,8 @@ function QuizPage() {
 			},
 		},
 		{ key: 'Enter', label: 'Check / Next', action: () => handleCheckOrNext() },
-		{ key: 'Escape', label: 'Go home', action: () => goHome() },
-	], [displayedOptions, isRevealed, focusedIndex, handleSelect, handleCheckOrNext, goHome]);
+		{ key: 'Escape', label: 'Go home', action: () => requestLeave() },
+	], [displayedOptions, isRevealed, focusedIndex, handleSelect, handleCheckOrNext, requestLeave]);
 
 	useHotkeys('quiz', quizShortcuts);
 
@@ -270,7 +277,7 @@ function QuizPage() {
 								{currentIndex + 1}/{questions.length}
 							</span>
 						)}
-						<Button variant="ghost" size="sm" onClick={goHome} className="h-7 gap-1 px-2 text-xs">
+						<Button variant="ghost" size="sm" onClick={requestLeave} className="h-7 gap-1 px-2 text-xs">
 							<Home className="h-3 w-3" />
 							Home
 						</Button>
@@ -315,7 +322,7 @@ function QuizPage() {
 							</Muted>
 						</div>
 						<div className="flex gap-3 pt-2">
-							<Button variant="outline" size="sm" onClick={goHome} className="gap-1">
+							<Button variant="outline" size="sm" onClick={requestLeave} className="gap-1">
 								<Home className="h-3 w-3" />
 								Home
 							</Button>
@@ -503,6 +510,17 @@ function QuizPage() {
 
 			{/* Floating AI chat widget */}
 			<FloatingChat questionContext={questionContext} />
+
+			<ConfirmDialog
+				open={showLeaveDialog}
+				title="Leave the quiz?"
+				description="Your progress is saved automatically — you can pick up right where you left off anytime."
+				hint={`${sessionCorrect}/${sessionTotal} answered correctly this session.`}
+				confirmLabel="Leave quiz"
+				cancelLabel="Keep going"
+				onConfirm={confirmLeave}
+				onCancel={() => setShowLeaveDialog(false)}
+			/>
 		</>
 	);
 }
