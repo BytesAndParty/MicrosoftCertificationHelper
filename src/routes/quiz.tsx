@@ -290,20 +290,20 @@ function QuizPage() {
 				{/* Progress bar */}
 				<div className="h-px shrink-0 bg-border">
 					<div
-						className="h-full bg-accent transition-all duration-500"
+						className="h-full bg-accent transition-[width] duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]"
 						style={{ width: `${progress}%` }}
 					/>
 				</div>
 
 				{/* Content */}
 				{showSummary ? (
-					<motion.div
-						initial={{ opacity: 0, scale: 0.96 }}
-						animate={{ opacity: 1, scale: 1 }}
-						transition={{ duration: 0.3 }}
-						className="flex flex-1 flex-col items-center justify-center space-y-5 py-16"
-					>
-						<div className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-accent bg-accent/10">
+					<div className="flex flex-1 flex-col items-center justify-center space-y-5 py-16">
+						<motion.div
+							initial={{ opacity: 0, scale: 0.8 }}
+							animate={{ opacity: 1, scale: 1 }}
+							transition={{ duration: 0.4, ease: [0.25, 1, 0.5, 1] }}
+							className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-accent bg-accent/10"
+						>
 							{sessionTotal > 0 && Math.round((sessionCorrect / sessionTotal) * 100) >= 80 ? (
 								<Trophy className="h-7 w-7 text-accent" />
 							) : (
@@ -311,8 +311,13 @@ function QuizPage() {
 									{sessionTotal > 0 ? Math.round((sessionCorrect / sessionTotal) * 100) : 0}%
 								</span>
 							)}
-						</div>
-						<div className="text-center">
+						</motion.div>
+						<motion.div
+							initial={{ opacity: 0, y: 8 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={{ duration: 0.3, delay: 0.15, ease: [0.25, 1, 0.5, 1] }}
+							className="text-center"
+						>
 							<p className="font-semibold">
 								{sessionTotal > 0 && Math.round((sessionCorrect / sessionTotal) * 100) >= 80
 									? 'Great job!'
@@ -323,8 +328,13 @@ function QuizPage() {
 							<Muted className="mt-1">
 								{sessionCorrect} of {sessionTotal} correct
 							</Muted>
-						</div>
-						<div className="flex gap-3 pt-2">
+						</motion.div>
+						<motion.div
+							initial={{ opacity: 0, y: 8 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={{ duration: 0.3, delay: 0.3, ease: [0.25, 1, 0.5, 1] }}
+							className="flex gap-3 pt-2"
+						>
 							<Button variant="outline" size="sm" onClick={requestLeave} className="gap-1">
 								<Home className="h-3 w-3" />
 								Home
@@ -343,8 +353,8 @@ function QuizPage() {
 								<RotateCcw className="h-3 w-3" />
 								Try again
 							</Button>
-						</div>
-					</motion.div>
+						</motion.div>
+					</div>
 				) : !question ? (
 					<div className="flex flex-1 items-center justify-center py-20">
 						<Muted>Loading questions...</Muted>
@@ -394,7 +404,15 @@ function QuizPage() {
 											: 'text-text-muted hover:text-red-500',
 									)}
 								>
-									<Heart className={cn('h-3.5 w-3.5', isFavorite && 'fill-current')} />
+									<motion.span
+										key={isFavorite ? 'saved' : 'unsaved'}
+										initial={{ scale: 0.5 }}
+										animate={{ scale: 1 }}
+										transition={{ type: 'spring', stiffness: 500, damping: 15 }}
+										className="flex"
+									>
+										<Heart className={cn('h-3.5 w-3.5', isFavorite && 'fill-current')} />
+									</motion.span>
 									{isFavorite ? 'Saved' : 'Save'}
 								</button>
 								<span className="hidden text-border sm:inline">|</span>
@@ -425,21 +443,31 @@ function QuizPage() {
 								)}
 							</AnimatePresence>
 
-							{/* Options — compact spacing */}
-							<div className="space-y-2">
+							{/* Options — staggered entrance per question */}
+							<div className="-mx-1 space-y-3 px-1">
 								{displayedOptions.map((opt, i) => (
-									<OptionButton
-										key={opt.id}
-										index={i + 1}
-										label={opt.text}
-										explanation={opt.explanation}
-										isSelected={selectedIds.has(opt.id)}
-										isFocused={focusedIndex === i}
-										isRevealed={isRevealed}
-										isCorrect={opt.isCorrect}
-										onSelect={() => handleSelect(opt.id)}
-										onDoubleClick={() => handleSelectAndCheck(opt.id)}
-									/>
+									<motion.div
+										key={`${question.id}-${opt.id}`}
+										initial={{ opacity: 0, y: 6 }}
+										animate={{ opacity: 1, y: 0 }}
+										transition={{
+											duration: 0.25,
+											delay: i * 0.05,
+											ease: [0.25, 1, 0.5, 1],
+										}}
+									>
+										<OptionButton
+											index={i + 1}
+											label={opt.text}
+											explanation={opt.explanation}
+											isSelected={selectedIds.has(opt.id)}
+											isFocused={focusedIndex === i}
+											isRevealed={isRevealed}
+											isCorrect={opt.isCorrect}
+											onSelect={() => handleSelect(opt.id)}
+											onDoubleClick={() => handleSelectAndCheck(opt.id)}
+										/>
+									</motion.div>
 								))}
 							</div>
 
@@ -498,26 +526,44 @@ function QuizPage() {
 								Shortcuts
 							</button>
 
-							{/* Action button */}
-							{!isRevealed ? (
-								<Button
-									size="sm"
-									disabled={selectedIds.size === 0}
-									onClick={handleCheck}
-									className="h-8 bg-accent text-accent-fg hover:bg-accent/90"
-								>
-									Check Answer
-								</Button>
-							) : (
-								<Button
-									size="sm"
-									onClick={isLast ? () => setShowSummary(true) : handleNext}
-									className="h-8 gap-1 bg-accent text-accent-fg hover:bg-accent/90"
-								>
-									{isLast ? 'Finish' : 'Next'}
-									<ChevronRight className="h-3.5 w-3.5" />
-								</Button>
-							)}
+							{/* Action button — crossfade between states */}
+							<AnimatePresence mode="wait">
+								{!isRevealed ? (
+									<motion.div
+										key="check"
+										initial={{ opacity: 0, scale: 0.95 }}
+										animate={{ opacity: 1, scale: 1 }}
+										exit={{ opacity: 0, scale: 0.95 }}
+										transition={{ duration: 0.15 }}
+									>
+										<Button
+											size="sm"
+											disabled={selectedIds.size === 0}
+											onClick={handleCheck}
+											className="h-8 bg-accent text-accent-fg hover:bg-accent/90"
+										>
+											Check Answer
+										</Button>
+									</motion.div>
+								) : (
+									<motion.div
+										key="next"
+										initial={{ opacity: 0, scale: 0.95 }}
+										animate={{ opacity: 1, scale: 1 }}
+										exit={{ opacity: 0, scale: 0.95 }}
+										transition={{ duration: 0.15 }}
+									>
+										<Button
+											size="sm"
+											onClick={isLast ? () => setShowSummary(true) : handleNext}
+											className="h-8 gap-1 bg-accent text-accent-fg hover:bg-accent/90"
+										>
+											{isLast ? 'Finish' : 'Next'}
+											<ChevronRight className="h-3.5 w-3.5" />
+										</Button>
+									</motion.div>
+								)}
+							</AnimatePresence>
 						</div>
 					</>
 				)}

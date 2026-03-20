@@ -216,9 +216,9 @@ function RootLayout() {
 						>
 							<Keyboard className="h-4.5 w-4.5" />
 						</Button>
-						<Link to="/settings">
+						<Link to="/settings" className="group">
 							<Button variant="ghost" size="icon" aria-label="Settings">
-								<Settings className="h-4.5 w-4.5" />
+								<Settings className="h-4.5 w-4.5 transition-transform duration-500 ease-out group-hover:rotate-90" />
 							</Button>
 						</Link>
 						<AccentSwitcher palettes={palettes} defaultPalette="amber" />

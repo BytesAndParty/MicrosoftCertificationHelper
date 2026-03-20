@@ -1,5 +1,5 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { useState } from 'react';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { useEffect, useState } from 'react';
 import { Settings, Eye, EyeOff, Check } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useSettingsStore } from '@/store/settings-store';
@@ -11,6 +11,7 @@ export const Route = createFileRoute('/settings')({
 });
 
 function SettingsPage() {
+	const navigate = useNavigate();
 	const { apiKey, apiEndpoint, setApiKey, setApiEndpoint } = useSettingsStore();
 	const [localKey, setLocalKey] = useState(apiKey);
 	const [localEndpoint, setLocalEndpoint] = useState(apiEndpoint);
@@ -18,6 +19,16 @@ function SettingsPage() {
 	const [saved, setSaved] = useState(false);
 
 	const hasChanges = localKey !== apiKey || localEndpoint !== apiEndpoint;
+
+	useEffect(() => {
+		function handleKeyDown(e: KeyboardEvent) {
+			if (e.key === 'Escape' && !(e.target instanceof HTMLInputElement)) {
+				navigate({ to: '/' });
+			}
+		}
+		window.addEventListener('keydown', handleKeyDown);
+		return () => window.removeEventListener('keydown', handleKeyDown);
+	}, [navigate]);
 
 	function handleSave() {
 		setApiKey(localKey.trim());
