@@ -260,21 +260,21 @@ function QuizPage() {
 
 	return (
 		<>
-			<div className="mx-auto flex min-h-[calc(100vh-3.5rem)] max-w-3xl flex-col px-6">
+			<div className="mx-auto flex min-h-0 flex-1 w-full max-w-3xl flex-col px-4 sm:px-6">
 				{/* Quiz header — compact inline bar */}
-				<div className="flex shrink-0 items-center justify-between py-4">
-					<div className="flex items-center gap-3">
-						<div className="vt-quiz-hero flex h-8 w-8 items-center justify-center rounded-lg bg-accent-dim">
+				<div className="flex shrink-0 items-center justify-between gap-2 py-4">
+					<div className="flex min-w-0 items-center gap-2 sm:gap-3">
+						<div className="vt-quiz-hero flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-accent-dim">
 							<Brain className="h-4 w-4 text-accent" />
 						</div>
-						<span className="text-sm font-semibold">Quiz</span>
+						<span className="shrink-0 text-sm font-semibold">Quiz</span>
 						{question && (
-							<span className="rounded-md bg-border/50 px-2 py-0.5 font-tech text-xs text-text-muted">
+							<span className="truncate rounded-md bg-border/50 px-2 py-0.5 font-tech text-xs text-text-muted">
 								{question.topic}
 							</span>
 						)}
 					</div>
-					<div className="flex items-center gap-3">
+					<div className="flex shrink-0 items-center gap-2 sm:gap-3">
 						{questions.length > 0 && (
 							<span className="font-tech text-xs tabular-nums text-text-muted">
 								{currentIndex + 1}/{questions.length}
@@ -282,7 +282,7 @@ function QuizPage() {
 						)}
 						<Button variant="ghost" size="sm" onClick={requestLeave} className="h-7 gap-1 px-2 text-xs">
 							<Home className="h-3 w-3" />
-							Home
+							<span className="hidden sm:inline">Home</span>
 						</Button>
 					</div>
 				</div>
@@ -351,7 +351,7 @@ function QuizPage() {
 					</div>
 				) : (
 					<>
-						<div className="flex-1 space-y-5 py-6">
+						<div className="min-h-0 flex-1 space-y-5 overflow-y-auto py-6">
 							{/* Multi-choice badge */}
 							{question.type === 'multi-choice' && (
 								<span className="inline-block rounded border border-accent/30 bg-accent-dim px-2 py-0.5 font-tech text-xs text-accent">
@@ -371,7 +371,7 @@ function QuizPage() {
 							</motion.p>
 
 							{/* Hint + Favorite + Discuss with AI */}
-							<div className="flex items-center gap-4">
+							<div className="flex flex-wrap items-center gap-x-4 gap-y-2">
 								<button
 									type="button"
 									onClick={() => setShowHint((h) => !h)}
@@ -379,11 +379,11 @@ function QuizPage() {
 								>
 									<Lightbulb className="h-3.5 w-3.5" />
 									{showHint ? 'Hide hint' : 'Show hint'}
-									<kbd className="ml-0.5 rounded border border-border px-1 py-0.5 font-tech text-[10px] text-text-muted">
+									<kbd className="ml-0.5 hidden rounded border border-border px-1 py-0.5 font-tech text-[10px] text-text-muted sm:inline">
 										P
 									</kbd>
 								</button>
-								<span className="text-border">|</span>
+								<span className="hidden text-border sm:inline">|</span>
 								<button
 									type="button"
 									onClick={() => useQuizStore.getState().toggleFavorite(question.id)}
@@ -397,7 +397,7 @@ function QuizPage() {
 									<Heart className={cn('h-3.5 w-3.5', isFavorite && 'fill-current')} />
 									{isFavorite ? 'Saved' : 'Save'}
 								</button>
-								<span className="text-border">|</span>
+								<span className="hidden text-border sm:inline">|</span>
 								<button
 									type="button"
 									onClick={() => {
@@ -407,7 +407,7 @@ function QuizPage() {
 									className="flex items-center gap-1.5 text-sm text-text-muted transition-colors hover:text-accent"
 								>
 									<MessageSquare className="h-3.5 w-3.5" />
-									Discuss with AI
+									<span className="hidden sm:inline">Discuss with</span> AI
 								</button>
 							</div>
 
@@ -489,9 +489,8 @@ function QuizPage() {
 						<div className="flex shrink-0 items-center justify-between border-t border-border py-3">
 							<button
 								type="button"
-								className="flex items-center gap-1 text-xs text-text-muted transition-colors hover:text-accent"
+								className="hidden items-center gap-1 text-xs text-text-muted transition-colors hover:text-accent sm:flex"
 								onClick={() => {
-									// Dispatch a keyboard event to trigger the shortcuts overlay
 									window.dispatchEvent(new KeyboardEvent('keydown', { key: '?', shiftKey: true, bubbles: true }));
 								}}
 							>

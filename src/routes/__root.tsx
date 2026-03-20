@@ -56,7 +56,7 @@ function ShortcutsOverlay({ onClose }: { onClose: () => void }) {
 
 	return (
 		<div className="fixed inset-0 z-50 flex items-center justify-center bg-surface/80 backdrop-blur-sm">
-			<div ref={ref} className="w-full max-w-2xl rounded-xl border border-border bg-surface-alt p-10">
+			<div ref={ref} className="mx-4 w-full max-w-2xl rounded-xl border border-border bg-surface-alt p-6 sm:mx-0 sm:p-10">
 				<div className="flex items-center justify-between">
 					<H2>Keyboard Shortcuts</H2>
 					<Button variant="ghost" size="icon" onClick={onClose}>
@@ -64,7 +64,7 @@ function ShortcutsOverlay({ onClose }: { onClose: () => void }) {
 					</Button>
 				</div>
 
-				<div className={`mt-8 grid gap-x-10 gap-y-8 ${groups.length > 1 ? 'grid-cols-2' : 'mx-auto max-w-sm'}`}>
+				<div className={`mt-8 grid gap-x-10 gap-y-8 ${groups.length > 1 ? 'sm:grid-cols-2' : 'mx-auto max-w-sm'}`}>
 					{groups.map(({ scope: groupLabel, shortcuts: items }) => (
 						<div key={groupLabel}>
 							<Label>{groupLabel}</Label>
@@ -117,7 +117,7 @@ function Breadcrumbs() {
 	const segments = pathname.split('/').filter(Boolean);
 
 	return (
-		<div className="border-b border-border bg-surface/95 px-6 py-2 backdrop-blur">
+		<div className="border-b border-border bg-surface/95 px-4 py-2 backdrop-blur sm:px-6">
 			<nav className="flex items-center gap-1.5 text-sm">
 				<Link to="/" className="text-text-muted transition-colors hover:text-text">
 					<Home className="h-3.5 w-3.5" />
@@ -178,24 +178,26 @@ function RootLayout() {
 	useHotkeyScope(activeScope);
 
 	return (
-		<div className="min-h-screen bg-surface text-text">
+		<div className="flex min-h-dvh flex-col bg-surface text-text">
 			<header className="sticky top-0 z-40 border-b border-border bg-surface/95 backdrop-blur supports-backdrop-filter:bg-surface/60">
-				<nav className="grid h-14 grid-cols-[auto_1fr_auto] items-center gap-6 px-6">
-					<Link to="/" className="flex items-center gap-2 text-lg font-semibold tracking-tight">
+				<nav className="flex h-14 items-center gap-3 px-4 sm:gap-6 sm:px-6">
+					<Link to="/" className="flex shrink-0 items-center gap-2 text-lg font-semibold tracking-tight">
 						<img src="/favicon.svg" alt="" className="h-5 w-5" />
-						AI-900
+						<span className="hidden sm:inline">AI-900</span>
 					</Link>
 
-					<ReadinessBar percent={readinessPercent} />
+					<div className="min-w-0 flex-1">
+						<ReadinessBar percent={readinessPercent} />
+					</div>
 
-					<div className="flex items-center gap-2">
+					<div className="flex shrink-0 items-center gap-1 sm:gap-2">
 						<Button
 							variant="outline"
 							size="sm"
 							className="gap-1.5 border-accent bg-accent-dim font-semibold text-accent"
 						>
 							<Play className="h-3.5 w-3.5" />
-							Start Exam
+							<span className="hidden sm:inline">Start Exam</span>
 						</Button>
 						<Button
 							variant="ghost"
@@ -210,6 +212,7 @@ function RootLayout() {
 							size="icon"
 							onClick={toggleShortcuts}
 							aria-label="Keyboard shortcuts"
+							className="hidden sm:inline-flex"
 						>
 							<Keyboard className="h-4.5 w-4.5" />
 						</Button>
@@ -225,7 +228,7 @@ function RootLayout() {
 
 			<Breadcrumbs />
 
-			<main>
+			<main className="flex min-h-0 flex-1 flex-col">
 				<Outlet />
 			</main>
 
