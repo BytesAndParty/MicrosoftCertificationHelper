@@ -11,7 +11,11 @@ export default defineConfig({
 			generatedRouteTree: './src/routeTree.gen.ts',
 			quoteStyle: 'single',
 		}),
-		react(),
+		react({
+			babel: {
+				plugins: ['babel-plugin-react-compiler'],
+			},
+		}),
 		tailwindcss(),
 	],
 	resolve: {

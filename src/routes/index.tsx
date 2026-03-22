@@ -7,12 +7,12 @@ import { FeatureCard } from '@/components/home/feature-card';
 import { StudyJourneySection } from '@/components/home/study-journey-section';
 import { SiteFooter } from '@/components/home/site-footer';
 import { H1, Muted } from '@/components/ui/typography';
+import { ShaderBackground } from '@/components/ui/shader-background';
 import { useIsDark } from '@/lib/use-is-dark';
 import { quizPattern, flashcardsPattern, glossaryPattern, roadmapPattern } from '@/lib/patterns';
 import type { PatternDef } from '@/lib/patterns';
 import { db } from '@/db/schema';
 import { useQuizStore } from '@/store/quiz-store';
-import { QuizModal } from '@/components/quiz/quiz-modal';
 
 interface Feature {
 	label: string;
@@ -93,9 +93,6 @@ function getHighlightedIndices(cards: Feature[]): Set<number> {
 }
 
 export const Route = createFileRoute('/')({
-	validateSearch: (search: Record<string, unknown>) => ({
-		modal: (search.modal as 'quiz' | undefined) ?? undefined,
-	}),
 	component: HomePage,
 });
 
@@ -124,50 +121,51 @@ function HomePage() {
 	}, [quizAnswers]);
 
 	const highlighted = useMemo(() => getHighlightedIndices(features), [features]);
-	const { modal } = Route.useSearch();
-	const navigate = useNavigate({ from: '/' });
-	const openQuiz = () => navigate({ search: { modal: 'quiz' } });
-	const closeQuiz = () => navigate({ search: { modal: undefined } });
+	const navigate = useNavigate();
 
 	return (
 		<>
-			<div className="flex min-h-[calc(100vh-3.5rem)] flex-col space-y-10 px-10 py-10">
-				<motion.section
-					initial={{ opacity: 0, y: 12 }}
-					animate={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.4, ease: [0.25, 1, 0.5, 1] }}
-				>
-					<H1>Microsoft AI-900 Certification</H1>
-					<Muted className="mt-1">
-						Azure AI Fundamentals — Study at your own pace.
-					</Muted>
-				</motion.section>
+			{/* Hero + cards — full-bleed shader background */}
+			<div className="relative min-h-[calc(100vh-3.5rem)] overflow-hidden">
+				<ShaderBackground className="absolute inset-0 h-full w-full" />
 
-				<section className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-					{features.map((feature, i) => (
-						<FeatureCard
-							key={feature.label}
-							label={feature.label}
-							description={feature.description}
-							icon={feature.icon}
-							count={feature.count}
-							progress={feature.progress}
-							patternStyle={{
-								backgroundImage: isDark ? feature.pattern.dark : feature.pattern.light,
-								...(feature.pattern.size ? { backgroundSize: feature.pattern.size } : {}),
-							}}
-							isHighlighted={highlighted.has(i)}
-							index={i}
-							onClick={feature.label === 'Quiz' ? openQuiz : undefined}
-						/>
-					))}
-				</section>
+				<div className="relative z-10 flex min-h-[calc(100vh-3.5rem)] flex-col space-y-8 px-4 py-8 sm:space-y-10 sm:px-6 md:px-10 md:py-10">
+					<motion.section
+						initial={{ opacity: 0, y: 12 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ duration: 0.4, ease: [0.25, 1, 0.5, 1] }}
+					>
+						<H1 className="dark:text-white">Microsoft AI-900 Certification</H1>
+						<Muted className="mt-1 dark:text-white/70">
+							Azure AI Fundamentals — Study at your own pace.
+						</Muted>
+					</motion.section>
+
+					<section className="grid gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-4 lg:gap-12">
+						{features.map((feature, i) => (
+							<FeatureCard
+								key={feature.label}
+								label={feature.label}
+								description={feature.description}
+								icon={feature.icon}
+								count={feature.count}
+								progress={feature.progress}
+								patternStyle={{
+									backgroundImage: isDark ? feature.pattern.dark : feature.pattern.light,
+									...(feature.pattern.size ? { backgroundSize: feature.pattern.size } : {}),
+								}}
+								isHighlighted={highlighted.has(i)}
+								index={i}
+								onClick={feature.label === 'Quiz' ? () => navigate({ to: '/quiz' }) : undefined}
+								iconClassName={feature.label === 'Quiz' ? 'vt-quiz-hero' : undefined}
+							/>
+						))}
+					</section>
+				</div>
 			</div>
 
 			<StudyJourneySection />
 			<SiteFooter />
-
-			{modal === 'quiz' && <QuizModal onClose={closeQuiz} />}
 		</>
 	);
 }

@@ -1,5 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { X, Lightbulb, ExternalLink, ChevronRight, Brain, Trophy, RotateCcw } from 'lucide-react';
 import { useClickAway } from '@uidotdev/usehooks';
 import { db } from '@/db/schema';
@@ -9,6 +8,8 @@ import { OptionButton } from '@/components/quiz/option-button';
 import { Button } from '@/components/ui/button';
 import { Muted } from '@/components/ui/typography';
 import { cn, shuffle } from '@/lib/utils';
+import { useHotkeys } from '@/lib/hotkeys';
+import type { Shortcut } from '@/lib/hotkeys';
 
 interface QuizModalProps {
 	onClose: () => void;
@@ -34,6 +35,7 @@ export function QuizModal({ onClose }: QuizModalProps) {
 	const [isRevealed, setIsRevealed] = useState(false);
 	const [showHint, setShowHint] = useState(false);
 	const [showSummary, setShowSummary] = useState(false);
+	const [focusedIndex, setFocusedIndex] = useState(-1);
 
 	// Session tracking for results
 	const [sessionCorrect, setSessionCorrect] = useState(0);
@@ -53,6 +55,7 @@ export function QuizModal({ onClose }: QuizModalProps) {
 		setSelectedIds(new Set());
 		setIsRevealed(false);
 		setShowHint(false);
+		setFocusedIndex(-1);
 	}, [question?.id]);
 
 	const handleSelect = useCallback(
@@ -105,45 +108,61 @@ export function QuizModal({ onClose }: QuizModalProps) {
 
 	const isLast = currentIndex >= questions.length - 1;
 
-	// Keyboard shortcuts
-	useEffect(() => {
-		function handler(e: KeyboardEvent) {
-			const tag = (e.target as HTMLElement)?.tagName;
-			if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+	const handleCheckOrNext = useCallback(() => {
+		if (showSummary) { onClose(); return; }
+		if (!isRevealed && selectedIds.size > 0) handleCheck();
+		else if (isRevealed) isLast ? setShowSummary(true) : handleNext();
+	}, [showSummary, onClose, isRevealed, selectedIds.size, handleCheck, isLast, handleNext]);
 
-			const num = parseInt(e.key, 10);
-			if (num >= 1 && num <= 4) {
+	// Keyboard shortcuts — pushed as 'quiz-modal' scope (sits above 'quiz' in the stack)
+	const modalShortcuts = useMemo<Shortcut[]>(() => [
+		{
+			key: 'arrowdown',
+			label: 'Next option',
+			action: () => {
+				if (isRevealed || displayedOptions.length === 0) return;
+				setFocusedIndex((prev) => (prev < displayedOptions.length - 1 ? prev + 1 : 0));
+			},
+		},
+		{
+			key: 'arrowup',
+			label: 'Previous option',
+			action: () => {
+				if (isRevealed || displayedOptions.length === 0) return;
+				setFocusedIndex((prev) => (prev > 0 ? prev - 1 : displayedOptions.length - 1));
+			},
+		},
+		{
+			key: '1-4',
+			label: 'Select answer',
+			action: (key) => {
+				if (isRevealed) return;
+				const num = parseInt(key, 10);
 				const opt = displayedOptions[num - 1];
-				if (opt && !isRevealed) {
-					e.preventDefault();
+				if (opt) {
+					setFocusedIndex(num - 1);
 					handleSelect(opt.id);
 				}
-				return;
-			}
+			},
+		},
+		{ key: 'p', label: 'Toggle hint', action: () => setShowHint((h) => !h) },
+		{
+			key: 'Space',
+			label: 'Select / Confirm',
+			action: () => {
+				if (!isRevealed && focusedIndex >= 0) {
+					const opt = displayedOptions[focusedIndex];
+					if (opt) handleSelect(opt.id);
+					return;
+				}
+				handleCheckOrNext();
+			},
+		},
+		{ key: 'Enter', label: 'Check / Next', action: () => handleCheckOrNext() },
+		{ key: 'Escape', label: 'Close', action: () => onClose() },
+	], [displayedOptions, isRevealed, focusedIndex, handleSelect, handleCheckOrNext, onClose]);
 
-			if (e.key === 'p' || e.key === 'P') {
-				e.preventDefault();
-				setShowHint((h) => !h);
-				return;
-			}
-
-			if (e.key === 'Enter' || e.key === ' ') {
-				e.preventDefault();
-				if (showSummary) { onClose(); return; }
-				if (!isRevealed && selectedIds.size > 0) handleCheck();
-				else if (isRevealed) isLast ? setShowSummary(true) : handleNext();
-				return;
-			}
-
-			if (e.key === 'Escape') {
-				e.preventDefault();
-				onClose();
-			}
-		}
-
-		window.addEventListener('keydown', handler);
-		return () => window.removeEventListener('keydown', handler);
-	}, [displayedOptions, isRevealed, selectedIds, handleSelect, handleCheck, handleNext, onClose, isLast]);
+	useHotkeys('quiz-modal', modalShortcuts, { push: true });
 
 	const isCorrectAnswer =
 		isRevealed &&
@@ -153,10 +172,10 @@ export function QuizModal({ onClose }: QuizModalProps) {
 	const progress = questions.length > 0 ? Math.round((currentIndex / questions.length) * 100) : 0;
 
 	return (
-		<div className="fixed inset-0 z-50 flex items-center justify-center bg-surface/80 p-6 backdrop-blur-sm">
+		<div className="fixed inset-0 z-50 flex items-center justify-center bg-surface/80 p-6 backdrop-blur-sm transition-opacity duration-300 starting:opacity-0">
 			<div
 				ref={ref}
-				className="flex max-h-[92vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-border bg-surface-alt shadow-2xl"
+				className="flex max-h-[92vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-border bg-surface-alt shadow-2xl transition-[opacity,transform] duration-300 starting:scale-95 starting:opacity-0"
 			>
 				{/* Header */}
 				<div className="flex shrink-0 items-center justify-between border-b border-border px-8 py-5">
@@ -251,7 +270,7 @@ export function QuizModal({ onClose }: QuizModalProps) {
 							{/* Prompt */}
 							<p className="text-xl font-medium leading-relaxed">{question.prompt}</p>
 
-							{/* Hint */}
+							{/* Hint — CSS grid trick for height:auto animation */}
 							<div>
 								<button
 									type="button"
@@ -264,19 +283,18 @@ export function QuizModal({ onClose }: QuizModalProps) {
 										P
 									</kbd>
 								</button>
-								<AnimatePresence>
-									{showHint && (
-										<motion.p
-											key="hint"
-											initial={{ opacity: 0, height: 0, marginTop: 0 }}
-											animate={{ opacity: 1, height: 'auto', marginTop: 12 }}
-											exit={{ opacity: 0, height: 0, marginTop: 0 }}
-											className="border-l-2 border-accent pl-4 text-sm leading-relaxed text-text-muted"
-										>
-											{question.hint}
-										</motion.p>
+								<div
+									className={cn(
+										'grid transition-[grid-template-rows,opacity] duration-300 ease-out',
+										showHint ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0',
 									)}
-								</AnimatePresence>
+								>
+									<div className="overflow-hidden">
+										<p className="mt-3 border-l-2 border-accent pl-4 text-sm leading-relaxed text-text-muted">
+											{question.hint}
+										</p>
+									</div>
+								</div>
 							</div>
 
 							{/* Options */}
@@ -288,6 +306,7 @@ export function QuizModal({ onClose }: QuizModalProps) {
 										label={opt.text}
 										explanation={opt.explanation}
 										isSelected={selectedIds.has(opt.id)}
+										isFocused={focusedIndex === i}
 										isRevealed={isRevealed}
 										isCorrect={opt.isCorrect}
 										onSelect={() => handleSelect(opt.id)}
@@ -295,46 +314,40 @@ export function QuizModal({ onClose }: QuizModalProps) {
 								))}
 							</div>
 
-							{/* Explanation */}
-							<AnimatePresence>
-								{isRevealed && (
-									<motion.div
-										key="explanation"
-										initial={{ opacity: 0, y: 10 }}
-										animate={{ opacity: 1, y: 0 }}
-										transition={{ duration: 0.25 }}
+							{/* Explanation — @starting-style entry via Tailwind starting: variant */}
+							{isRevealed && (
+								<div
+									className={cn(
+										'space-y-3 rounded-xl border p-5 transition-[opacity,transform] duration-250 starting:translate-y-2.5 starting:opacity-0',
+										isCorrectAnswer
+											? 'border-emerald-500/40 bg-emerald-500/5'
+											: 'border-red-500/40 bg-red-500/5',
+									)}
+								>
+									<p
 										className={cn(
-											'space-y-3 rounded-xl border p-5',
+											'text-sm font-semibold',
 											isCorrectAnswer
-												? 'border-emerald-500/40 bg-emerald-500/5'
-												: 'border-red-500/40 bg-red-500/5',
+												? 'text-emerald-600 dark:text-emerald-400'
+												: 'text-red-600 dark:text-red-400',
 										)}
 									>
-										<p
-											className={cn(
-												'text-sm font-semibold',
-												isCorrectAnswer
-													? 'text-emerald-600 dark:text-emerald-400'
-													: 'text-red-600 dark:text-red-400',
-											)}
-										>
-											{isCorrectAnswer ? '✓ Correct!' : '✗ Not quite'}
-										</p>
-										<p className="text-sm leading-relaxed text-text-muted">
-											{question.explanation}
-										</p>
-										<a
-											href={question.learnRef.url}
-											target="_blank"
-											rel="noopener noreferrer"
-											className="inline-flex items-center gap-1.5 text-xs text-accent hover:underline"
-										>
-											{question.learnRef.title}
-											<ExternalLink className="h-3 w-3" />
-										</a>
-									</motion.div>
-								)}
-							</AnimatePresence>
+										{isCorrectAnswer ? '✓ Correct!' : '✗ Not quite'}
+									</p>
+									<p className="text-sm leading-relaxed text-text-muted">
+										{question.explanation}
+									</p>
+									<a
+										href={question.learnRef.url}
+										target="_blank"
+										rel="noopener noreferrer"
+										className="inline-flex items-center gap-1.5 text-xs text-accent hover:underline"
+									>
+										{question.learnRef.title}
+										<ExternalLink className="h-3 w-3" />
+									</a>
+								</div>
+							)}
 						</div>
 
 						{/* Footer */}
@@ -342,7 +355,11 @@ export function QuizModal({ onClose }: QuizModalProps) {
 							{/* Keyboard hints */}
 							<div className="flex items-center gap-3 text-xs text-text-muted">
 								<span className="flex items-center gap-1">
-									<kbd className="rounded border border-border px-1.5 py-0.5 font-tech">1–4</kbd>
+									<kbd className="rounded border border-border px-1.5 py-0.5 font-tech">↑↓</kbd>
+									navigate
+								</span>
+								<span className="flex items-center gap-1">
+									<kbd className="rounded border border-border px-1.5 py-0.5 font-tech">Space</kbd>
 									select
 								</span>
 								<span className="flex items-center gap-1">

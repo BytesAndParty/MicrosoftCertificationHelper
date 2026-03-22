@@ -26,6 +26,17 @@ interface SessionQuestion {
 
 type QuizMode = 'all' | 'topic' | 'incorrect';
 
+/** Lightweight session snapshot — persisted so the quiz survives navigation/reload */
+interface SessionSnapshot {
+	/** Ordered question IDs for the current session */
+	questionIds: string[];
+	/** Current position in the session */
+	index: number;
+	/** Session score tracking */
+	correct: number;
+	total: number;
+}
+
 interface QuizState {
 	/* --- Session (not persisted) --- */
 	mode: QuizMode | null;
@@ -38,6 +49,10 @@ interface QuizState {
 
 	/* --- Persistent progress --- */
 	answers: Record<string, AnswerRecord>;
+	/** Set of bookmarked question IDs */
+	favorites: Set<string>;
+	/** Persisted session so quiz survives navigation/reload */
+	session: SessionSnapshot | null;
 
 	/* --- Derived helpers --- */
 	currentQuestion: () => Promise<QuizQuestion | null>;
@@ -52,6 +67,7 @@ interface QuizState {
 	nextQuestion: () => void;
 	previousQuestion: () => void;
 	toggleHint: () => void;
+	toggleFavorite: (questionId: string) => void;
 	endSession: () => void;
 	resetProgress: () => void;
 }
@@ -95,6 +111,8 @@ export const useQuizStore = create<QuizState>()(
 
 			/* Persistent */
 			answers: {},
+			favorites: new Set<string>(),
+			session: null,
 
 			/* Derived */
 			currentQuestion: async () => {
@@ -230,6 +248,13 @@ export const useQuizStore = create<QuizState>()(
 
 			toggleHint: () => set((s) => ({ showHint: !s.showHint })),
 
+			toggleFavorite: (questionId) => {
+				const next = new Set(get().favorites);
+				if (next.has(questionId)) next.delete(questionId);
+				else next.add(questionId);
+				set({ favorites: next });
+			},
+
 			endSession: () =>
 				set({
 					mode: null,
@@ -244,7 +269,33 @@ export const useQuizStore = create<QuizState>()(
 		}),
 		{
 			name: 'quiz-progress',
-			partialize: (state) => ({ answers: state.answers }),
+			partialize: (state) => ({ answers: state.answers, favorites: state.favorites, session: state.session }),
+			storage: {
+				getItem: (name) => {
+					const raw = localStorage.getItem(name);
+					if (!raw) return null;
+					const parsed = JSON.parse(raw);
+					// Rehydrate favorites from array back to Set
+					if (parsed?.state?.favorites) {
+						parsed.state.favorites = new Set(parsed.state.favorites);
+					}
+					return parsed;
+				},
+				setItem: (name, value) => {
+					// Serialize Set as array
+					const serializable = {
+						...value,
+						state: {
+							...value.state,
+							favorites: value.state.favorites instanceof Set
+								? [...value.state.favorites]
+								: value.state.favorites,
+						},
+					};
+					localStorage.setItem(name, JSON.stringify(serializable));
+				},
+				removeItem: (name) => localStorage.removeItem(name),
+			},
 		},
 	),
 );

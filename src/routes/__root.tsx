@@ -1,20 +1,12 @@
 import { createRootRoute, Link, Outlet, useNavigate, useMatches } from '@tanstack/react-router';
-import { lazy, Suspense, useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { AccentSwitcher } from '@/components/ui/accent-switcher';
-import { Play, X, Keyboard, BarChart3 } from 'lucide-react';
+import { Play, X, Keyboard, BarChart3, Settings, ChevronRight, Home } from 'lucide-react';
 import { H2, Label, Body, Muted, Code } from '@/components/ui/typography';
 import { useClickAway } from '@uidotdev/usehooks';
 import { Button } from '@/components/ui/button';
-import { useHotkeys, getActiveShortcuts } from '@/lib/hotkeys';
-import type { ShortcutMap, ShortcutScope } from '@/lib/hotkeys';
-
-const TanStackRouterDevtools = import.meta.env.DEV
-	? lazy(() =>
-			import('@tanstack/router-devtools').then((m) => ({
-				default: m.TanStackRouterDevtools,
-			})),
-		)
-	: () => null;
+import { useHotkeys, useHotkeyScope, getHotkeyManager } from '@/lib/hotkeys';
+import type { Shortcut } from '@/lib/hotkeys';
 
 const palettes = {
 	amber: { label: 'Amber', oklch: 'oklch(0.555 0.146 49)' },
@@ -24,7 +16,7 @@ const palettes = {
 };
 
 /* Map route paths to shortcut scopes */
-function routeToScope(pathname: string): ShortcutScope | undefined {
+function routeToScope(pathname: string): string | undefined {
 	if (pathname.startsWith('/quiz')) return 'quiz';
 	if (pathname.startsWith('/flashcards')) return 'flashcards';
 	if (pathname.startsWith('/glossary')) return 'glossary';
@@ -53,21 +45,18 @@ function ReadinessBar({ percent }: { percent: number }) {
 	);
 }
 
-function ShortcutsOverlay({
-	shortcuts,
-	scope,
-	onClose,
-}: {
-	shortcuts: ShortcutMap;
-	scope?: ShortcutScope;
-	onClose: () => void;
-}) {
-	const groups = getActiveShortcuts(shortcuts, scope);
+function ShortcutsOverlay({ onClose }: { onClose: () => void }) {
+	const groups = getHotkeyManager().getDisplayGroups();
 	const ref = useClickAway<HTMLDivElement>(onClose);
+
+	// Escape closes the overlay — pushed as highest-priority scope
+	useHotkeys('shortcuts-overlay', [
+		{ key: 'Escape', label: 'Close', action: () => onClose() },
+	], { push: true });
 
 	return (
 		<div className="fixed inset-0 z-50 flex items-center justify-center bg-surface/80 backdrop-blur-sm">
-			<div ref={ref} className="w-full max-w-2xl rounded-xl border border-border bg-surface-alt p-10">
+			<div ref={ref} className="mx-4 w-full max-w-2xl rounded-xl border border-border bg-surface-alt p-6 sm:mx-0 sm:p-10">
 				<div className="flex items-center justify-between">
 					<H2>Keyboard Shortcuts</H2>
 					<Button variant="ghost" size="icon" onClick={onClose}>
@@ -75,7 +64,7 @@ function ShortcutsOverlay({
 					</Button>
 				</div>
 
-				<div className={`mt-8 grid gap-x-10 gap-y-8 ${groups.length > 1 ? 'grid-cols-2' : 'mx-auto max-w-sm'}`}>
+				<div className={`mt-8 grid gap-x-10 gap-y-8 ${groups.length > 1 ? 'sm:grid-cols-2' : 'mx-auto max-w-sm'}`}>
 					{groups.map(({ scope: groupLabel, shortcuts: items }) => (
 						<div key={groupLabel}>
 							<Label>{groupLabel}</Label>
@@ -99,9 +88,58 @@ function ShortcutsOverlay({
 				</div>
 
 				<Muted className="mt-8 text-center">
-					Press <Code>?</Code> or <Code>ESC</Code> to close
+					Press <Code>?</Code> / <Code>ß</Code> or <Code>ESC</Code> to close
 				</Muted>
 			</div>
+		</div>
+	);
+}
+
+/** Route label map — add entries here when new routes are created */
+const routeLabels: Record<string, string> = {
+	'/quiz': 'Quiz',
+	'/settings': 'Settings',
+	'/flashcards': 'Flashcards',
+	'/glossary': 'Glossary',
+	'/roadmap': 'Roadmap',
+	'/exam': 'Exam',
+};
+
+function Breadcrumbs() {
+	const matches = useMatches();
+	const lastMatch = matches[matches.length - 1];
+	const pathname = lastMatch?.pathname ?? '/';
+
+	// Don't render on home page
+	if (pathname === '/') return null;
+
+	// Build breadcrumb segments from pathname
+	const segments = pathname.split('/').filter(Boolean);
+
+	return (
+		<div className="border-b border-border bg-surface/95 px-4 py-2 backdrop-blur sm:px-6">
+			<nav className="flex items-center gap-1.5 text-sm">
+				<Link to="/" className="text-text-muted transition-colors hover:text-text">
+					<Home className="h-3.5 w-3.5" />
+				</Link>
+				{segments.map((segment, i) => {
+					const path = '/' + segments.slice(0, i + 1).join('/');
+					const label = routeLabels[path] ?? segment.charAt(0).toUpperCase() + segment.slice(1);
+					const isLast = i === segments.length - 1;
+					return (
+						<span key={path} className="flex items-center gap-1.5">
+							<ChevronRight className="h-3 w-3 text-text-muted" />
+							{isLast ? (
+								<span className="font-medium text-text">{label}</span>
+							) : (
+								<Link to={path} className="text-text-muted transition-colors hover:text-text">
+									{label}
+								</Link>
+							)}
+						</span>
+					);
+				})}
+			</nav>
 		</div>
 	);
 }
@@ -125,68 +163,46 @@ function RootLayout() {
 		setShowShortcuts(false);
 	}, []);
 
-	// Central shortcut config — all shortcuts in one place
-	const shortcuts = useMemo<ShortcutMap>(
-		() => ({
-			global: [
-				{ key: '?', label: 'Show shortcuts', action: toggleShortcuts, mod: { shift: true }, highlight: true },
-				{ key: 'Escape', label: 'Close overlay', action: closeShortcuts },
-				{ key: 'q', label: 'Go to Quiz', action: () => navigate({ to: '/', search: { modal: undefined } }) },
-				{ key: 'f', label: 'Go to Flashcards', action: () => navigate({ to: '/', search: { modal: undefined } }) },
-				{ key: 'g', label: 'Go to Glossary', action: () => navigate({ to: '/', search: { modal: undefined } }) },
-				{ key: 'r', label: 'Go to Roadmap', action: () => navigate({ to: '/', search: { modal: undefined } }) },
-				{ key: 'e', label: 'Start Exam', action: () => navigate({ to: '/', search: { modal: undefined } }) },
-				{ key: 'h', label: 'Go Home', action: () => navigate({ to: '/', search: { modal: undefined } }) },
-			],
-			quiz: [
-				{ key: '1-4', label: 'Select answer', action: () => {} },
-				{ key: 'n', label: 'Next question', action: () => {} },
-				{ key: 'p', label: 'Show hint', action: () => {} },
-			],
-			flashcards: [
-				{ key: 'Space', label: 'Flip card', action: () => {} },
-				{ key: 'a', label: 'Rate: Again', action: () => {} },
-				{ key: 's', label: 'Rate: Good', action: () => {} },
-				{ key: 'd', label: 'Rate: Easy', action: () => {} },
-			],
-			glossary: [
-				{ key: '/', label: 'Focus search', action: () => {} },
-			],
-			exam: [
-				{ key: '1-4', label: 'Select answer', action: () => {} },
-				{ key: 'n', label: 'Next question', action: () => {} },
-				{ key: 'b', label: 'Previous question', action: () => {} },
-				{ key: 'm', label: 'Flag question', action: () => {} },
-			],
-		}),
-		[navigate, toggleShortcuts, closeShortcuts],
+	// Global shortcuts — scope-specific shortcuts are registered by each page/modal
+	const globalShortcuts = useMemo<Shortcut[]>(
+		() => [
+			{ key: '?', label: 'Toggle shortcuts', action: () => toggleShortcuts(), mod: { shift: true }, highlight: true },
+			{ key: 'ß', label: 'Toggle shortcuts', action: () => toggleShortcuts() },
+			{ key: 'q', label: 'Go to Quiz', action: () => navigate({ to: '/quiz' }) },
+			{ key: 'h', label: 'Go Home', action: () => navigate({ to: '/' }) },
+		],
+		[navigate, toggleShortcuts],
 	);
 
-	useHotkeys(shortcuts, activeScope);
+	useHotkeys('global', globalShortcuts);
+	useHotkeyScope(activeScope);
 
 	return (
-		<div className="min-h-screen bg-surface text-text">
+		<div className="flex min-h-dvh flex-col bg-surface text-text">
 			<header className="sticky top-0 z-40 border-b border-border bg-surface/95 backdrop-blur supports-backdrop-filter:bg-surface/60">
-				<nav className="grid h-14 grid-cols-[auto_1fr_auto] items-center gap-6 px-6">
-					<Link to="/" search={{ modal: undefined }} className="text-lg font-semibold tracking-tight">
-						AI-900
+				<nav className="flex h-14 items-center gap-3 px-4 sm:gap-6 sm:px-6">
+					<Link to="/" className="flex shrink-0 items-center gap-2 text-lg font-semibold tracking-tight">
+						<img src="/favicon.svg" alt="" className="h-5 w-5" />
+						<span className="hidden sm:inline">AI-900</span>
 					</Link>
 
-					<ReadinessBar percent={readinessPercent} />
+					<div className="min-w-0 flex-1">
+						<ReadinessBar percent={readinessPercent} />
+					</div>
 
-					<div className="flex items-center gap-2">
+					<div className="flex shrink-0 items-center gap-1 sm:gap-2">
 						<Button
 							variant="outline"
 							size="sm"
 							className="gap-1.5 border-accent bg-accent-dim font-semibold text-accent"
 						>
 							<Play className="h-3.5 w-3.5" />
-							Start Exam
+							<span className="hidden sm:inline">Start Exam</span>
 						</Button>
 						<Button
 							variant="ghost"
 							size="icon"
-							onClick={() => navigate({ to: '/', search: { modal: undefined } })}
+							onClick={() => navigate({ to: '/' })}
 							aria-label="Progress stats"
 						>
 							<BarChart3 className="h-4.5 w-4.5" />
@@ -196,29 +212,30 @@ function RootLayout() {
 							size="icon"
 							onClick={toggleShortcuts}
 							aria-label="Keyboard shortcuts"
+							className="hidden sm:inline-flex"
 						>
 							<Keyboard className="h-4.5 w-4.5" />
 						</Button>
+						<Link to="/settings" className="group">
+							<Button variant="ghost" size="icon" aria-label="Settings">
+								<Settings className="h-4.5 w-4.5 transition-transform duration-500 ease-out group-hover:rotate-90" />
+							</Button>
+						</Link>
 						<AccentSwitcher palettes={palettes} defaultPalette="amber" />
 					</div>
 				</nav>
 			</header>
 
-			<main>
+			<Breadcrumbs />
+
+			<main className="flex min-h-0 flex-1 flex-col">
 				<Outlet />
 			</main>
 
 			{showShortcuts && (
-				<ShortcutsOverlay
-					shortcuts={shortcuts}
-					scope={activeScope}
-					onClose={closeShortcuts}
-				/>
+				<ShortcutsOverlay onClose={closeShortcuts} />
 			)}
 
-			<Suspense>
-				<TanStackRouterDevtools position="bottom-right" />
-			</Suspense>
 		</div>
 	);
 }
