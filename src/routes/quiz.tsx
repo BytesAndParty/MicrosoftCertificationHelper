@@ -22,7 +22,7 @@ import { Button } from '@/components/ui/button';
 import { Muted } from '@/components/ui/typography';
 import { cn, shuffle } from '@/lib/utils';
 import { FloatingChat } from '@/components/chat/floating-chat';
-import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { QuizLeaveDialog } from '@/components/quiz/quiz-leave-dialog';
 
 export const Route = createFileRoute('/quiz')({
 	component: QuizPage,
@@ -221,10 +221,10 @@ function QuizPage() {
 		navigate({ to: '/' });
 	}, [navigate, showSummary]);
 	const requestLeave = useCallback(() => {
-		// If on summary screen or no answers given yet, leave immediately
-		if (showSummary || sessionTotal === 0) { confirmLeave(); return; }
+		// No answers given yet — leave immediately without dialog
+		if (sessionTotal === 0) { confirmLeave(); return; }
 		setShowLeaveDialog(true);
-	}, [showSummary, sessionTotal, confirmLeave]);
+	}, [sessionTotal, confirmLeave]);
 	const isLast = currentIndex >= questions.length - 1;
 
 	const handleCheckOrNext = useCallback(() => {
@@ -634,16 +634,17 @@ function QuizPage() {
 			{/* Floating AI chat widget */}
 			<FloatingChat questionContext={questionContext} />
 
-			<ConfirmDialog
-				open={showLeaveDialog}
-				title="Leave the quiz?"
-				description="Your progress is saved automatically — you can pick up right where you left off anytime."
-				hint={`${sessionCorrect}/${sessionTotal} answered correctly this session.`}
-				confirmLabel="Leave quiz"
-				cancelLabel="Keep going"
-				onConfirm={confirmLeave}
-				onCancel={() => setShowLeaveDialog(false)}
-			/>
+			<AnimatePresence>
+				{showLeaveDialog && (
+					<QuizLeaveDialog
+						correct={sessionCorrect}
+						incorrect={sessionTotal - sessionCorrect}
+						total={sessionTotal}
+						onConfirm={confirmLeave}
+						onCancel={() => setShowLeaveDialog(false)}
+					/>
+				)}
+			</AnimatePresence>
 		</>
 	);
 }
