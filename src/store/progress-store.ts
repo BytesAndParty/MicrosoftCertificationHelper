@@ -117,6 +117,6 @@ export const useProgressStore = create<ProgressState>()(
 
 			reset: () => set({ cards: {} }),
 		}),
-		{ name: 'ai900-progress' },
+		{ name: 'cert-progress' },
 	),
 );

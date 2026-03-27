@@ -18,6 +18,7 @@ export interface LearnRef {
 
 export interface QuizQuestion {
   id: string;
+  certId: string;
   topic: string;
   type: QuestionType;
   prompt: string;

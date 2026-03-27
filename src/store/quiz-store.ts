@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { db } from '@/db/schema';
+import { useCertStore } from '@/store/cert-store';
 import type { QuizQuestion, QuizOption } from '@/types/quiz';
 import { shuffle } from '@/lib/utils';
 
@@ -139,18 +140,26 @@ export const useQuizStore = create<QuizState>()(
 			startQuiz: async (mode, topic) => {
 				set({ isLoading: true });
 				const { answers } = get();
+				const certId = useCertStore.getState().currentCertId;
 				let questions: QuizQuestion[] = [];
 
 				if (mode === 'topic' && topic) {
-					questions = await db.questions.where('topic').equals(topic).toArray();
+					questions = await db.questions
+						.where('[certId+topic]')
+						.equals([certId, topic])
+						.toArray()
+						.catch(() =>
+							// Fallback if compound index doesn't exist yet
+							db.questions.where('certId').equals(certId).filter(q => q.topic === topic).toArray()
+						);
 				} else if (mode === 'incorrect') {
-					const all = await db.questions.toArray();
+					const all = await db.questions.where('certId').equals(certId).toArray();
 					questions = all.filter((q) => {
 						const r = answers[q.id];
 						return !r || !r.correct;
 					});
 				} else {
-					questions = await db.questions.toArray();
+					questions = await db.questions.where('certId').equals(certId).toArray();
 				}
 
 				set({

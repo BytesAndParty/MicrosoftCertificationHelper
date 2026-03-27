@@ -3,7 +3,8 @@ import type { QuizQuestion } from '@/types/quiz';
 import type { Flashcard, GlossaryTerm, RoadmapTheme } from '@/types/db';
 
 /**
- * AppDatabase - Browser-based IndexedDB for Microsoft AI-900 Helper
+ * AppDatabase - Browser-based IndexedDB for certification study helper.
+ * Supports multiple certifications via the certId index.
  */
 export class AppDatabase extends Dexie {
   questions!: Table<QuizQuestion>;
@@ -12,8 +13,8 @@ export class AppDatabase extends Dexie {
   roadmapThemes!: Table<RoadmapTheme>;
 
   constructor() {
-    super('AI900HelperDB');
-    
+    super('CertHelperDB');
+
     this.version(1).stores({
       questions: 'id, topic, type'
     });
@@ -24,37 +25,27 @@ export class AppDatabase extends Dexie {
       glossaryTerms: 'term',
       roadmapThemes: 'id',
     });
+
+    // Add certId index to every table for multi-cert filtering
+    this.version(3).stores({
+      questions: 'id, certId, topic, type',
+      flashcards: 'id, certId, topic',
+      glossaryTerms: 'term, certId',
+      roadmapThemes: 'id, certId',
+    });
   }
 
-  async seedIfEmpty(
-    initialQuestions: QuizQuestion[],
-    initialFlashcards: Flashcard[],
-    initialGlossaryTerms: GlossaryTerm[],
-    initialRoadmapThemes: RoadmapTheme[],
+  /** Seed tables using bulkPut so new content is merged without duplicating existing rows. */
+  async seedData(
+    questions: QuizQuestion[],
+    flashcards: Flashcard[],
+    glossaryTerms: GlossaryTerm[],
+    roadmapThemes: RoadmapTheme[],
   ) {
-    const qCount = await this.questions.count();
-    if (qCount === 0) {
-      console.info('Seeding quiz questions...');
-      await this.questions.bulkAdd(initialQuestions);
-    }
-
-    const fCount = await this.flashcards.count();
-    if (fCount === 0) {
-      console.info('Seeding flashcards...');
-      await this.flashcards.bulkAdd(initialFlashcards);
-    }
-
-    const gCount = await this.glossaryTerms.count();
-    if (gCount === 0) {
-      console.info('Seeding glossary terms...');
-      await this.glossaryTerms.bulkAdd(initialGlossaryTerms);
-    }
-
-    const rCount = await this.roadmapThemes.count();
-    if (rCount === 0) {
-      console.info('Seeding roadmap themes...');
-      await this.roadmapThemes.bulkAdd(initialRoadmapThemes);
-    }
+    await this.questions.bulkPut(questions);
+    await this.flashcards.bulkPut(flashcards);
+    await this.glossaryTerms.bulkPut(glossaryTerms);
+    await this.roadmapThemes.bulkPut(roadmapThemes);
   }
 
   async resetDatabase() {

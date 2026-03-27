@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { MessageSquare, AlertCircle } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
 import { useSettingsStore } from '@/store/settings-store';
+import { useCertStore } from '@/store/cert-store';
 import { ChatBubble } from '@/components/chat/chat-bubble';
 import { ChatInput } from '@/components/chat/chat-input';
 import { Muted } from '@/components/ui/typography';
@@ -16,34 +17,28 @@ interface ChatPanelProps {
 	questionContext?: string;
 }
 
-const SYSTEM_PROMPT = `You are a helpful AI tutor helping a student prepare for the Microsoft AI-900 (Azure AI Fundamentals) certification exam.
-
-Your role:
-- Explain AI and Azure concepts clearly and concisely
-- Relate answers back to the AI-900 exam objectives
-- Use practical examples when helpful
-- Keep responses focused and exam-relevant
-- If the student asks about a quiz question, help them understand WHY the correct answer is correct
-
-Be encouraging but accurate. If you're unsure about something, say so.`;
-
-const INITIAL_MESSAGE: ChatMessage = {
-	role: 'assistant',
-	content: `Hey! I'm your **AI-900 Study Buddy**.
+function buildInitialMessage(certCode: string): ChatMessage {
+	return {
+		role: 'assistant',
+		content: `Hey! I'm your **${certCode} Study Buddy**.
 
 Need help with a question? You can:
 
 - Ask me to **explain** a concept or answer
 - Say *"Why is this correct?"* or *"Why not option B?"*
 - Request a **summary** of the topic
-- Just ask anything AI-900 related
+- Just ask anything ${certCode} related
 
 I'm here to help!`,
-};
+	};
+}
 
 export function ChatPanel({ questionContext }: ChatPanelProps) {
 	const { apiKey, apiEndpoint } = useSettingsStore();
-	const [messages, setMessages] = useState<ChatMessage[]>([INITIAL_MESSAGE]);
+	const cert = useCertStore((s) => s.current());
+	const systemPrompt = cert.chatPrompt;
+	const initialMessage = buildInitialMessage(cert.code);
+	const [messages, setMessages] = useState<ChatMessage[]>([initialMessage]);
 	const [isStreaming, setIsStreaming] = useState(false);
 	const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -65,11 +60,11 @@ export function ChatPanel({ questionContext }: ChatPanelProps) {
 
 			// Build message history for the API
 			const systemContent = questionContext
-				? `${SYSTEM_PROMPT}\n\nCurrent quiz context:\n${questionContext}`
-				: SYSTEM_PROMPT;
+				? `${systemPrompt}\n\nCurrent quiz context:\n${questionContext}`
+				: systemPrompt;
 
 			// Exclude the static welcome message from API history
-			const history = messages.filter((m) => m !== INITIAL_MESSAGE);
+			const history = messages.filter((m) => m !== initialMessage);
 			const apiMessages = [
 				{ role: 'system', content: systemContent },
 				...history.map((m) => ({ role: m.role, content: m.content })),

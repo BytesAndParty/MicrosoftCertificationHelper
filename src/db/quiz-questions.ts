@@ -52,7 +52,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Introduction to AI concepts (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/get-started-ai-fundamentals/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q2",
@@ -105,7 +106,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Introduction to AI concepts (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/get-started-ai-fundamentals/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q3",
@@ -158,7 +160,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Introduction to AI concepts (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/get-started-ai-fundamentals/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q4",
@@ -211,7 +214,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Introduction to machine learning concepts (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/fundamentals-machine-learning/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q5",
@@ -264,7 +268,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Introduction to machine learning concepts (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/fundamentals-machine-learning/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q6",
@@ -317,7 +322,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Introduction to machine learning concepts (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/fundamentals-machine-learning/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q7",
@@ -370,7 +376,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "(AI-900) Einstieg in Computer Vision in Microsoft Foundry",
       "url": "https://learn.microsoft.com/en-us/training/modules/get-started-computer-vision-azure/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q8",
@@ -423,7 +430,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "(AI-900) Einstieg in Computer Vision in Microsoft Foundry",
       "url": "https://learn.microsoft.com/en-us/training/modules/get-started-computer-vision-azure/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q9",
@@ -476,7 +484,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "(AI-900) Einstieg in Computer Vision in Microsoft Foundry",
       "url": "https://learn.microsoft.com/en-us/training/modules/get-started-computer-vision-azure/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q10",
@@ -529,7 +538,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "(AI-900) Einstieg in NLP in Microsoft Foundry",
       "url": "https://learn.microsoft.com/en-us/training/modules/get-started-language-azure/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q11",
@@ -582,7 +592,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "(AI-900) Einstieg in NLP in Microsoft Foundry",
       "url": "https://learn.microsoft.com/en-us/training/modules/get-started-language-azure/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q12",
@@ -635,7 +646,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "(AI-900) Einstieg in NLP in Microsoft Foundry",
       "url": "https://learn.microsoft.com/en-us/training/modules/get-started-language-azure/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q13",
@@ -688,7 +700,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "(AI-900) Einstieg in Generative AI und Agents in Microsoft Foundry",
       "url": "https://learn.microsoft.com/en-us/training/modules/get-started-generative-ai-azure/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q14",
@@ -741,7 +754,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Introduction to generative AI and agents (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/fundamentals-generative-ai/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q15",
@@ -794,7 +808,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Introduction to generative AI and agents (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/fundamentals-generative-ai/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q16",
@@ -847,7 +862,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "(AI-900) Einstieg in AI-gestutzte Informationsextraktion in Microsoft Foundry",
       "url": "https://learn.microsoft.com/en-us/training/modules/ai-information-extraction/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q17",
@@ -900,7 +916,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "(AI-900) Einstieg in AI-gestutzte Informationsextraktion in Microsoft Foundry",
       "url": "https://learn.microsoft.com/en-us/training/modules/ai-information-extraction/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q18",
@@ -953,7 +970,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "(AI-900) Einstieg in AI-gestutzte Informationsextraktion in Microsoft Foundry",
       "url": "https://learn.microsoft.com/en-us/training/modules/ai-information-extraction/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q19",
@@ -1006,7 +1024,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Introduction to AI concepts (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/get-started-ai-fundamentals/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q20",
@@ -1059,7 +1078,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Introduction to AI concepts (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/get-started-ai-fundamentals/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q21",
@@ -1112,7 +1132,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Introduction to AI concepts (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/get-started-ai-fundamentals/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q22",
@@ -1165,7 +1186,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "(AI-900) Einstieg in AI-gestutzte Informationsextraktion in Microsoft Foundry",
       "url": "https://learn.microsoft.com/en-us/training/modules/ai-information-extraction/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q23",
@@ -1218,7 +1240,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "(AI-900) Einstieg in AI-gestutzte Informationsextraktion in Microsoft Foundry",
       "url": "https://learn.microsoft.com/en-us/training/modules/ai-information-extraction/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q24",
@@ -1271,7 +1294,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "(AI-900) Einstieg in AI-gestutzte Informationsextraktion in Microsoft Foundry",
       "url": "https://learn.microsoft.com/en-us/training/modules/ai-information-extraction/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q25",
@@ -1308,7 +1332,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Introduction to AI concepts (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/get-started-ai-fundamentals/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q26",
@@ -1345,7 +1370,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Introduction to generative AI and agents (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/fundamentals-generative-ai/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q27",
@@ -1382,7 +1408,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Introduction to machine learning concepts (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/fundamentals-machine-learning/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q28",
@@ -1419,7 +1446,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "(AI-900) Einstieg in AI-gestutzte Informationsextraktion in Microsoft Foundry",
       "url": "https://learn.microsoft.com/en-us/training/modules/ai-information-extraction/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q29",
@@ -1472,7 +1500,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "(AI-900) Einstieg in Microsoft Foundry",
       "url": "https://learn.microsoft.com/en-us/training/modules/get-started-ai-in-foundry/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q30",
@@ -1525,7 +1554,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "(AI-900) Einstieg in Microsoft Foundry",
       "url": "https://learn.microsoft.com/en-us/training/modules/get-started-ai-in-foundry/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q31",
@@ -1562,7 +1592,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "(AI-900) Einstieg in Microsoft Foundry",
       "url": "https://learn.microsoft.com/en-us/training/modules/get-started-ai-in-foundry/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q32",
@@ -1615,7 +1646,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Einstieg in Machine Learning in Azure",
       "url": "https://learn.microsoft.com/en-us/training/modules/design-machine-learning-model-training-solution/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q33",
@@ -1668,7 +1700,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Einstieg in Machine Learning in Azure",
       "url": "https://learn.microsoft.com/en-us/training/modules/design-machine-learning-model-training-solution/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q34",
@@ -1721,7 +1754,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Introduction to machine learning concepts (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/fundamentals-machine-learning/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q35",
@@ -1774,7 +1808,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Introduction to machine learning concepts (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/fundamentals-machine-learning/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q36",
@@ -1827,7 +1862,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Introduction to machine learning concepts (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/fundamentals-machine-learning/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q37",
@@ -1864,7 +1900,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Introduction to machine learning concepts (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/fundamentals-machine-learning/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q38",
@@ -1917,7 +1954,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Introduction to machine learning concepts (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/fundamentals-machine-learning/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q39",
@@ -1970,7 +2008,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "(AI-900) Einstieg in Computer Vision in Microsoft Foundry",
       "url": "https://learn.microsoft.com/en-us/training/modules/get-started-computer-vision-azure/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q40",
@@ -2023,7 +2062,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Introduction to computer vision concepts (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/introduction-computer-vision/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q41",
@@ -2076,7 +2116,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "(AI-900) Einstieg in Computer Vision in Microsoft Foundry",
       "url": "https://learn.microsoft.com/en-us/training/modules/get-started-computer-vision-azure/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q42",
@@ -2113,7 +2154,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "(AI-900) Einstieg in Computer Vision in Microsoft Foundry",
       "url": "https://learn.microsoft.com/en-us/training/modules/get-started-computer-vision-azure/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q43",
@@ -2166,7 +2208,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "(AI-900) Einstieg in NLP in Microsoft Foundry",
       "url": "https://learn.microsoft.com/en-us/training/modules/get-started-language-azure/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q44",
@@ -2219,7 +2262,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "(AI-900) Einstieg in NLP in Microsoft Foundry",
       "url": "https://learn.microsoft.com/en-us/training/modules/get-started-language-azure/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q45",
@@ -2272,7 +2316,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "(AI-900) Einstieg in Speech in Microsoft Foundry",
       "url": "https://learn.microsoft.com/en-us/training/modules/recognize-synthesize-speech/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q46",
@@ -2325,7 +2370,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Introduction to AI speech concepts (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/introduction-ai-speech/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q47",
@@ -2362,7 +2408,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "(AI-900) Einstieg in NLP in Microsoft Foundry",
       "url": "https://learn.microsoft.com/en-us/training/modules/get-started-language-azure/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q48",
@@ -2415,7 +2462,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "(AI-900) Einstieg in NLP in Microsoft Foundry",
       "url": "https://learn.microsoft.com/en-us/training/modules/get-started-language-azure/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q49",
@@ -2468,7 +2516,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "(AI-900) Einstieg in Generative AI und Agents in Microsoft Foundry",
       "url": "https://learn.microsoft.com/en-us/training/modules/get-started-generative-ai-azure/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q50",
@@ -2521,7 +2570,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Introduction to generative AI and agents (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/fundamentals-generative-ai/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q51",
@@ -2574,7 +2624,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Introduction to generative AI and agents (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/fundamentals-generative-ai/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q52",
@@ -2627,7 +2678,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "(AI-900) Einstieg in Generative AI und Agents in Microsoft Foundry",
       "url": "https://learn.microsoft.com/en-us/training/modules/get-started-generative-ai-azure/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q53",
@@ -2664,7 +2716,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "(AI-900) Einstieg in Generative AI und Agents in Microsoft Foundry",
       "url": "https://learn.microsoft.com/en-us/training/modules/get-started-generative-ai-azure/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q54",
@@ -2717,7 +2770,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Introduction to generative AI and agents (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/fundamentals-generative-ai/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q55",
@@ -2770,7 +2824,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Introduction to generative AI and agents (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/fundamentals-generative-ai/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q56",
@@ -2823,7 +2878,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "(AI-900) Einstieg in AI-gestutzte Informationsextraktion in Microsoft Foundry",
       "url": "https://learn.microsoft.com/en-us/training/modules/ai-information-extraction/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q57",
@@ -2876,7 +2932,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "(AI-900) Einstieg in AI-gestutzte Informationsextraktion in Microsoft Foundry",
       "url": "https://learn.microsoft.com/en-us/training/modules/ai-information-extraction/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q58",
@@ -2913,7 +2970,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "(AI-900) Einstieg in AI-gestutzte Informationsextraktion in Microsoft Foundry",
       "url": "https://learn.microsoft.com/en-us/training/modules/ai-information-extraction/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q59",
@@ -2966,7 +3024,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Introduction to AI concepts (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/get-started-ai-fundamentals/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q60",
@@ -3019,7 +3078,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Introduction to AI concepts (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/get-started-ai-fundamentals/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q61",
@@ -3072,7 +3132,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Introduction to AI concepts (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/get-started-ai-fundamentals/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q62",
@@ -3109,7 +3170,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Introduction to AI concepts (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/get-started-ai-fundamentals/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q63",
@@ -3162,7 +3224,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "(AI-900) Einstieg in AI-gestutzte Informationsextraktion in Microsoft Foundry",
       "url": "https://learn.microsoft.com/en-us/training/modules/ai-information-extraction/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q64",
@@ -3215,7 +3278,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "(AI-900) Einstieg in AI-gestutzte Informationsextraktion in Microsoft Foundry",
       "url": "https://learn.microsoft.com/en-us/training/modules/ai-information-extraction/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q65",
@@ -3252,7 +3316,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "(AI-900) Einstieg in AI-gestutzte Informationsextraktion in Microsoft Foundry",
       "url": "https://learn.microsoft.com/en-us/training/modules/ai-information-extraction/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q66",
@@ -3305,7 +3370,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Introduction to machine learning concepts (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/fundamentals-machine-learning/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q67",
@@ -3358,7 +3424,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Introduction to machine learning concepts (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/fundamentals-machine-learning/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q68",
@@ -3395,7 +3462,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Introduction to machine learning concepts (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/fundamentals-machine-learning/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q69",
@@ -3448,7 +3516,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Introduction to machine learning concepts (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/fundamentals-machine-learning/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q70",
@@ -3501,7 +3570,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Introduction to machine learning concepts (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/fundamentals-machine-learning/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q71",
@@ -3554,7 +3624,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Einstieg in Machine Learning in Azure",
       "url": "https://learn.microsoft.com/en-us/training/modules/design-machine-learning-model-training-solution/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q72",
@@ -3607,7 +3678,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "(AI-900) Einstieg in Generative AI und Agents in Microsoft Foundry",
       "url": "https://learn.microsoft.com/en-us/training/modules/get-started-generative-ai-azure/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q73",
@@ -3660,7 +3732,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "(AI-900) Einstieg in Generative AI und Agents in Microsoft Foundry",
       "url": "https://learn.microsoft.com/en-us/training/modules/get-started-generative-ai-azure/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q74",
@@ -3697,7 +3770,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "(AI-900) Einstieg in Generative AI und Agents in Microsoft Foundry",
       "url": "https://learn.microsoft.com/en-us/training/modules/get-started-generative-ai-azure/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q75",
@@ -3750,7 +3824,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "(AI-900) Einstieg in Generative AI und Agents in Microsoft Foundry",
       "url": "https://learn.microsoft.com/en-us/training/modules/get-started-generative-ai-azure/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q76",
@@ -3803,7 +3878,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Introduction to natural language processing concepts (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/introduction-language/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q77",
@@ -3856,7 +3932,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Einstieg in Machine Learning in Azure",
       "url": "https://learn.microsoft.com/en-us/training/modules/design-machine-learning-model-training-solution/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q78",
@@ -3893,7 +3970,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Introduction to machine learning concepts (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/fundamentals-machine-learning/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q79",
@@ -3946,7 +4024,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Analyze images with Azure AI Vision (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/analyze-images/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q80",
@@ -3999,7 +4078,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Analyze images with Azure AI Vision (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/analyze-images/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q81",
@@ -4052,7 +4132,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Analyze images with Azure AI Vision (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/analyze-images/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q82",
@@ -4105,7 +4186,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Analyze video with Azure AI Vision (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/analyze-video/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q83",
@@ -4158,7 +4240,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Detect and analyze faces with Azure AI Face (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/detect-analyze-faces/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q84",
@@ -4211,7 +4294,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Detect and analyze faces with Azure AI Face (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/detect-analyze-faces/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q85",
@@ -4264,7 +4348,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Detect and analyze faces with Azure AI Face (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/detect-analyze-faces/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q86",
@@ -4317,7 +4402,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Read text with Azure AI Vision (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/read-text-images-documents-with-computer-vision-service/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q87",
@@ -4370,7 +4456,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Introduction to computer vision concepts (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/introduction-computer-vision/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q88",
@@ -4423,7 +4510,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Classify images with Custom Vision (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/classify-images/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q89",
@@ -4476,7 +4564,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Detect objects in images (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/detect-objects-images/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q90",
@@ -4513,7 +4602,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Analyze video with Azure AI Vision (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/analyze-video/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q91",
@@ -4550,7 +4640,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Read text with Azure AI Vision (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/read-text-images-documents-with-computer-vision-service/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q92",
@@ -4603,7 +4694,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Classify images with Custom Vision (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/classify-images/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q93",
@@ -4640,7 +4732,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Classify images with Custom Vision (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/classify-images/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q94",
@@ -4693,7 +4786,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Get started with Azure AI Foundry (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/get-started-ai-in-foundry/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q95",
@@ -4746,7 +4840,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Get started with Azure AI Foundry (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/get-started-ai-in-foundry/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q96",
@@ -4799,7 +4894,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Get started with Azure AI Foundry (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/get-started-ai-in-foundry/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q97",
@@ -4852,7 +4948,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Responsible generative AI (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/responsible-generative-ai/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q98",
@@ -4905,7 +5002,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Get started with generative AI and agents in Microsoft Foundry (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/get-started-generative-ai-azure/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q99",
@@ -4958,7 +5056,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Introduction to generative AI and agents (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/fundamentals-generative-ai/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q100",
@@ -5011,7 +5110,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Introduction to generative AI and agents (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/fundamentals-generative-ai/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q101",
@@ -5064,7 +5164,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Responsible generative AI (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/responsible-generative-ai/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q102",
@@ -5117,7 +5218,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Get started with generative AI and agents in Microsoft Foundry (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/get-started-generative-ai-azure/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q103",
@@ -5170,7 +5272,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Introduction to generative AI and agents (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/fundamentals-generative-ai/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q104",
@@ -5223,7 +5326,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Introduction to generative AI and agents (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/fundamentals-generative-ai/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q105",
@@ -5260,7 +5364,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Get started with Azure AI Foundry (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/get-started-ai-in-foundry/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q106",
@@ -5297,7 +5402,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Introduction to generative AI and agents (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/fundamentals-generative-ai/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q107",
@@ -5350,7 +5456,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Get started with generative AI and agents in Microsoft Foundry (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/get-started-generative-ai-azure/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q108",
@@ -5387,7 +5494,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Get started with generative AI and agents in Microsoft Foundry (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/get-started-generative-ai-azure/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q109",
@@ -5440,7 +5548,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Translate text and documents with Azure AI Translator (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/translate-text-with-translation-service/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q110",
@@ -5493,7 +5602,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Build a conversational language understanding model (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/build-language-understanding-model/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q111",
@@ -5546,7 +5656,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Create a question answering solution (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/create-question-answer-solution-ai-language/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q112",
@@ -5599,7 +5710,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Recognize and synthesize speech (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/recognize-synthesize-speech/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q113",
@@ -5652,7 +5764,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Introduction to AI speech concepts (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/introduction-ai-speech/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q114",
@@ -5705,7 +5818,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Analyze text with Azure AI Language (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/analyze-text-with-text-analytics-service/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q115",
@@ -5758,7 +5872,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Custom text classification with Azure AI Language (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/custom-text-classification/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q116",
@@ -5795,7 +5910,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Translate text and documents with Azure AI Translator (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/translate-text-with-translation-service/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q117",
@@ -5848,7 +5964,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Einstieg in Machine Learning in Azure (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/design-machine-learning-model-training-solution/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q118",
@@ -5901,7 +6018,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Einstieg in Machine Learning in Azure (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/design-machine-learning-model-training-solution/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q119",
@@ -5954,7 +6072,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Einstieg in Machine Learning in Azure (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/design-machine-learning-model-training-solution/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q120",
@@ -6007,7 +6126,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Einstieg in Machine Learning in Azure (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/design-machine-learning-model-training-solution/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q121",
@@ -6060,7 +6180,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Einstieg in Machine Learning in Azure (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/design-machine-learning-model-training-solution/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q122",
@@ -6113,7 +6234,8 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Einstieg in Machine Learning in Azure (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/design-machine-learning-model-training-solution/"
-    }
+    },
+    "certId": "ai900"
   },
   {
     "id": "q123",
@@ -6150,6 +6272,7 @@ export const quizQuestions: QuizQuestion[] = [
     "learnRefDe": {
       "title": "Einstieg in Machine Learning in Azure (Microsoft Learn)",
       "url": "https://learn.microsoft.com/en-us/training/modules/design-machine-learning-model-training-solution/"
-    }
+    },
+    "certId": "ai900"
   }
 ];

@@ -1,11 +1,14 @@
 import { createRootRoute, Link, Outlet, useNavigate, useMatches } from '@tanstack/react-router';
 import { useState, useMemo, useCallback } from 'react';
 import { AccentSwitcher } from '@/components/ui/accent-switcher';
-import { Play, X, Keyboard, BarChart3, Settings, ChevronRight, Home } from 'lucide-react';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
+import { Play, X, Keyboard, BarChart3, Settings, ChevronRight, Home, ChevronDown } from 'lucide-react';
 import { H2, Label, Body, Muted, Code } from '@/components/ui/typography';
 import { useClickAway } from '@uidotdev/usehooks';
 import { Button } from '@/components/ui/button';
 import { useHotkeys, useHotkeyScope, getHotkeyManager } from '@/lib/hotkeys';
+import { useCertStore } from '@/store/cert-store';
+import { getCertification } from '@/db/certifications';
 import type { Shortcut } from '@/lib/hotkeys';
 
 const palettes = {
@@ -148,6 +151,9 @@ function RootLayout() {
 	const navigate = useNavigate();
 	const matches = useMatches();
 	const [showShortcuts, setShowShortcuts] = useState(false);
+	const certCode = useCertStore((s) => s.current().code);
+	const setCert = useCertStore((s) => s.setCert);
+	const allCertIds = useCertStore((s) => s.allIds());
 
 	// Determine active scope from current route
 	const activeScope = useMemo(() => {
@@ -183,8 +189,29 @@ function RootLayout() {
 				<nav className="flex h-14 items-center gap-3 px-4 sm:gap-6 sm:px-6">
 					<Link to="/" className="flex shrink-0 items-center gap-2 text-lg font-semibold tracking-tight">
 						<img src="/favicon.svg" alt="" className="h-5 w-5" />
-						<span className="hidden sm:inline">AI-900</span>
 					</Link>
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<button className="hidden items-center gap-1 text-lg font-semibold tracking-tight hover:text-accent transition-colors sm:flex">
+								{certCode}
+								<ChevronDown className="h-3.5 w-3.5 text-text-muted" />
+							</button>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent align="start">
+							{allCertIds.map((id) => {
+								const c = getCertification(id);
+								return (
+									<DropdownMenuItem
+										key={id}
+										onClick={() => setCert(id)}
+										className={id === useCertStore.getState().currentCertId ? 'font-bold text-accent' : ''}
+									>
+										{c.code} — {c.title}
+									</DropdownMenuItem>
+								);
+							})}
+						</DropdownMenuContent>
+					</DropdownMenu>
 
 					<div className="min-w-0 flex-1">
 						<ReadinessBar percent={readinessPercent} />

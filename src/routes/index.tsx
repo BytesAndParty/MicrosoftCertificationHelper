@@ -13,6 +13,7 @@ import { quizPattern, flashcardsPattern, glossaryPattern, roadmapPattern } from 
 import type { PatternDef } from '@/lib/patterns';
 import { db } from '@/db/schema';
 import { useQuizStore } from '@/store/quiz-store';
+import { useCertStore } from '@/store/cert-store';
 
 interface Feature {
 	label: string;
@@ -26,6 +27,7 @@ interface Feature {
 function buildFeatures(
 	counts: { questions: number; flashcards: number; glossary: number; roadmap: number },
 	quizProgress: number,
+	certCode: string,
 ): Feature[] {
 	return [
 		{
@@ -46,7 +48,7 @@ function buildFeatures(
 		},
 		{
 			label: 'Glossary',
-			description: 'Searchable AI-900 terms',
+			description: `Searchable ${certCode} terms`,
 			icon: FileText,
 			count: `${counts.glossary} Terms`,
 			progress: 0,
@@ -99,26 +101,28 @@ export const Route = createFileRoute('/')({
 function HomePage() {
 	const isDark = useIsDark();
 	const quizAnswers = useQuizStore((s) => s.answers);
+	const cert = useCertStore((s) => s.current());
+	const certId = useCertStore((s) => s.currentCertId);
 
 	const [features, setFeatures] = useState<Feature[]>(() =>
-		buildFeatures({ questions: 0, flashcards: 0, glossary: 0, roadmap: 0 }, 0),
+		buildFeatures({ questions: 0, flashcards: 0, glossary: 0, roadmap: 0 }, 0, cert.code),
 	);
 
 	useEffect(() => {
 		let cancelled = false;
 		Promise.all([
-			db.questions.count(),
-			db.flashcards.count(),
-			db.glossaryTerms.count(),
-			db.roadmapThemes.count(),
+			db.questions.where('certId').equals(certId).count(),
+			db.flashcards.where('certId').equals(certId).count(),
+			db.glossaryTerms.where('certId').equals(certId).count(),
+			db.roadmapThemes.where('certId').equals(certId).count(),
 		]).then(([questions, flashcards, glossary, roadmap]) => {
 			if (cancelled) return;
 			const correctCount = Object.values(quizAnswers).filter((r) => r.correct).length;
 			const quizProgress = questions > 0 ? Math.round((correctCount / questions) * 100) : 0;
-			setFeatures(buildFeatures({ questions, flashcards, glossary, roadmap }, quizProgress));
+			setFeatures(buildFeatures({ questions, flashcards, glossary, roadmap }, quizProgress, cert.code));
 		});
 		return () => { cancelled = true; };
-	}, [quizAnswers]);
+	}, [quizAnswers, certId, cert.code]);
 
 	const highlighted = useMemo(() => getHighlightedIndices(features), [features]);
 	const navigate = useNavigate();
@@ -135,9 +139,9 @@ function HomePage() {
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ duration: 0.4, ease: [0.25, 1, 0.5, 1] }}
 					>
-						<H1 className="dark:text-white">Microsoft AI-900 Certification</H1>
+						<H1 className="dark:text-white">Microsoft {cert.code} Certification</H1>
 						<Muted className="mt-1 dark:text-white/70">
-							Azure AI Fundamentals — Study at your own pace.
+							{cert.subtitle}
 						</Muted>
 					</motion.section>
 
