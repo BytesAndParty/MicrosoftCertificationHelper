@@ -8,7 +8,10 @@ import { useClickAway } from '@uidotdev/usehooks';
 import { Button } from '@/components/ui/button';
 import { useHotkeys, useHotkeyScope, getHotkeyManager } from '@/lib/hotkeys';
 import { useCertStore } from '@/store/cert-store';
-import { getCertification } from '@/db/certifications';
+import { getCertification, getAllCertIds } from '@/db/certifications';
+
+// Static — cert list never changes at runtime
+const ALL_CERT_IDS = getAllCertIds();
 import type { Shortcut } from '@/lib/hotkeys';
 
 const palettes = {
@@ -151,9 +154,9 @@ function RootLayout() {
 	const navigate = useNavigate();
 	const matches = useMatches();
 	const [showShortcuts, setShowShortcuts] = useState(false);
-	const certCode = useCertStore((s) => s.current().code);
+	const currentCertId = useCertStore((s) => s.currentCertId);
 	const setCert = useCertStore((s) => s.setCert);
-	const allCertIds = useCertStore((s) => s.allIds());
+	const certCode = getCertification(currentCertId).code;
 
 	// Determine active scope from current route
 	const activeScope = useMemo(() => {
@@ -198,7 +201,7 @@ function RootLayout() {
 							</button>
 						</DropdownMenuTrigger>
 						<DropdownMenuContent align="start">
-							{allCertIds.map((id) => {
+							{ALL_CERT_IDS.map((id) => {
 								const c = getCertification(id);
 								return (
 									<DropdownMenuItem
