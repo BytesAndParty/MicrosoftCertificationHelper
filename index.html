@@ -14,12 +14,16 @@
 		<!-- Prevent FOUC: apply theme + accent before React hydrates -->
 		<script>
 			(function () {
+				var d = document.documentElement;
 				var t = localStorage.getItem('theme_pref');
 				if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-				document.documentElement.setAttribute('data-theme', t);
-				if (t === 'dark') document.documentElement.classList.add('dark');
-				var a = localStorage.getItem('accent_pref');
-				if (a) document.documentElement.setAttribute('data-accent', a);
+				d.setAttribute('data-theme', t);
+				if (t === 'dark') d.classList.add('dark');
+				// Set background immediately so there's no white flash while CSS loads
+				d.style.backgroundColor = t === 'dark' ? '#1f1f1f' : '#fbfbfb';
+				d.style.colorScheme = t;
+				var a = localStorage.getItem('accent_pref') || 'amber';
+				d.setAttribute('data-accent', a);
 			})();
 		</script>
 		<div id="root"></div>
