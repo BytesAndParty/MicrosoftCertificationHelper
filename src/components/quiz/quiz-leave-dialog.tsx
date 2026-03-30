@@ -1,9 +1,9 @@
-import { useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useClickAway } from '@uidotdev/usehooks';
 import { CheckCircle2, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Muted } from '@/components/ui/typography';
+import { useHotkeys } from '@/lib/hotkeys';
 
 interface QuizLeaveDialogProps {
 	correct: number;
@@ -22,24 +22,15 @@ export function QuizLeaveDialog({
 }: QuizLeaveDialogProps) {
 	const pct = total > 0 ? Math.round((correct / total) * 100) : 0;
 
-	const handleKeyDown = useCallback(
-		(e: KeyboardEvent) => {
-			if (e.key === 'Escape') {
-				e.preventDefault();
-				onCancel();
-			}
-			if (e.key === 'Enter') {
-				e.preventDefault();
-				onConfirm();
-			}
-		},
-		[onCancel, onConfirm],
+	// Push scope so this dialog's keys take priority over the quiz shortcuts
+	useHotkeys(
+		'quiz-leave',
+		[
+			{ key: 'Escape', label: 'Stay', action: () => onCancel() },
+			{ key: 'Enter', label: 'Leave', action: () => onConfirm() },
+		],
+		{ push: true },
 	);
-
-	useEffect(() => {
-		window.addEventListener('keydown', handleKeyDown);
-		return () => window.removeEventListener('keydown', handleKeyDown);
-	}, [handleKeyDown]);
 
 	const ref = useClickAway<HTMLDivElement>(() => onCancel());
 

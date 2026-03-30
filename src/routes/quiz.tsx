@@ -1,5 +1,5 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { createFileRoute, useNavigate, useBlocker } from '@tanstack/react-router';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useHotkeys } from '@/lib/hotkeys';
 import type { Shortcut } from '@/lib/hotkeys';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -214,24 +214,29 @@ function QuizPage() {
 		window.scrollTo({ top: 0, behavior: 'smooth' });
 	}, []);
 
-	const [showLeaveDialog, setShowLeaveDialog] = useState(false);
-	const confirmLeave = useCallback(() => {
-		// Clear persisted session when leaving from summary (quiz completed)
-		if (showSummary) useQuizStore.setState({ session: null });
-		navigate({ to: '/' });
-	}, [navigate, showSummary]);
-	const requestLeave = useCallback(() => {
-		// No answers given yet — leave immediately without dialog
-		if (sessionTotal === 0) { confirmLeave(); return; }
-		setShowLeaveDialog(true);
-	}, [sessionTotal, confirmLeave]);
+	// Block all navigation while the quiz has progress (any answered question)
+	const blocker = useBlocker({
+		shouldBlockFn: () => sessionTotal > 0 && !showSummary,
+		withResolver: true,
+	});
+
+	// Clear the persisted session when leaving after completing the quiz
+	const showSummaryRef = useRef(false);
+	useEffect(() => { showSummaryRef.current = showSummary; }, [showSummary]);
+	useEffect(() => {
+		return () => { if (showSummaryRef.current) useQuizStore.setState({ session: null }); };
+	}, []);
 	const isLast = currentIndex >= questions.length - 1;
 
 	const handleCheckOrNext = useCallback(() => {
-		if (showSummary) { requestLeave(); return; }
+		if (showSummary) {
+			useQuizStore.setState({ session: null });
+			navigate({ to: '/' });
+			return;
+		}
 		if (!isRevealed && selectedIds.size > 0) handleCheck();
 		else if (isRevealed) isLast ? setShowSummary(true) : handleNext();
-	}, [showSummary, requestLeave, isRevealed, selectedIds.size, handleCheck, isLast, handleNext]);
+	}, [showSummary, navigate, isRevealed, selectedIds.size, handleCheck, isLast, handleNext]);
 
 	// Keyboard shortcuts — registered under 'quiz' scope (pushed by useHotkeyScope in root)
 	const quizShortcuts = useMemo<Shortcut[]>(() => [
@@ -302,8 +307,8 @@ function QuizPage() {
 				handleCheckOrNext();
 			},
 		},
-		{ key: 'Escape', label: 'Go home', action: () => requestLeave() },
-	], [displayedOptions, isRevealed, focusedIndex, handleSelect, handleCheckOrNext, requestLeave]);
+		{ key: 'Escape', label: 'Go home', action: () => navigate({ to: '/' }) },
+	], [displayedOptions, isRevealed, focusedIndex, handleSelect, handleCheckOrNext, navigate]);
 
 	useHotkeys('quiz', quizShortcuts);
 
@@ -341,7 +346,7 @@ function QuizPage() {
 								{currentIndex + 1}/{questions.length}
 							</span>
 						)}
-						<Button variant="ghost" size="sm" onClick={requestLeave} className="h-7 gap-1 px-2 text-xs">
+						<Button variant="ghost" size="sm" onClick={() => navigate({ to: '/' })} className="h-7 gap-1 px-2 text-xs">
 							<Home className="h-3 w-3" />
 							<span className="hidden sm:inline">Home</span>
 						</Button>
@@ -396,7 +401,7 @@ function QuizPage() {
 							transition={{ duration: 0.3, delay: 0.3, ease: [0.25, 1, 0.5, 1] }}
 							className="flex gap-3 pt-2"
 						>
-							<Button variant="outline" size="sm" onClick={requestLeave} className="gap-1">
+							<Button variant="outline" size="sm" onClick={() => { useQuizStore.setState({ session: null }); navigate({ to: '/' }); }} className="gap-1">
 								<Home className="h-3 w-3" />
 								Home
 							</Button>
@@ -635,13 +640,13 @@ function QuizPage() {
 			<FloatingChat questionContext={questionContext} />
 
 			<AnimatePresence>
-				{showLeaveDialog && (
+				{blocker.status === 'blocked' && (
 					<QuizLeaveDialog
 						correct={sessionCorrect}
 						incorrect={sessionTotal - sessionCorrect}
 						total={sessionTotal}
-						onConfirm={confirmLeave}
-						onCancel={() => setShowLeaveDialog(false)}
+						onConfirm={() => blocker.proceed?.()}
+						onCancel={() => blocker.reset?.()}
 					/>
 				)}
 			</AnimatePresence>
