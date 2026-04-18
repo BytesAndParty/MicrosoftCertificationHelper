@@ -66,6 +66,32 @@ Your role:
 
 Be encouraging but accurate. If you're unsure about something, say so.`,
   },
+  pl600: {
+    id: 'pl600',
+    code: 'PL-600',
+    title: 'Power Platform Solution Architect',
+    titleDe: 'Power Platform Solution Architect',
+    subtitle: 'Power Platform Solution Architect — Expert-level certification.',
+    subtitleDe: 'Power Platform Solution Architect — Expertenzertifizierung.',
+    topics: [
+      'Solution Envisioning',
+      'Solution Architecture',
+      'Data Model',
+      'Integration',
+      'Security Model',
+      'Implementation',
+    ],
+    chatPrompt: `You are a helpful AI tutor helping a student prepare for the Microsoft PL-600 (Power Platform Solution Architect) certification exam.
+
+Your role:
+- Explain solution architecture concepts for Power Platform clearly and concisely
+- Relate answers back to the PL-600 exam objectives: Envisioning (45-50%), Architecture (35-40%), Implementation (15-20%)
+- Use real-world enterprise scenarios when helpful
+- Focus on architectural decision-making, trade-offs, and best practices
+- If the student asks about a quiz question, help them understand the reasoning behind the correct architectural approach
+
+Be encouraging but accurate. This is an expert-level exam — emphasize the "why" behind decisions, not just the "what".`,
+  },
 };
 
 export const defaultCertId = 'ai900';
