@@ -29,3 +29,6 @@ playwright-report/
 
 # TypeScript build info
 tsconfig.tsbuildinfo
+
+# raw exam notes (not part of the source tree)
+/PL600/

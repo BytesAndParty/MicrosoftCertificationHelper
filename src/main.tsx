@@ -11,6 +11,10 @@ import { pl200Questions } from './db/pl200/quiz-questions';
 import { pl200Flashcards } from './db/pl200/flashcards';
 import { pl200GlossaryTerms } from './db/pl200/glossary-terms';
 import { pl200RoadmapThemes } from './db/pl200/roadmap-themes';
+import { pl400Questions } from './db/pl400/quiz-questions';
+import { pl400Flashcards } from './db/pl400/flashcards';
+import { pl400GlossaryTerms } from './db/pl400/glossary-terms';
+import { pl400RoadmapThemes } from './db/pl400/roadmap-themes';
 import { pl600Questions } from './db/pl600/quiz-questions';
 import { pl600Flashcards } from './db/pl600/flashcards';
 import { pl600GlossaryTerms } from './db/pl600/glossary-terms';
@@ -22,10 +26,10 @@ if (!rootEl) throw new Error('Root element not found');
 
 // Seed all certification content on startup (bulkPut upserts existing rows)
 db.seedData(
-	[...quizQuestions, ...pl200Questions, ...pl600Questions],
-	[...flashcards, ...pl200Flashcards, ...pl600Flashcards],
-	[...glossaryTerms, ...pl200GlossaryTerms, ...pl600GlossaryTerms],
-	[...roadmapThemes, ...pl200RoadmapThemes, ...pl600RoadmapThemes],
+	[...quizQuestions, ...pl200Questions, ...pl400Questions, ...pl600Questions],
+	[...flashcards, ...pl200Flashcards, ...pl400Flashcards, ...pl600Flashcards],
+	[...glossaryTerms, ...pl200GlossaryTerms, ...pl400GlossaryTerms, ...pl600GlossaryTerms],
+	[...roadmapThemes, ...pl200RoadmapThemes, ...pl400RoadmapThemes, ...pl600RoadmapThemes],
 ).catch((err) => {
 	console.error('Error seeding database:', err);
 });
